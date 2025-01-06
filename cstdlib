@@ -1,0 +1,102 @@
+/// \file cstdlib
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#if defined(ywstd_export) and __has_include("inc/cstdlib")
+#include "inc/cstdlib"
+#else
+
+namespace std {
+using size_t = /* see description */;  // freestanding
+using div_t = /* see description */;   // freestanding
+using ldiv_t = /* see description */;  // freestanding
+using lldiv_t = /* see description */; // freestanding
+}
+
+#define NULL /* see description */         // freestanding
+#define EXIT_FAILURE /* see description */ // freestanding
+#define EXIT_SUCCESS /* see description */ // freestanding
+#define RAND_MAX                           /* see description */
+#define MB_CUR_MAX                         /* see description */
+
+namespace std {
+// Exposition-only function type aliases
+extern "C" using /* c-atexit-handler */ = void(); // exposition only
+extern "C++" using /* atexit-handler */ = void(); // exposition only
+extern "C" using /* c-compare-pred */ =           // exposition only
+  int(const void*, const void*);
+extern "C++" using /* compare-pred */ = // exposition only
+  int(const void*, const void*);
+
+// start and termination
+[[noreturn]] void abort() noexcept;                       // freestanding
+int atexit(/* c-atexit-handler */ *func) noexcept;        // freestanding
+int atexit(/* atexit-handler */ *func) noexcept;          // freestanding
+int at_quick_exit(/* c-atexit-handler */ *func) noexcept; // freestanding
+int at_quick_exit(/* atexit-handler */ *func) noexcept;   // freestanding
+[[noreturn]] void exit(int status);                       // freestanding
+[[noreturn]] void _Exit(int status) noexcept;             // freestanding
+[[noreturn]] void quick_exit(int status) noexcept;        // freestanding
+
+char* getenv(const char* name);
+int system(const char* string);
+
+// C library memory allocation
+void* aligned_alloc(size_t alignment, size_t size);
+void* calloc(size_t nmemb, size_t size);
+void free(void* ptr);
+void* malloc(size_t size);
+void* realloc(void* ptr, size_t size);
+
+double atof(const char* nptr);
+int atoi(const char* nptr);
+long int atol(const char* nptr);
+long long int atoll(const char* nptr);
+double strtod(const char* nptr, char** endptr);
+float strtof(const char* nptr, char** endptr);
+long double strtold(const char* nptr, char** endptr);
+long int strtol(const char* nptr, char** endptr, int base);
+long long int strtoll(const char* nptr, char** endptr, int base);
+unsigned long int strtoul(const char* nptr, char** endptr, int base);
+unsigned long long int strtoull(const char* nptr, char** endptr, int base);
+
+// multibyte / wide string and character conversion functions
+int mblen(const char* s, size_t n);
+int mbtowc(wchar_t* pwc, const char* s, size_t n);
+int wctomb(char* s, wchar_t wchar);
+size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n);
+size_t wcstombs(char* s, const wchar_t* pwcs, size_t n);
+
+// C standard library algorithms
+void* bsearch(const void* key, const void* base, // freestanding
+              size_t nmemb, size_t size, /* c-compare-pred */ *compar);
+void* bsearch(const void* key, const void* base, // freestanding
+              size_t nmemb, size_t size, /* compare-pred */ *compar);
+void qsort(void* base, size_t nmemb, size_t size, // freestanding
+           /* c-compare-pred */ *compar);
+void qsort(void* base, size_t nmemb, size_t size, // freestanding
+           /* compare-pred */ *compar);
+
+// low-quality random number generation
+int rand();
+void srand(unsigned int seed);
+
+// absolute values
+constexpr int abs(int j);                     // freestanding
+constexpr long int abs(long int j);           // freestanding
+constexpr long long int abs(long long int j); // freestanding
+constexpr                                     /* floating-point-type */
+  abs(/* floating-point-type */ j);           // freestanding-deleted
+
+constexpr long int labs(long int j);            // freestanding
+constexpr long long int llabs(long long int j); // freestanding
+
+constexpr div_t div(int numer, int denom);                         // freestanding
+constexpr ldiv_t div(long int numer, long int denom);              // freestanding
+constexpr lldiv_t div(long long int numer, long long int denom);   // freestanding
+constexpr ldiv_t ldiv(long int numer, long int denom);             // freestanding
+constexpr lldiv_t lldiv(long long int numer, long long int denom); // freestanding
+}
+
+#endif

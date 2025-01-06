@@ -1,0 +1,33 @@
+DisableFormat: false
+
+BasedOnStyle: LLVM
+ColumnLimit: 120
+IndentWidth: 2
+FixNamespaceComments: false
+NamespaceIndentation: None
+
+EmptyLineBeforeAccessModifier: Leave
+
+AlignEscapedNewlines: LeftWithLastLine
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+
+
+BreakBeforeConceptDeclarations: Never
+BreakTemplateDeclarations: No
+ContinuationIndentWidth: 2
+RequiresClausePosition: SingleLine
+SpaceAfterTemplateKeyword: false
+
+ConstructorInitializerIndentWidth: 2
+
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterRequiresInClause: true

@@ -1,0 +1,161 @@
+#pragma once /* clang-format off */ /* Python code start
+import os, sys, subprocess
+if len(sys.argv) > 1 :
+  cpp_file = sys.argv[1]
+  if (os.path.splitext(cpp_file)[1] != ".cpp"):
+    print("Usage: python ywstd [<cpp_file> [--run]]")
+  if (not os.path.exists(cpp_file)):
+    print(f"{cpp_file} not found:")
+    sys.exit(1)
+  exe_file = cpp_file.replace(".cpp", ".exe")
+  obj_file = cpp_file.replace(".cpp", ".obj")
+  if os.path.exists(exe_file): os.remove(exe_file)
+  if os.path.exists(obj_file): os.remove(obj_file)
+  args = ["bin\\cl", cpp_file, f"/Fe{exe_file}", f"/Fo{obj_file}", "/Dywstd_import", ]
+  args+= ["/std:c++latest", "/EHsc", "/nologo", "/W4", "/O2", "/Qpar", "/utf-8", ]
+  args+= ["/link", "ywstd.obj", "/LIBPATH:lib", ]
+  subprocess.run(args)
+  if os.path.exists(obj_file): os.remove(obj_file)
+  if os.path.exists(exe_file):
+    print(f"{exe_file} compiled successfully.")
+    if "--run" in sys.argv:
+      print(f"Running {exe_file}...")
+      subprocess.run([exe_file])
+    sys.exit(0)
+  else:
+    print(f"Failed to compile {cpp_file}.")
+    sys.exit(1)
+else:
+  print("Compiling ywstd...")
+  # create ywstd.ixx
+  args = ["bin\\cl", "ywstd.ixx", "/c", "/Dywstd_export", ]
+  args+= ["/std:c++latest", "/EHsc", "/nologo", "/W4", "/O2", "/Qpar", "/utf-8", ]
+  if os.path.exists("ywstd.ifc"): os.remove("ywstd.ifc")
+  if os.path.exists("ywstd.obj"): os.remove("ywstd.obj")
+  with open("ywstd.ixx", "w") as f:
+    f.write("export module ywstd;\n#include \"ywstd\"\n")
+  subprocess.run(args)
+  if os.path.exists("ywstd.ixx"): os.remove("ywstd.ixx")
+  if os.path.exists("ywstd.ifc") and os.path.exists("ywstd.obj"):
+    print("ywstd compiled successfully.")
+    sys.exit(0)
+  else:
+    print("Failed to compile ywstd.")
+    sys.exit(1)
+# Python code end */
+
+#ifdef ywstd_import
+#pragma comment(lib, "kernel32.lib")
+#pragma comment(lib, "libcpmt.lib")
+#pragma comment(lib, "user32.lib")
+import ywstd;
+#else
+#if defined(ywstd_export)
+#define _BUILD_STD_MODULE
+#endif
+
+#include "inc/algorithm"
+#include "inc/any"
+#include "inc/array"
+#include "inc/atomic"
+#include "inc/barrier"
+#include "inc/bit"
+#include "inc/bitset"
+#include "inc/cassert"
+#include "inc/cctype"
+#include "inc/cerrno"
+#include "inc/cfenv"
+#include "inc/cfloat"
+#include "inc/charconv"
+#include "inc/chrono"
+#include "inc/cinttypes"
+#include "inc/climits"
+#include "inc/clocale"
+#include "inc/cmath"
+#include "inc/codecvt"
+#include "inc/compare"
+#include "inc/complex"
+#include "inc/concepts"
+#include "inc/condition_variable"
+#include "inc/coroutine"
+#include "inc/csetjmp"
+#include "inc/csignal"
+#include "inc/cstdarg"
+#include "inc/cstddef"
+#include "inc/cstdint"
+#include "inc/cstdio"
+#include "inc/cstdlib"
+#include "inc/cstring"
+#include "inc/ctime"
+#include "inc/cuchar"
+#include "inc/cwchar"
+#include "inc/cwctype"
+#include "inc/deque"
+#include "inc/exception"
+#include "inc/execution"
+#include "inc/expected"
+#include "inc/filesystem"
+#include "inc/format"
+#include "inc/forward_list"
+#include "inc/fstream"
+#include "inc/functional"
+#include "inc/future"
+#include "inc/initializer_list"
+#include "inc/iomanip"
+#include "inc/ios"
+#include "inc/iosfwd"
+#include "inc/iostream"
+#include "inc/istream"
+#include "inc/iterator"
+#include "inc/latch"
+#include "inc/limits"
+#include "inc/list"
+#include "inc/locale"
+#include "inc/map"
+#include "inc/memory"
+#include "inc/memory_resource"
+#include "inc/mutex"
+#include "inc/new"
+#include "inc/numbers"
+#include "inc/numeric"
+#include "inc/optional"
+#include "inc/ostream"
+#include "inc/print"
+#include "inc/queue"
+#include "inc/random"
+#include "inc/ranges"
+#include "inc/ratio"
+#include "inc/regex"
+#include "inc/scoped_allocator"
+#include "inc/semaphore"
+#include "inc/set"
+#include "inc/shared_mutex"
+#include "inc/source_location"
+#include "inc/span"
+#include "inc/spanstream"
+#include "inc/sstream"
+#include "inc/stack"
+#include "inc/stacktrace"
+#include "inc/stdexcept"
+#include "inc/stdfloat"
+#include "inc/stop_token"
+#include "inc/streambuf"
+#include "inc/string"
+#include "inc/string_view"
+#include "inc/strstream"
+#include "inc/syncstream"
+#include "inc/system_error"
+#include "inc/thread"
+#include "inc/tuple"
+#include "inc/type_traits"
+#include "inc/typeindex"
+#include "inc/typeinfo"
+#include "inc/unordered_map"
+#include "inc/unordered_set"
+#include "inc/utility"
+#include "inc/valarray"
+#include "inc/variant"
+#include "inc/vector"
+#include "inc/version"
+
+#endif
