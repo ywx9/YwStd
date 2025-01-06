@@ -8,95 +8,159 @@
 #else
 
 namespace std {
-using size_t = /* see description */;  // freestanding
-using div_t = /* see description */;   // freestanding
-using ldiv_t = /* see description */;  // freestanding
-using lldiv_t = /* see description */; // freestanding
-}
 
-#define NULL /* see description */         // freestanding
-#define EXIT_FAILURE /* see description */ // freestanding
-#define EXIT_SUCCESS /* see description */ // freestanding
-#define RAND_MAX                           /* see description */
-#define MB_CUR_MAX                         /* see description */
+using size_t = decltype(sizeof(0));
 
-namespace std {
-// Exposition-only function type aliases
-extern "C" using /* c-atexit-handler */ = void(); // exposition only
-extern "C++" using /* atexit-handler */ = void(); // exposition only
-extern "C" using /* c-compare-pred */ =           // exposition only
-  int(const void*, const void*);
-extern "C++" using /* compare-pred */ = // exposition only
-  int(const void*, const void*);
+/// structure type, returned by `std::div`
+struct div_t {
+  int quot, rem;
+};
 
-// start and termination
-[[noreturn]] void abort() noexcept;                       // freestanding
-int atexit(/* c-atexit-handler */ *func) noexcept;        // freestanding
-int atexit(/* atexit-handler */ *func) noexcept;          // freestanding
-int at_quick_exit(/* c-atexit-handler */ *func) noexcept; // freestanding
-int at_quick_exit(/* atexit-handler */ *func) noexcept;   // freestanding
-[[noreturn]] void exit(int status);                       // freestanding
-[[noreturn]] void _Exit(int status) noexcept;             // freestanding
-[[noreturn]] void quick_exit(int status) noexcept;        // freestanding
+/// structure type, returned by `std::ldiv`
+struct ldiv_t {
+  long quot, rem;
+};
 
-char* getenv(const char* name);
-int system(const char* string);
+/// structure type, returned by `std::lldiv`
+struct lldiv_t {
+  long long quot, rem;
+};
 
-// C library memory allocation
-void* aligned_alloc(size_t alignment, size_t size);
-void* calloc(size_t nmemb, size_t size);
-void free(void* ptr);
-void* malloc(size_t size);
-void* realloc(void* ptr, size_t size);
+// PROCESS CONTROL FUNCTIONS ///////////////////////////////////////////////////
 
-double atof(const char* nptr);
-int atoi(const char* nptr);
-long int atol(const char* nptr);
-long long int atoll(const char* nptr);
-double strtod(const char* nptr, char** endptr);
-float strtof(const char* nptr, char** endptr);
-long double strtold(const char* nptr, char** endptr);
-long int strtol(const char* nptr, char** endptr, int base);
-long long int strtoll(const char* nptr, char** endptr, int base);
-unsigned long int strtoul(const char* nptr, char** endptr, int base);
-unsigned long long int strtoull(const char* nptr, char** endptr, int base);
+/// causes abnormal program termination without cleaning up
+[[noreturn]] void __cdecl abort() noexcept;
 
-// multibyte / wide string and character conversion functions
-int mblen(const char* s, size_t n);
-int mbtowc(wchar_t* pwc, const char* s, size_t n);
-int wctomb(char* s, wchar_t wchar);
-size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n);
-size_t wcstombs(char* s, const wchar_t* pwcs, size_t n);
+/// causes normal program termination with cleaning up
+[[noreturn]] void __cdecl exit(int status);
 
-// C standard library algorithms
-void* bsearch(const void* key, const void* base, // freestanding
-              size_t nmemb, size_t size, /* c-compare-pred */ *compar);
-void* bsearch(const void* key, const void* base, // freestanding
-              size_t nmemb, size_t size, /* compare-pred */ *compar);
-void qsort(void* base, size_t nmemb, size_t size, // freestanding
-           /* c-compare-pred */ *compar);
-void qsort(void* base, size_t nmemb, size_t size, // freestanding
-           /* compare-pred */ *compar);
+/// causes quick program termination without completely cleaning up
+[[noreturn]] void __cdecl quick_exit(int status) noexcept;
 
-// low-quality random number generation
-int rand();
-void srand(unsigned int seed);
+/// causes normal program termination without cleaning up
+[[noreturn]] void __cdecl _Exit(int status) noexcept;
 
-// absolute values
-constexpr int abs(int j);                     // freestanding
-constexpr long int abs(long int j);           // freestanding
-constexpr long long int abs(long long int j); // freestanding
-constexpr                                     /* floating-point-type */
-  abs(/* floating-point-type */ j);           // freestanding-deleted
+/// registers a function to be called on `std::exit` invocation
+int __cdecl atexit(void (__cdecl*)()) noexcept;
 
-constexpr long int labs(long int j);            // freestanding
-constexpr long long int llabs(long long int j); // freestanding
+/// registers a function to be called on `std::quick_exit` invocation
+int __cdecl at_quick_exit(void (__cdecl*)()) noexcept;
 
-constexpr div_t div(int numer, int denom);                         // freestanding
-constexpr ldiv_t div(long int numer, long int denom);              // freestanding
-constexpr lldiv_t div(long long int numer, long long int denom);   // freestanding
-constexpr ldiv_t ldiv(long int numer, long int denom);             // freestanding
-constexpr lldiv_t lldiv(long long int numer, long long int denom); // freestanding
+/// calls the host environment's command processor
+int __cdecl system(const char* string);
+
+/// accesses to the list of environment variables
+char* __cdecl getenv(const char* name);
+
+// MEMORY MANAGEMENT FUNCTIONS /////////////////////////////////////////////////
+
+/// allocates memory
+void* __cdecl malloc(size_t size);
+
+/// allocates and zeroes memory
+void* __cdecl calloc(size_t nmemb, size_t size);
+
+/// expands or shrinks previously allocated memory block
+void* __cdecl realloc(void* ptr, size_t size);
+
+/// deallocates previously allocated memory
+void __cdecl free(void* ptr);
+
+// NUMERIC STRING CONVERSION FUNCTIONS /////////////////////////////////////////
+
+/// converts a byte string to a floating-point value
+double __cdecl atof(const char* nptr);
+
+/// converts a byte string to an integer value
+int __cdecl atoi(const char* nptr);
+
+/// converts a byte string to an integer value
+long __cdecl atol(const char* nptr);
+
+/// converts a byte string to an integer value
+long long __cdecl atoll(const char* nptr);
+
+/// converts a byte string to a floating-point value
+float __cdecl strtof(const char* nptr, char** endptr);
+
+/// converts a byte string to a floating-point value
+double __cdecl strtod(const char* nptr, char** endptr);
+
+/// converts a byte string to a floating-point value
+long double __cdecl strtold(const char* nptr, char** endptr);
+
+/// converts a byte string to an integer value
+long __cdecl strtol(const char* nptr, char** endptr, int base);
+
+/// converts a byte string to an integer value
+long long __cdecl strtoll(const char* nptr, char** endptr, int base);
+
+/// converts a byte string to an unsigned integer value
+unsigned long __cdecl strtoul(const char* nptr, char** endptr, int base);
+
+/// converts a byte string to an unsigned integer value
+unsigned long long __cdecl strtoull(const char* nptr, char** endptr, int base);
+
+// WIDE STRING MANIPULATION FUNCTIONS //////////////////////////////////////////
+
+/// returns the number of bytes in the next multibyte character
+int __cdecl mblen(const char* s, size_t n);
+
+/// converts the next multibyte character to a wide character
+int __cdecl mbtowc(wchar_t* pwc, const char* s, size_t n);
+
+/// converts a wide character to its multibyte representation
+int __cdecl wctomb(char* s, wchar_t wchar);
+
+/// converts a narrow multibyte character string to a wide string
+size_t __cdecl mbstowcs(wchar_t* pwcs, const char* s, size_t n);
+
+/// converts a wide string to a narrow multibyte character string
+size_t __cdecl wcstombs(char* s, const wchar_t* pwcs, size_t n);
+
+// MISCELLANEOUS FUNCTIONS /////////////////////////////////////////////////////
+
+/// generates a pseudo-random number
+int __cdecl rand();
+
+/// seeds pseudo-random number generator
+void __cdecl srand(unsigned int seed);
+
+/// sorts a range of elements with unspecified type
+void __cdecl qsort(void* base, size_t nmemb, size_t size, int (__cdecl* compar)(const void*, const void*));
+
+/// searches an array for an element of unspecified type
+void* __cdecl bsearch(const void* key, const void* base, size_t nmemb, size_t size, int (__cdecl* compar)(const void*, const void*));
+
+/// computes absolute value of an integer
+constexpr int abs(int j) { return j < 0 ? -j : j; }
+
+/// computes absolute value of an integer
+constexpr long abs(long j) { return j < 0 ? -j : j; }
+
+/// computes absolute value of an integer
+constexpr long long abs(long long j) { return j < 0 ? -j : j; }
+
+/// computes absolute value of an integer
+constexpr long labs(long j) { return j < 0 ? -j : j; }
+
+/// computes absolute value of an integer
+constexpr long long llabs(long long j) { return j < 0 ? -j : j; }
+
+/// computes quotient and remainder of integer division
+constexpr div_t div(int numer, int denom) { return {numer / denom, numer % denom}; }
+
+/// computes quotient and remainder of integer division
+constexpr ldiv_t div(long numer, long denom) { return {numer / denom, numer % denom}; }
+
+/// computes quotient and remainder of integer division
+constexpr lldiv_t div(long long numer, long long denom) { return {numer / denom, numer % denom}; }
+
+/// computes quotient and remainder of integer division
+constexpr ldiv_t ldiv(long numer, long denom) { return {numer / denom, numer % denom}; }
+
+/// computes quotient and remainder of integer division
+constexpr lldiv_t lldiv(long long numer, long long denom) { return {numer / denom, numer % denom}; }
 }
 
 #endif
