@@ -1,0 +1,17 @@
+/// \file cerrno
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#if defined(ywstd_export) and __has_include("inc/cerrno")
+#include "inc/cerrno"
+namespace yw::_ {
+inline int _errno() { return *::_errno(); }
+}
+#else
+
+namespace yw::_ {
+
+[[nodiscard]] int _errno();
+}
+#endif

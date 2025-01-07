@@ -44,6 +44,9 @@ else:
     sys.exit(1)
 # Python code end */
 
+#define nat size_t
+#define wchar wchar_t
+
 #ifdef ywstd_import
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "libcpmt.lib")
@@ -61,9 +64,9 @@ import ywstd;
 #include "inc/barrier"
 #include "inc/bit"
 #include "inc/bitset"
-#include "inc/cassert"
-#include "inc/cctype"
-#include "inc/cerrno"
+#include "cassert"
+#include "cctype"
+#include "cerrno"
 #include "inc/cfenv"
 #include "inc/cfloat"
 #include "inc/charconv"
@@ -84,7 +87,7 @@ import ywstd;
 #include "inc/cstddef"
 #include "inc/cstdint"
 #include "inc/cstdio"
-#include "inc/cstdlib"
+#include "cstdlib"
 #include "inc/cstring"
 #include "inc/ctime"
 #include "inc/cuchar"
@@ -157,5 +160,7 @@ import ywstd;
 #include "inc/variant"
 #include "inc/vector"
 #include "inc/version"
+
+#include "xyz.hpp"
 
 #endif
