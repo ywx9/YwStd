@@ -7,11 +7,11 @@
 #define _TYPEINDEX_
 #include "yvals_core.h"
 #if _STL_COMPILER_PREPROCESSOR
-#include "typeinfo"
+#include <typeinfo>
 
 #if _HAS_CXX20
-#include "compare"
-#include "cstring"
+#include <compare>
+#include <cstring>
 #endif // _HAS_CXX20
 
 #pragma pack(push, _CRT_PACKING)

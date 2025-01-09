@@ -24,7 +24,7 @@ extern "C++" {
 #ifdef __cpp_aligned_new
 namespace std
 {
-    _VCRT_EXPORT_STD enum class align_val_t : size_t {};
+    enum class align_val_t : size_t {};
 }
 #endif // __cpp_aligned_new
 
@@ -32,72 +32,76 @@ namespace std
 #define __NOTHROW_T_DEFINED
     namespace std
     {
-        _VCRT_EXPORT_STD struct nothrow_t {
+        struct nothrow_t {
             explicit nothrow_t() = default;
         };
 
-        _VCRT_EXPORT_STD extern nothrow_t const nothrow;
+        #ifdef _CRT_ENABLE_SELECTANY_NOTHROW
+            extern __declspec(selectany) nothrow_t const nothrow;
+        #else
+            extern nothrow_t const nothrow;
+        #endif
     }
 #endif
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new(
     size_t _Size
     );
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new(
     size_t _Size,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new[](
     size_t _Size
     );
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new[](
     size_t _Size,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete(
+void __CRTDECL operator delete(
     void* _Block
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete(
+void __CRTDECL operator delete(
     void* _Block,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete[](
+void __CRTDECL operator delete[](
     void* _Block
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete[](
+void __CRTDECL operator delete[](
     void* _Block,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete(
+void __CRTDECL operator delete(
     void*  _Block,
     size_t _Size
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete[](
+void __CRTDECL operator delete[](
     void* _Block,
     size_t _Size
     ) noexcept;
 
 #ifdef __cpp_aligned_new
-_VCRT_EXPORT_STD _NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new(
     size_t             _Size,
     ::std::align_val_t _Al
     );
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new(
     size_t                  _Size,
     ::std::align_val_t      _Al,
@@ -105,48 +109,48 @@ void* __CRTDECL operator new(
     ) noexcept;
 
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new[](
     size_t             _Size,
     ::std::align_val_t _Al
     );
 
-_VCRT_EXPORT_STD _NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
+_NODISCARD _Ret_maybenull_ _Success_(return != NULL) _Post_writable_byte_size_(_Size) _VCRT_ALLOCATOR
 void* __CRTDECL operator new[](
     size_t                  _Size,
     ::std::align_val_t      _Al,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete(
+void __CRTDECL operator delete(
     void*              _Block,
     ::std::align_val_t _Al
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete(
+void __CRTDECL operator delete(
     void*                   _Block,
     ::std::align_val_t      _Al,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete[](
+void __CRTDECL operator delete[](
     void*              _Block,
     ::std::align_val_t _Al
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete[](
+void __CRTDECL operator delete[](
     void*                   _Block,
     ::std::align_val_t      _Al,
     ::std::nothrow_t const&
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete(
+void __CRTDECL operator delete(
     void*              _Block,
     size_t             _Size,
     ::std::align_val_t _Al
     ) noexcept;
 
-_VCRT_EXPORT_STD void __CRTDECL operator delete[](
+void __CRTDECL operator delete[](
     void*              _Block,
     size_t             _Size,
     ::std::align_val_t _Al
@@ -158,7 +162,7 @@ _VCRT_EXPORT_STD void __CRTDECL operator delete[](
 #pragma warning(disable: 4514) // 'operator new': unreferenced inline function has been removed
 #ifndef __PLACEMENT_NEW_INLINE
     #define __PLACEMENT_NEW_INLINE
-    _VCRT_EXPORT_STD _NODISCARD _MSVC_CONSTEXPR _Ret_notnull_ _Post_writable_byte_size_(_Size) _Post_satisfies_(return == _Where)
+    _NODISCARD _MSVC_CONSTEXPR _Ret_notnull_ _Post_writable_byte_size_(_Size) _Post_satisfies_(return == _Where)
     inline void* __CRTDECL operator new(size_t _Size,
         _Writable_bytes_(_Size) void* _Where) noexcept
     {
@@ -166,7 +170,7 @@ _VCRT_EXPORT_STD void __CRTDECL operator delete[](
         return _Where;
     }
 
-    _VCRT_EXPORT_STD inline void __CRTDECL operator delete(void*, void*) noexcept
+    inline void __CRTDECL operator delete(void*, void*) noexcept
     {
         return;
     }
@@ -174,7 +178,7 @@ _VCRT_EXPORT_STD void __CRTDECL operator delete[](
 
 #ifndef __PLACEMENT_VEC_NEW_INLINE
     #define __PLACEMENT_VEC_NEW_INLINE
-    _VCRT_EXPORT_STD _NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _Post_satisfies_(return == _Where)
+    _NODISCARD _Ret_notnull_ _Post_writable_byte_size_(_Size) _Post_satisfies_(return == _Where)
     inline void* __CRTDECL operator new[](size_t _Size,
         _Writable_bytes_(_Size) void* _Where) noexcept
     {
@@ -182,7 +186,7 @@ _VCRT_EXPORT_STD void __CRTDECL operator delete[](
         return _Where;
     }
 
-    _VCRT_EXPORT_STD inline void __CRTDECL operator delete[](void*, void*) noexcept
+    inline void __CRTDECL operator delete[](void*, void*) noexcept
     {
     }
 #endif

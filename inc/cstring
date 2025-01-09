@@ -1,57 +1,105 @@
-// cstring standard header (core)
+/// \file cstring
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-#ifndef _CSTRING_
-#define _CSTRING_
-#include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
+#if ywstd_is_exported
+extern "C" {
 
-#include "string.h"
+char* __cdecl strcpy(char* dest, const char* src);
+char* __cdecl strncpy(char* dest, const char* src, size_t count);
+char* __cdecl strcat(char* dest, const char* src);
+char* __cdecl strncat(char* dest, const char* src, size_t count);
+size_t __cdecl strxfrm(char* dest, const char* src, size_t count);
 
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
+size_t __cdecl strlen(const char* str);
+int __cdecl strcmp(const char* str1, const char* str2);
+int __cdecl strncmp(const char* str1, const char* str2, size_t count);
+int __cdecl strcoll(const char* str1, const char* str2);
+const char* __cdecl strchr(const char* str, int ch);
+const char* __cdecl strrchr(const char* str, int ch);
+size_t __cdecl strspn(const char* str, const char* control);
+size_t __cdecl strcspn(const char* str, const char* control);
+char* __cdecl strpbrk(const char* str, const char* control);
+char* __cdecl strstr(const char* str1, const char* str2);
+char* __cdecl strtok(char* str, const char* control);
 
-_STD_BEGIN
-#pragma warning(push)
-#pragma warning(disable : 4995) // name was marked as #pragma deprecated
+void* __cdecl memchr(const void* ptr, int value, size_t num);
+int __cdecl memcmp(const void* ptr1, const void* ptr2, size_t num);
+void* __cdecl memcpy(void* dest, const void* src, size_t num);
+void* __cdecl memmove(void* dest, const void* src, size_t num);
+void* __cdecl memset(void* ptr, int value, size_t num);
 
-_EXPORT_STD using _CSTD size_t;
-_EXPORT_STD using _CSTD memchr;
-_EXPORT_STD using _CSTD memcmp;
-_EXPORT_STD using _CSTD memcpy;
-_EXPORT_STD using _CSTD memmove;
-_EXPORT_STD using _CSTD memset;
-_EXPORT_STD using _CSTD strcat;
-_EXPORT_STD using _CSTD strchr;
-_EXPORT_STD using _CSTD strcmp;
-_EXPORT_STD using _CSTD strcoll;
-_EXPORT_STD using _CSTD strcpy;
-_EXPORT_STD using _CSTD strcspn;
-_EXPORT_STD using _CSTD strerror;
-_EXPORT_STD using _CSTD strlen;
-_EXPORT_STD using _CSTD strncat;
-_EXPORT_STD using _CSTD strncmp;
-_EXPORT_STD using _CSTD strncpy;
-_EXPORT_STD using _CSTD strpbrk;
-_EXPORT_STD using _CSTD strrchr;
-_EXPORT_STD using _CSTD strspn;
-_EXPORT_STD using _CSTD strstr;
-_EXPORT_STD using _CSTD strtok;
-_EXPORT_STD using _CSTD strxfrm;
+char* __cdecl strerror(int errnum);
 
-#pragma warning(pop)
-_STD_END
+errno_t __cdecl strcpy_s(char*, size_t, char const*);
+errno_t __cdecl strcat_s(char*, size_t, char const*);
+errno_t __cdecl strerror_s(char*, size_t, int);
+errno_t __cdecl strncat_s(char*, size_t, char const*, size_t);
+errno_t __cdecl strncpy_s(char*, size_t, char const*, size_t);
+char* __cdecl strtok_s(char*, char const*, char**);
+}
+#endif
 
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma warning(pop)
-#pragma pack(pop)
+export namespace std {
 
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _CSTRING_
+using size_t = decltype(sizeof(0));
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING MANIPULATION
+
+using ::strcpy;
+using ::strncpy;
+using ::strcat;
+using ::strncat;
+using ::strxfrm;
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING EXAMINATION
+
+using ::strlen;
+using ::strcmp;
+using ::strncmp;
+using ::strcoll;
+using ::strchr;
+using ::strrchr;
+using ::strspn;
+using ::strcspn;
+using ::strpbrk;
+using ::strstr;
+using ::strtok;
+
+////////////////////////////////////////////////////////////////////////////////
+// CHARACTER ARRAY MANIPULATION
+
+using ::memchr;
+using ::memcmp;
+using ::memcpy;
+using ::memmove;
+using ::memset;
+
+////////////////////////////////////////////////////////////////////////////////
+// MISCELLANEOUS
+
+using ::strerror;
+
+inline void* memchr(void* ptr, int value, size_t num) {
+  return const_cast<void*>(memchr(const_cast<const void*>(ptr), value, num));
+}
+
+inline char* strchr(char* str, int ch) {
+  return const_cast<char*>(strchr(const_cast<const char*>(str), ch));
+}
+
+inline char* strrchr(char* str, int ch) {
+  return const_cast<char*>(strrchr(const_cast<const char*>(str), ch));
+}
+
+inline char* strpbrk(char* str, const char* control) {
+  return const_cast<char*>(strpbrk(const_cast<const char*>(str), control));
+}
+
+inline char* strstr(char* str1, const char* str2) {
+  return const_cast<char*>(strstr(const_cast<const char*>(str1), str2));
+}
+}

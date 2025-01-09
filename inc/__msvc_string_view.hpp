@@ -19,6 +19,68 @@ _STL_DISABLE_CLANG_WARNINGS
 #pragma push_macro("new")
 #undef new
 
+#if _USE_STD_VECTOR_ALGORITHMS
+extern "C" {
+// The "noalias" attribute tells the compiler optimizer that pointers going into these hand-vectorized algorithms
+// won't be stored beyond the lifetime of the function, and that the function will only reference arrays denoted by
+// those pointers. The optimizer also assumes in that case that a pointer parameter is not returned to the caller via
+// the return value, so functions using "noalias" must usually return void. This attribute is valuable because these
+// functions are in native code objects that the compiler cannot analyze. In the absence of the noalias attribute, the
+// compiler has to assume that the denoted arrays are "globally address taken", and that any later calls to
+// unanalyzable routines may modify those arrays.
+
+__declspec(noalias) size_t __stdcall __std_find_first_of_trivial_pos_1(
+    const void* _Haystack, size_t _Haystack_length, const void* _Needle, size_t _Needle_length) noexcept;
+__declspec(noalias) size_t __stdcall __std_find_first_of_trivial_pos_2(
+    const void* _Haystack, size_t _Haystack_length, const void* _Needle, size_t _Needle_length) noexcept;
+__declspec(noalias) size_t __stdcall __std_find_first_of_trivial_pos_4(
+    const void* _Haystack, size_t _Haystack_length, const void* _Needle, size_t _Needle_length) noexcept;
+__declspec(noalias) size_t __stdcall __std_find_first_of_trivial_pos_8(
+    const void* _Haystack, size_t _Haystack_length, const void* _Needle, size_t _Needle_length) noexcept;
+
+__declspec(noalias) size_t __stdcall __std_find_last_of_trivial_pos_1(
+    const void* _Haystack, size_t _Haystack_length, const void* _Needle, size_t _Needle_length) noexcept;
+__declspec(noalias) size_t __stdcall __std_find_last_of_trivial_pos_2(
+    const void* _Haystack, size_t _Haystack_length, const void* _Needle, size_t _Needle_length) noexcept;
+
+} // extern "C"
+
+_STD_BEGIN
+
+template <class _Ty1, class _Ty2>
+size_t _Find_first_of_pos_vectorized(const _Ty1* const _Haystack, const size_t _Haystack_length,
+    const _Ty2* const _Needle, const size_t _Needle_length) noexcept {
+    _STL_INTERNAL_STATIC_ASSERT(sizeof(_Ty1) == sizeof(_Ty2));
+    if constexpr (sizeof(_Ty1) == 1) {
+        return ::__std_find_first_of_trivial_pos_1(_Haystack, _Haystack_length, _Needle, _Needle_length);
+    } else if constexpr (sizeof(_Ty1) == 2) {
+        return ::__std_find_first_of_trivial_pos_2(_Haystack, _Haystack_length, _Needle, _Needle_length);
+    } else if constexpr (sizeof(_Ty1) == 4) {
+        return ::__std_find_first_of_trivial_pos_4(_Haystack, _Haystack_length, _Needle, _Needle_length);
+    } else if constexpr (sizeof(_Ty1) == 8) {
+        return ::__std_find_first_of_trivial_pos_8(_Haystack, _Haystack_length, _Needle, _Needle_length);
+    } else {
+        _STL_INTERNAL_STATIC_ASSERT(false); // unexpected size
+    }
+}
+
+template <class _Ty1, class _Ty2>
+size_t _Find_last_of_pos_vectorized(const _Ty1* const _Haystack, const size_t _Haystack_length,
+    const _Ty2* const _Needle, const size_t _Needle_length) noexcept {
+    _STL_INTERNAL_STATIC_ASSERT(sizeof(_Ty1) == sizeof(_Ty2));
+    if constexpr (sizeof(_Ty1) == 1) {
+        return ::__std_find_last_of_trivial_pos_1(_Haystack, _Haystack_length, _Needle, _Needle_length);
+    } else if constexpr (sizeof(_Ty1) == 2) {
+        return ::__std_find_last_of_trivial_pos_2(_Haystack, _Haystack_length, _Needle, _Needle_length);
+    } else {
+        _STL_INTERNAL_STATIC_ASSERT(false); // unexpected size
+    }
+}
+
+_STD_END
+
+#endif // _USE_STD_VECTOR_ALGORITHMS
+
 _STD_BEGIN
 #ifdef __clang__
 #define _HAS_MEMCPY_MEMMOVE_INTRINSICS 1
@@ -331,6 +393,17 @@ template <>
 struct char_traits<unsigned short> : _WChar_traits<unsigned short> {};
 #endif // defined(_CRTBLD)
 
+// signed char and other unsigned integral types are supported as an extension.
+// Use of other arithmetic types and nullptr_t should be rejected.
+template <class _Ty>
+constexpr bool _Is_implementation_handled_char_like_type = is_arithmetic_v<_Ty> || is_null_pointer_v<_Ty>;
+
+template <class>
+constexpr bool _Is_implementation_handled_char_traits = false;
+template <class _Elem>
+constexpr bool _Is_implementation_handled_char_traits<char_traits<_Elem>> =
+    _Is_implementation_handled_char_like_type<_Elem>;
+
 #if defined(__cpp_char8_t) && !defined(__clang__) && !defined(__EDG__)
 #define _HAS_U8_INTRINSICS 1
 #else // ^^^ Use intrinsics for char8_t / don't use said intrinsics vvv
@@ -581,6 +654,21 @@ constexpr size_t _Traits_find(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits>
         return _Start_at;
     }
 
+#if _USE_STD_VECTOR_ALGORITHMS
+    if constexpr (_Is_implementation_handled_char_traits<_Traits> && sizeof(typename _Traits::char_type) <= 2) {
+        if (!_STD _Is_constant_evaluated()) {
+            const auto _End = _Haystack + _Hay_size;
+            const auto _Ptr = _STD _Search_vectorized(_Haystack + _Start_at, _End, _Needle, _Needle_size);
+
+            if (_Ptr != _End) {
+                return static_cast<size_t>(_Ptr - _Haystack);
+            } else {
+                return static_cast<size_t>(-1);
+            }
+        }
+    }
+#endif // _USE_STD_VECTOR_ALGORITHMS
+
     const auto _Possible_matches_end = _Haystack + (_Hay_size - _Needle_size) + 1;
     for (auto _Match_try = _Haystack + _Start_at;; ++_Match_try) {
         _Match_try = _Traits::find(_Match_try, static_cast<size_t>(_Possible_matches_end - _Match_try), *_Needle);
@@ -598,11 +686,28 @@ template <class _Traits>
 constexpr size_t _Traits_find_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack, const size_t _Hay_size,
     const size_t _Start_at, const _Traits_ch_t<_Traits> _Ch) noexcept {
     // search [_Haystack, _Haystack + _Hay_size) for _Ch, at/after _Start_at
-    if (_Start_at < _Hay_size) {
-        const auto _Found_at = _Traits::find(_Haystack + _Start_at, _Hay_size - _Start_at, _Ch);
-        if (_Found_at) {
-            return static_cast<size_t>(_Found_at - _Haystack);
+    if (_Start_at >= _Hay_size) {
+        return static_cast<size_t>(-1); // (npos) no room for match
+    }
+
+#if _USE_STD_VECTOR_ALGORITHMS
+    if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
+        if (!_STD _Is_constant_evaluated()) {
+            const auto _End = _Haystack + _Hay_size;
+            const auto _Ptr = _STD _Find_vectorized(_Haystack + _Start_at, _End, _Ch);
+
+            if (_Ptr != _End) {
+                return static_cast<size_t>(_Ptr - _Haystack);
+            } else {
+                return static_cast<size_t>(-1); // (npos) no match
+            }
         }
+    }
+#endif // _USE_STD_VECTOR_ALGORITHMS
+
+    const auto _Found_at = _Traits::find(_Haystack + _Start_at, _Hay_size - _Start_at, _Ch);
+    if (_Found_at) {
+        return static_cast<size_t>(_Found_at - _Haystack);
     }
 
     return static_cast<size_t>(-1); // (npos) no match
@@ -617,38 +722,77 @@ constexpr size_t _Traits_rfind(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits
         return (_STD min)(_Start_at, _Hay_size); // empty string always matches
     }
 
-    if (_Needle_size <= _Hay_size) { // room for match, look for it
-        for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - _Needle_size);; --_Match_try) {
-            if (_Traits::eq(*_Match_try, *_Needle) && _Traits::compare(_Match_try, _Needle, _Needle_size) == 0) {
-                return static_cast<size_t>(_Match_try - _Haystack); // found a match
-            }
+    if (_Needle_size > _Hay_size) { // no room for match
+        return static_cast<size_t>(-1);
+    }
 
-            if (_Match_try == _Haystack) {
-                break; // at beginning, no more chance for match
+    const size_t _Actual_start_at = (_STD min)(_Start_at, _Hay_size - _Needle_size);
+
+#if _USE_STD_VECTOR_ALGORITHMS
+    if constexpr (_Is_implementation_handled_char_traits<_Traits> && sizeof(typename _Traits::char_type) <= 2) {
+        if (!_STD _Is_constant_evaluated()) {
+            // _Find_end_vectorized takes into account the needle length when locating the search start.
+            // As a potentially earlier start position can be specified, we need to take it into account,
+            // and pick between the maximum possible start position and the specified one,
+            // and then add _Needle_size, so that it is subtracted back in _Find_end_vectorized.
+            const auto _End = _Haystack + _Actual_start_at + _Needle_size;
+            const auto _Ptr = _STD _Find_end_vectorized(_Haystack, _End, _Needle, _Needle_size);
+
+            if (_Ptr != _End) {
+                return static_cast<size_t>(_Ptr - _Haystack);
+            } else {
+                return static_cast<size_t>(-1);
             }
         }
     }
+#endif // _USE_STD_VECTOR_ALGORITHMS
 
-    return static_cast<size_t>(-1); // no match
+    for (auto _Match_try = _Haystack + _Actual_start_at;; --_Match_try) {
+        if (_Traits::eq(*_Match_try, *_Needle) && _Traits::compare(_Match_try, _Needle, _Needle_size) == 0) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
+        }
+
+        if (_Match_try == _Haystack) {
+            return static_cast<size_t>(-1); // at beginning, no more chance for match
+        }
+    }
 }
 
 template <class _Traits>
 constexpr size_t _Traits_rfind_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack, const size_t _Hay_size,
     const size_t _Start_at, const _Traits_ch_t<_Traits> _Ch) noexcept {
     // search [_Haystack, _Haystack + _Hay_size) for _Ch before _Start_at
-    if (_Hay_size != 0) { // room for match, look for it
-        for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
-            if (_Traits::eq(*_Match_try, _Ch)) {
-                return static_cast<size_t>(_Match_try - _Haystack); // found a match
-            }
 
-            if (_Match_try == _Haystack) {
-                break; // at beginning, no more chance for match
+    if (_Hay_size == 0) { // no room for match
+        return static_cast<size_t>(-1);
+    }
+
+    const size_t _Actual_start_at = (_STD min)(_Start_at, _Hay_size - 1);
+
+#if _USE_STD_VECTOR_ALGORITHMS
+    if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
+        if (!_STD _Is_constant_evaluated()) {
+            const auto _End = _Haystack + _Actual_start_at + 1;
+            const auto _Ptr = _STD _Find_last_vectorized(_Haystack, _End, _Ch);
+
+            if (_Ptr != _End) {
+                return static_cast<size_t>(_Ptr - _Haystack);
+            } else {
+                return static_cast<size_t>(-1);
             }
         }
     }
+#endif // _USE_STD_VECTOR_ALGORITHMS
 
-    return static_cast<size_t>(-1); // no match
+    for (auto _Match_try = _Haystack + _Actual_start_at;; --_Match_try) {
+        if (_Traits::eq(*_Match_try, _Ch)) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
+        }
+
+        if (_Match_try == _Haystack) {
+            return static_cast<size_t>(-1); // at beginning, no more chance for match
+        }
+    }
 }
 
 template <class _Elem, bool = _Is_character<_Elem>::value>
@@ -665,6 +809,7 @@ public:
     }
 
     constexpr bool _Match(const _Elem _Ch) const noexcept { // test if _Ch is in the bitmap
+        // CodeQL [SM01954] This index is valid: we cast to unsigned char and the array has 256 elements.
         return _Matches[static_cast<unsigned char>(_Ch)];
     }
 
@@ -675,9 +820,9 @@ private:
 template <class _Elem>
 class _String_bitmap<_Elem, false> { // _String_bitmap for wchar_t/unsigned short/char16_t/char32_t/etc. types
 public:
-    static_assert(is_unsigned_v<_Elem>,
-        "Standard char_traits is only provided for char, wchar_t, char16_t, and char32_t. See N4950 [char.traits]. "
-        "Visual C++ accepts other unsigned integral types as an extension.");
+    static_assert(is_unsigned_v<_Elem>, "Standard char_traits is only provided for char, wchar_t, char8_t, char16_t, "
+                                        "and char32_t. See N4988 [char.traits]. "
+                                        "Visual C++ accepts other unsigned integral types as an extension.");
 
     constexpr bool _Mark(const _Elem* _First, const _Elem* const _Last) noexcept {
         // mark this bitmap such that the characters in [_First, _Last) are intended to match
@@ -702,103 +847,136 @@ private:
     bool _Matches[256] = {};
 };
 
-template <class _Traits, bool _Special = _Is_specialization_v<_Traits, char_traits>>
+template <class _Traits>
 constexpr size_t _Traits_find_first_of(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack,
     const size_t _Hay_size, const size_t _Start_at, _In_reads_(_Needle_size) const _Traits_ptr_t<_Traits> _Needle,
     const size_t _Needle_size) noexcept {
     // in [_Haystack, _Haystack + _Hay_size), look for one of [_Needle, _Needle + _Needle_size), at/after _Start_at
-    if (_Needle_size != 0 && _Start_at < _Hay_size) { // room for match, look for it
-        if constexpr (_Special) {
-            _String_bitmap<typename _Traits::char_type> _Matches;
-            if (!_Matches._Mark(_Needle, _Needle + _Needle_size)) { // couldn't put one of the characters into the
-                                                                    // bitmap, fall back to the serial algorithm
-                return _Traits_find_first_of<_Traits, false>(_Haystack, _Hay_size, _Start_at, _Needle, _Needle_size);
-            }
+    if (_Needle_size == 0 || _Start_at >= _Hay_size) { // no match possible
+        return static_cast<size_t>(-1);
+    }
 
-            const auto _End = _Haystack + _Hay_size;
-            for (auto _Match_try = _Haystack + _Start_at; _Match_try < _End; ++_Match_try) {
+    const auto _Hay_start = _Haystack + _Start_at;
+    const auto _Hay_end   = _Haystack + _Hay_size;
+
+    if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
+#if _USE_STD_VECTOR_ALGORITHMS
+        if (!_STD _Is_constant_evaluated()) {
+            const size_t _Remaining_size = _Hay_size - _Start_at;
+            if (_Remaining_size + _Needle_size >= _Threshold_find_first_of) {
+                size_t _Pos = _Find_first_of_pos_vectorized(_Hay_start, _Remaining_size, _Needle, _Needle_size);
+                if (_Pos != static_cast<size_t>(-1)) {
+                    _Pos += _Start_at;
+                }
+                return _Pos;
+            }
+        }
+#endif // _USE_STD_VECTOR_ALGORITHMS
+
+        _String_bitmap<typename _Traits::char_type> _Matches;
+
+        if (_Matches._Mark(_Needle, _Needle + _Needle_size)) {
+            for (auto _Match_try = _Hay_start; _Match_try < _Hay_end; ++_Match_try) {
                 if (_Matches._Match(*_Match_try)) {
                     return static_cast<size_t>(_Match_try - _Haystack); // found a match
                 }
             }
-        } else {
-            const auto _End = _Haystack + _Hay_size;
-            for (auto _Match_try = _Haystack + _Start_at; _Match_try < _End; ++_Match_try) {
-                if (_Traits::find(_Needle, _Needle_size, *_Match_try)) {
-                    return static_cast<size_t>(_Match_try - _Haystack); // found a match
-                }
-            }
+            return static_cast<size_t>(-1); // no match
+        }
+
+        // couldn't put one of the characters into the bitmap, fall back to serial algorithm
+    }
+
+    for (auto _Match_try = _Hay_start; _Match_try < _Hay_end; ++_Match_try) {
+        if (_Traits::find(_Needle, _Needle_size, *_Match_try)) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
         }
     }
 
     return static_cast<size_t>(-1); // no match
 }
 
-template <class _Traits, bool _Special = _Is_specialization_v<_Traits, char_traits>>
+template <class _Traits>
 constexpr size_t _Traits_find_last_of(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack,
     const size_t _Hay_size, const size_t _Start_at, _In_reads_(_Needle_size) const _Traits_ptr_t<_Traits> _Needle,
     const size_t _Needle_size) noexcept {
     // in [_Haystack, _Haystack + _Hay_size), look for last of [_Needle, _Needle + _Needle_size), before _Start_at
-    if (_Needle_size != 0 && _Hay_size != 0) { // worth searching, do it
-        if constexpr (_Special) {
-            _String_bitmap<typename _Traits::char_type> _Matches;
-            if (!_Matches._Mark(_Needle, _Needle + _Needle_size)) { // couldn't put one of the characters into the
-                                                                    // bitmap, fall back to the serial algorithm
-                return _Traits_find_last_of<_Traits, false>(_Haystack, _Hay_size, _Start_at, _Needle, _Needle_size);
-            }
+    if (_Needle_size == 0 || _Hay_size == 0) { // not worth searching
+        return static_cast<size_t>(-1);
+    }
 
-            for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
+    const auto _Hay_start = (_STD min)(_Start_at, _Hay_size - 1);
+
+    if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
+        using _Elem = typename _Traits::char_type;
+#if _USE_STD_VECTOR_ALGORITHMS
+        if constexpr (sizeof(_Elem) <= 2) {
+            if (!_STD _Is_constant_evaluated()) {
+                const size_t _Remaining_size = _Hay_start + 1;
+                if (_Remaining_size + _Needle_size >= _Threshold_find_first_of) { // same threshold for first/last
+                    return _Find_last_of_pos_vectorized(_Haystack, _Remaining_size, _Needle, _Needle_size);
+                }
+            }
+        }
+#endif // _USE_STD_VECTOR_ALGORITHMS
+
+        _String_bitmap<_Elem> _Matches;
+        if (_Matches._Mark(_Needle, _Needle + _Needle_size)) {
+            for (auto _Match_try = _Haystack + _Hay_start;; --_Match_try) {
                 if (_Matches._Match(*_Match_try)) {
                     return static_cast<size_t>(_Match_try - _Haystack); // found a match
                 }
 
                 if (_Match_try == _Haystack) {
-                    break; // at beginning, no more chance for match
-                }
-            }
-        } else {
-            for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
-                if (_Traits::find(_Needle, _Needle_size, *_Match_try)) {
-                    return static_cast<size_t>(_Match_try - _Haystack); // found a match
-                }
-
-                if (_Match_try == _Haystack) {
-                    break; // at beginning, no more chance for match
+                    return static_cast<size_t>(-1); // at beginning, no more chance for match
                 }
             }
         }
+
+        // couldn't put one of the characters into the bitmap, fall back to serial algorithm
     }
 
-    return static_cast<size_t>(-1); // no match
+    for (auto _Match_try = _Haystack + _Hay_start;; --_Match_try) {
+        if (_Traits::find(_Needle, _Needle_size, *_Match_try)) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
+        }
+
+        if (_Match_try == _Haystack) {
+            return static_cast<size_t>(-1); // at beginning, no more chance for match
+        }
+    }
 }
 
-template <class _Traits, bool _Special = _Is_specialization_v<_Traits, char_traits>>
+template <class _Traits>
 constexpr size_t _Traits_find_first_not_of(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack,
     const size_t _Hay_size, const size_t _Start_at, _In_reads_(_Needle_size) const _Traits_ptr_t<_Traits> _Needle,
     const size_t _Needle_size) noexcept {
     // in [_Haystack, _Haystack + _Hay_size), look for none of [_Needle, _Needle + _Needle_size), at/after _Start_at
-    if (_Start_at < _Hay_size) { // room for match, look for it
-        if constexpr (_Special) {
-            _String_bitmap<typename _Traits::char_type> _Matches;
-            if (!_Matches._Mark(_Needle, _Needle + _Needle_size)) { // couldn't put one of the characters into the
-                                                                    // bitmap, fall back to the serial algorithm
-                return _Traits_find_first_not_of<_Traits, false>(
-                    _Haystack, _Hay_size, _Start_at, _Needle, _Needle_size);
-            }
+    if (_Start_at >= _Hay_size) { // no room for match
+        return static_cast<size_t>(-1);
+    }
 
-            const auto _End = _Haystack + _Hay_size;
-            for (auto _Match_try = _Haystack + _Start_at; _Match_try < _End; ++_Match_try) {
+    const auto _Hay_start = _Haystack + _Start_at;
+    const auto _Hay_end   = _Haystack + _Hay_size;
+
+    if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
+        using _Elem = typename _Traits::char_type;
+        _String_bitmap<_Elem> _Matches;
+        if (_Matches._Mark(_Needle, _Needle + _Needle_size)) {
+            for (auto _Match_try = _Hay_start; _Match_try < _Hay_end; ++_Match_try) {
                 if (!_Matches._Match(*_Match_try)) {
                     return static_cast<size_t>(_Match_try - _Haystack); // found a match
                 }
             }
-        } else {
-            const auto _End = _Haystack + _Hay_size;
-            for (auto _Match_try = _Haystack + _Start_at; _Match_try < _End; ++_Match_try) {
-                if (!_Traits::find(_Needle, _Needle_size, *_Match_try)) {
-                    return static_cast<size_t>(_Match_try - _Haystack); // found a match
-                }
-            }
+            return static_cast<size_t>(-1); // no match
+        }
+
+        // couldn't put one of the characters into the bitmap, fall back to the serial algorithm
+    }
+
+    for (auto _Match_try = _Hay_start; _Match_try < _Hay_end; ++_Match_try) {
+        if (!_Traits::find(_Needle, _Needle_size, *_Match_try)) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
         }
     }
 
@@ -821,61 +999,63 @@ constexpr size_t _Traits_find_not_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<_
     return static_cast<size_t>(-1); // no match
 }
 
-template <class _Traits, bool _Special = _Is_specialization_v<_Traits, char_traits>>
+template <class _Traits>
 constexpr size_t _Traits_find_last_not_of(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack,
     const size_t _Hay_size, const size_t _Start_at, _In_reads_(_Needle_size) const _Traits_ptr_t<_Traits> _Needle,
     const size_t _Needle_size) noexcept {
     // in [_Haystack, _Haystack + _Hay_size), look for none of [_Needle, _Needle + _Needle_size), before _Start_at
-    if (_Hay_size != 0) { // worth searching, do it
-        if constexpr (_Special) {
-            _String_bitmap<typename _Traits::char_type> _Matches;
-            if (!_Matches._Mark(_Needle, _Needle + _Needle_size)) { // couldn't put one of the characters into the
-                                                                    // bitmap, fall back to the serial algorithm
-                return _Traits_find_last_not_of<_Traits, false>(_Haystack, _Hay_size, _Start_at, _Needle, _Needle_size);
-            }
+    if (_Hay_size == 0) { // no match possible
+        return static_cast<size_t>(-1);
+    }
 
-            for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
+    const auto _Hay_start = (_STD min)(_Start_at, _Hay_size - 1);
+
+    if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
+        using _Elem = typename _Traits::char_type;
+        _String_bitmap<_Elem> _Matches;
+        if (_Matches._Mark(_Needle, _Needle + _Needle_size)) {
+            for (auto _Match_try = _Haystack + _Hay_start;; --_Match_try) {
                 if (!_Matches._Match(*_Match_try)) {
                     return static_cast<size_t>(_Match_try - _Haystack); // found a match
                 }
 
                 if (_Match_try == _Haystack) {
-                    break; // at beginning, no more chance for match
-                }
-            }
-        } else {
-            for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
-                if (!_Traits::find(_Needle, _Needle_size, *_Match_try)) {
-                    return static_cast<size_t>(_Match_try - _Haystack); // found a match
-                }
-
-                if (_Match_try == _Haystack) {
-                    break; // at beginning, no more chance for match
+                    return static_cast<size_t>(-1); // at beginning, no more chance for match
                 }
             }
         }
+
+        // couldn't put one of the characters into the bitmap, fall back to the serial algorithm
     }
 
-    return static_cast<size_t>(-1); // no match
+    for (auto _Match_try = _Haystack + _Hay_start;; --_Match_try) {
+        if (!_Traits::find(_Needle, _Needle_size, *_Match_try)) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
+        }
+
+        if (_Match_try == _Haystack) {
+            return static_cast<size_t>(-1); // at beginning, no more chance for match
+        }
+    }
 }
 
 template <class _Traits>
 constexpr size_t _Traits_rfind_not_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits> _Haystack,
     const size_t _Hay_size, const size_t _Start_at, const _Traits_ch_t<_Traits> _Ch) noexcept {
     // search [_Haystack, _Haystack + _Hay_size) for any value other than _Ch before _Start_at
-    if (_Hay_size != 0) { // room for match, look for it
-        for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
-            if (!_Traits::eq(*_Match_try, _Ch)) {
-                return static_cast<size_t>(_Match_try - _Haystack); // found a match
-            }
-
-            if (_Match_try == _Haystack) {
-                break; // at beginning, no more chance for match
-            }
-        }
+    if (_Hay_size == 0) { // no room for match
+        return static_cast<size_t>(-1);
     }
 
-    return static_cast<size_t>(-1); // no match
+    for (auto _Match_try = _Haystack + (_STD min)(_Start_at, _Hay_size - 1);; --_Match_try) {
+        if (!_Traits::eq(*_Match_try, _Ch)) {
+            return static_cast<size_t>(_Match_try - _Haystack); // found a match
+        }
+
+        if (_Match_try == _Haystack) {
+            return static_cast<size_t>(-1); // at beginning, no more chance for match
+        }
+    }
 }
 
 template <class _Ty>
@@ -1210,20 +1390,15 @@ public:
         : _Mydata(_STD to_address(_First)), _Mysize(static_cast<size_type>(_Last - _First)) {}
 
 #if _HAS_CXX23
-    // clang-format off
     template <class _Range>
-        requires (!same_as<remove_cvref_t<_Range>, basic_string_view>
-            && _RANGES contiguous_range<_Range>
-            && _RANGES sized_range<_Range>
-            && same_as<_RANGES range_value_t<_Range>, _Elem>
-            && !is_convertible_v<_Range, const _Elem*>
-            && !requires(remove_cvref_t<_Range>& _Rng) {
-                _Rng.operator _STD basic_string_view<_Elem, _Traits>();
-            })
-    constexpr explicit basic_string_view(_Range&& _Rng) noexcept(
-        noexcept(_RANGES data(_Rng)) && noexcept(_RANGES size(_Rng))) // strengthened
+        requires (!same_as<remove_cvref_t<_Range>, basic_string_view> && _RANGES contiguous_range<_Range>
+                     && _RANGES sized_range<_Range> && same_as<_RANGES range_value_t<_Range>, _Elem>
+                     && !is_convertible_v<_Range, const _Elem*>
+                     && !requires(
+                         remove_cvref_t<_Range>& _Rng) { _Rng.operator _STD basic_string_view<_Elem, _Traits>(); })
+    constexpr explicit basic_string_view(_Range&& _Rng)
+        noexcept(noexcept(_RANGES data(_Rng)) && noexcept(_RANGES size(_Rng))) // strengthened
         : _Mydata(_RANGES data(_Rng)), _Mysize(static_cast<size_t>(_RANGES size(_Rng))) {}
-    // clang-format on
 #endif // _HAS_CXX23
 #endif // _HAS_CXX20
 
@@ -1301,6 +1476,8 @@ public:
 #if _CONTAINER_DEBUG_LEVEL > 0
         _STL_VERIFY(_Off < _Mysize, "string_view subscript out of range");
 #endif // _CONTAINER_DEBUG_LEVEL > 0
+
+        // CodeQL [SM01954] This index is optionally validated above.
         return _Mydata[_Off];
     }
 
@@ -1643,13 +1820,14 @@ _NODISCARD constexpr bool operator==(const basic_string_view<_Elem, _Traits> _Lh
     return _Lhs._Equal(_Rhs);
 }
 
-template <class _Traits, class = void>
+template <class _Traits>
 struct _Get_comparison_category {
     using type = weak_ordering;
 };
 
 template <class _Traits>
-struct _Get_comparison_category<_Traits, void_t<typename _Traits::comparison_category>> {
+    requires requires { typename _Traits::comparison_category; }
+struct _Get_comparison_category<_Traits> {
     using type = _Traits::comparison_category;
 
     static_assert(_Is_any_of_v<type, partial_ordering, weak_ordering, strong_ordering>,

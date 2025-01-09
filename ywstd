@@ -28,7 +28,7 @@ if len(sys.argv) > 1 :
 else:
   print("Compiling ywstd...")
   # create ywstd.ixx
-  args = ["bin\\cl", "ywstd.ixx", "/c", "/Dywstd_export", ]
+  args = ["bin\\cl", "ywstd.ixx", "/c", "/Dywstd_export=export", ]
   args+= ["/std:c++latest", "/EHsc", "/nologo", "/W4", "/O2", "/Qpar", "/utf-8", ]
   if os.path.exists("ywstd.ifc"): os.remove("ywstd.ifc")
   if os.path.exists("ywstd.obj"): os.remove("ywstd.obj")
@@ -47,6 +47,14 @@ else:
 #define nat size_t
 #define wchar wchar_t
 
+#ifndef ywstd_export
+#define ywstd_export
+#define ywstd_is_exported 0
+#else
+#define _BUILD_STD_MODULE
+#define ywstd_is_exported 1
+#endif
+
 #ifdef ywstd_import
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "libcpmt.lib")
@@ -64,9 +72,9 @@ import ywstd;
 #include "inc/barrier"
 #include "inc/bit"
 #include "inc/bitset"
-#include "cassert"
-#include "cctype"
-#include "cerrno"
+#include "inc/cassert"
+#include "inc/cctype"
+#include "inc/cerrno"
 #include "inc/cfenv"
 #include "inc/cfloat"
 #include "inc/charconv"
@@ -75,7 +83,6 @@ import ywstd;
 #include "inc/climits"
 #include "inc/clocale"
 #include "inc/cmath"
-#include "inc/codecvt"
 #include "inc/compare"
 #include "inc/complex"
 #include "inc/concepts"
@@ -87,7 +94,7 @@ import ywstd;
 #include "inc/cstddef"
 #include "inc/cstdint"
 #include "inc/cstdio"
-#include "cstdlib"
+#include "inc/cstdlib"
 #include "inc/cstring"
 #include "inc/ctime"
 #include "inc/cuchar"

@@ -1,94 +1,168 @@
-// cstdio standard header (core)
+/// \file cstdio
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-#ifndef _CSTDIO_
-#define _CSTDIO_
+#include "corecrt_stdio_config.h"
 #include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
 
-#include "stdio.h"
+#if ywstd_is_exported
+extern "C" {
 
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
+#define _IOFBF 0x0000
+#define _IOLBF 0x0040
+#define _IONBF 0x0004
+#define BUFSIZ 512
+#define EOF (-1)
+#define FOPEN_MAX 20
+#define FILENAME_MAX 260
+#define L_tmpnam 260
+#define SEEK_CUR 1
+#define SEEK_END 2
+#define SEEK_SET 0
 
-// undef common macro overrides
-#undef clearerr
-#undef feof
-#undef ferror
-#undef getc
-#undef getchar
-#undef putc
-#undef putchar
+using fpos_t = long long;
 
-_STD_BEGIN
-#pragma warning(push)
-#pragma warning(disable : 4995) // name was marked as #pragma deprecated
+struct FILE {
+  void* _Placeholder;
+};
 
-using _CSTD _Mbstatet;
+FILE* __cdecl fopen(const char*, const char*);
+FILE* __cdecl freopen(const char*, const char*, FILE*);
+int __cdecl fclose(FILE*);
+int __cdecl fflush(FILE*);
+void __cdecl setbuf(FILE*, char*);
+int __cdecl setvbuf(FILE*, char*, int, size_t);
 
-_EXPORT_STD using _CSTD size_t;
-_EXPORT_STD using _CSTD fpos_t;
-_EXPORT_STD using _CSTD FILE;
-_EXPORT_STD using _CSTD clearerr;
-_EXPORT_STD using _CSTD fclose;
-_EXPORT_STD using _CSTD feof;
-_EXPORT_STD using _CSTD ferror;
-_EXPORT_STD using _CSTD fflush;
-_EXPORT_STD using _CSTD fgetc;
-_EXPORT_STD using _CSTD fgetpos;
-_EXPORT_STD using _CSTD fgets;
-_EXPORT_STD using _CSTD fopen;
-_EXPORT_STD using _CSTD fprintf;
-_EXPORT_STD using _CSTD fputc;
-_EXPORT_STD using _CSTD fputs;
-_EXPORT_STD using _CSTD fread;
-_EXPORT_STD using _CSTD freopen;
-_EXPORT_STD using _CSTD fscanf;
-_EXPORT_STD using _CSTD fseek;
-_EXPORT_STD using _CSTD fsetpos;
-_EXPORT_STD using _CSTD ftell;
-_EXPORT_STD using _CSTD fwrite;
-_EXPORT_STD using _CSTD getc;
-_EXPORT_STD using _CSTD getchar;
-_EXPORT_STD using _CSTD perror;
-_EXPORT_STD using _CSTD putc;
-_EXPORT_STD using _CSTD putchar;
-_EXPORT_STD using _CSTD printf;
-_EXPORT_STD using _CSTD puts;
-_EXPORT_STD using _CSTD remove;
-_EXPORT_STD using _CSTD rename;
-_EXPORT_STD using _CSTD rewind;
-_EXPORT_STD using _CSTD scanf;
-_EXPORT_STD using _CSTD setbuf;
-_EXPORT_STD using _CSTD setvbuf;
-_EXPORT_STD using _CSTD sprintf;
-_EXPORT_STD using _CSTD sscanf;
-_EXPORT_STD using _CSTD tmpfile;
-_EXPORT_STD using _CSTD tmpnam;
-_EXPORT_STD using _CSTD ungetc;
-_EXPORT_STD using _CSTD vfprintf;
-_EXPORT_STD using _CSTD vprintf;
-_EXPORT_STD using _CSTD vsprintf;
+size_t __cdecl fread(void*, size_t, size_t, FILE*);
+size_t __cdecl fwrite(const void*, size_t, size_t, FILE*);
 
-_EXPORT_STD using _CSTD snprintf;
-_EXPORT_STD using _CSTD vsnprintf;
-_EXPORT_STD using _CSTD vfscanf;
-_EXPORT_STD using _CSTD vscanf;
-_EXPORT_STD using _CSTD vsscanf;
+int __cdecl getc(FILE*);
+int __cdecl fgetc(FILE*);
+char* __cdecl fgets(char*, int, FILE*);
+int __cdecl putc(int, FILE*);
+int __cdecl fputc(int, FILE*);
+int __cdecl fputs(const char*, FILE*);
+int __cdecl getchar();
+int __cdecl putchar(int);
+int __cdecl puts(const char* s);
+int __cdecl ungetc(int, FILE*);
 
-#pragma warning(pop)
-_STD_END
+long __cdecl ftell(FILE*);
+int __cdecl fgetpos(FILE*, fpos_t*);
+int __cdecl fseek(FILE*, long, int);
+int __cdecl fsetpos(FILE*, const fpos_t*);
+void __cdecl rewind(FILE*);
 
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma warning(pop)
-#pragma pack(pop)
+void clearerr(FILE*);
+int feof(FILE*);
+int ferror(FILE*);
+void perror(const char*);
 
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _CSTDIO_
+int __cdecl remove(const char*);
+int __cdecl rename(const char*, const char*);
+FILE* __cdecl tmpfile();
+char* __cdecl tmpnam(char*);
+
+FILE* __cdecl __acrt_iob_func(unsigned);
+int __cdecl __stdio_common_vfprintf(unsigned long long, FILE*, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vsprintf(unsigned long long, char*, size_t, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vfscanf(unsigned long long, FILE*, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vsscanf(unsigned long long, const char*, size_t, const char*, _locale_t, va_list);
+}
+
+inline int __cdecl _scprintf(const char* Format, ...) {
+  va_list Args;
+  va_start(Args, Format);
+  int Result = __stdio_common_vsprintf(                                                   //
+    _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR, //
+    nullptr, 0, Format, nullptr, Args);
+  va_end(Args);
+  return Result;
+}
+
+inline int __cdecl sprintf_s(char* Buffer, size_t Size, const char* Format, ...) {
+  va_list Args;
+  va_start(Args, Format);
+  int Result = __stdio_common_vsprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, Buffer, Size, Format, nullptr, Args);
+  va_end(Args);
+  return Result;
+}
+#endif
+
+#define stdin (__acrt_iob_func(0))
+#define stdout (__acrt_iob_func(1))
+#define stderr (__acrt_iob_func(2))
+
+export namespace std {
+
+using fpos_t = long long;
+
+using ::FILE;
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE ACCESS
+
+inline FILE* fopen(const char* Filename, const char* Mode) { return ::fopen(Filename, Mode); }
+inline FILE* freopen(const char* Filename, const char* Mode, FILE* Stream) { return ::freopen(Filename, Mode, Stream); }
+inline int fclose(FILE* Stream) { return ::fclose(Stream); }
+inline int fflush(FILE* Stream) { return ::fflush(Stream); }
+inline void setbuf(FILE* Stream, char* Buffer) { ::setbuf(Stream, Buffer); }
+inline int setvbuf(FILE* Stream, char* Buffer, int Mode, size_t Size) { return ::setvbuf(Stream, Buffer, Mode, Size); }
+
+////////////////////////////////////////////////////////////////////////////////
+// DIRECT INPUT/OUTPUT
+
+inline size_t fread(void* Buffer, size_t Size, size_t Count, FILE* Stream) {
+  return ::fread(Buffer, Size, Count, Stream);
+}
+inline size_t fwrite(const void* Buffer, size_t Size, size_t Count, FILE* Stream) {
+  return ::fwrite(Buffer, Size, Count, Stream);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// UNFORMATTED INPUT/OUTPUT
+
+inline int getc(FILE* Stream) { return ::getc(Stream); }
+inline int fgetc(FILE* Stream) { return ::fgetc(Stream); }
+inline char* fgets(char* Buffer, int MaxCount, FILE* Stream) { return ::fgets(Buffer, MaxCount, Stream); }
+inline int putc(int Character, FILE* Stream) { return ::putc(Character, Stream); }
+inline int fputc(int Character, FILE* Stream) { return ::fputc(Character, Stream); }
+inline int fputs(const char* String, FILE* Stream) { return ::fputs(String, Stream); }
+inline int getchar() { return ::getchar(); }
+inline int putchar(int Character) { return ::putchar(Character); }
+inline int puts(const char* String) { return ::puts(String); }
+inline int ungetc(int Character, FILE* Stream) { return ::ungetc(Character, Stream); }
+
+////////////////////////////////////////////////////////////////////////////////
+// FORMATTED INPUT/OUTPUT
+
+inline int vfprintf(FILE* Stream, const char* Format, va_list Args) {
+  return __stdio_common_vfprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, Stream, Format, nullptr, Args);
+}
+inline int vsprintf(char* Buffer, const char* Format, va_list Args) {
+  return __stdio_common_vsprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, Buffer, (size_t)-1, Format, nullptr, Args);
+}
+inline int vprintf(const char* Format, va_list Args) { return vfprintf(stdout, Format, Args); }
+inline int fprintf(FILE* Stream, const char* Format, ...) {
+  va_list Args;
+  va_start(Args, Format);
+  int Result = vfprintf(Stream, Format, Args);
+  va_end(Args);
+  return Result;
+}
+inline int sprintf(char* Buffer, const char* Format, ...) {
+  va_list Args;
+  va_start(Args, Format);
+  int Result = vsprintf(Buffer, Format, Args);
+  va_end(Args);
+  return Result;
+}
+inline int printf(const char* Format, ...) {
+  va_list Args;
+  va_start(Args, Format);
+  int Result = vprintf(Format, Args);
+  va_end(Args);
+  return Result;
+}
+}

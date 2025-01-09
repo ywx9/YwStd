@@ -10,7 +10,7 @@
 #include "__msvc_xlocinfo_types.hpp"
 #include "cctype"
 #include "clocale"
-#include "cstdio" // TRANSITION, VSO-661721
+#include "cstdio" // TRANSITION, VSO-66172"
 #include "cstdlib"
 #include "cwchar"
 #include "xstring"

@@ -157,7 +157,12 @@ _CRT_BEGIN_C_HEADER
 // Definitions of common __declspecs
 #define _VCRT_NOALIAS __declspec(noalias)
 #define _VCRT_RESTRICT __declspec(restrict)
-#define _VCRT_ALLOCATOR __declspec(allocator)
+
+#if !defined _MSC_VER || _MSC_VER >= 1900
+    #define _VCRT_ALLOCATOR __declspec(allocator)
+#else
+    #define _VCRT_ALLOCATOR
+#endif
 
 #if defined _M_CEE && defined _M_X64
     #define _VCRT_JIT_INTRINSIC __declspec(jitintrinsic)
@@ -335,12 +340,6 @@ _CRT_BEGIN_C_HEADER
 
 #pragma pop_macro("constexpr")
 #pragma pop_macro("msvc")
-
-#ifdef _BUILD_STD_MODULE
-    #define _VCRT_EXPORT_STD export
-#else // ^^^ defined(_BUILD_STD_MODULE) / !defined(_BUILD_STD_MODULE) vvv
-    #define _VCRT_EXPORT_STD
-#endif // ^^^ !defined(_BUILD_STD_MODULE) ^^^
 
 // See note on use of "deprecate" at the top of this file
 #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))

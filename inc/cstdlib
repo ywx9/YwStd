@@ -1,87 +1,170 @@
-// cstdlib standard header (core)
+/// \file cstdlib
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-#ifndef _CSTDLIB_
-#define _CSTDLIB_
-#include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
+#if ywstd_is_exported
+extern "C" {
 
-#include "math.h"
-#include "stdlib.h"
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
+#define RAND_MAX 0x7fff
+#define MB_CUR_MAX ___mb_cur_max_func()
+int __cdecl ___mb_cur_max_func();
 
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
+struct div_t {
+  int quot, rem;
+};
 
-_EXTERN_CXX_WORKAROUND
-// <stdlib.h> has abs(long) and abs(long long)
-_NODISCARD _Check_return_ inline double abs(_In_ double _Xx) noexcept /* strengthened */ { return _CSTD fabs(_Xx); }
+struct ldiv_t {
+  long quot, rem;
+};
 
-_NODISCARD _Check_return_ inline float abs(_In_ float _Xx) noexcept /* strengthened */ { return _CSTD fabsf(_Xx); }
+struct lldiv_t {
+  long long quot, rem;
+};
 
-_NODISCARD _Check_return_ inline long double abs(_In_ long double _Xx) noexcept /* strengthened */ {
-  return _CSTD fabsl(_Xx);
+[[noreturn]] void __cdecl exit(int);
+[[noreturn]] void __cdecl _Exit(int);
+[[noreturn]] void __cdecl quick_exit(int);
+[[noreturn]] void __cdecl abort();
+int __cdecl atexit(void(__cdecl*)());
+int __cdecl at_quick_exit(void(__cdecl*)());
+int __cdecl system(const char*);
+char* __cdecl getenv(const char*);
+
+void* __cdecl malloc(size_t);
+void* __cdecl calloc(size_t, size_t);
+void* __cdecl realloc(void*, size_t);
+void __cdecl free(void*);
+
+int __cdecl atoi(const char*);
+long __cdecl atol(const char*);
+long long __cdecl atoll(const char*);
+double __cdecl atof(const char*);
+long __cdecl strtol(const char*, char**, int);
+unsigned long __cdecl strtoul(const char*, char**, int);
+long long __cdecl strtoll(const char*, char**, int);
+unsigned long long __cdecl strtoull(const char*, char**, int);
+float __cdecl strtof(const char*, char**);
+double __cdecl strtod(const char*, char**);
+long double __cdecl strtold(const char*, char**);
+
+int __cdecl mblen(const char*, size_t);
+int __cdecl mbtowc(wchar_t*, const char*, size_t);
+int __cdecl wctomb(char*, wchar_t);
+size_t __cdecl mbstowcs(wchar_t*, const char*, size_t);
+size_t __cdecl wcstombs(char*, const wchar_t*, size_t);
+
+int __cdecl rand();
+void __cdecl srand(unsigned int);
+void __cdecl qsort(void*, size_t, size_t, int(__cdecl*)(const void*, const void*));
+void* __cdecl bsearch(const void*, const void*, size_t, size_t, int(__cdecl*)(const void*, const void*));
+int __cdecl abs(int);
+long __cdecl labs(long);
+long long __cdecl llabs(long long);
+div_t __cdecl div(int, int);
+ldiv_t __cdecl ldiv(long, long);
+lldiv_t __cdecl lldiv(long long, long long);
 }
-_END_EXTERN_CXX_WORKAROUND
+#endif
 
-_STD_BEGIN
-_EXPORT_STD using _CSTD size_t;
-_EXPORT_STD using _CSTD div_t;
-_EXPORT_STD using _CSTD ldiv_t;
-_EXPORT_STD using _CSTD abort;
-_EXPORT_STD using _CSTD abs;
-_EXPORT_STD using _CSTD atexit;
-_EXPORT_STD using _CSTD atof;
-_EXPORT_STD using _CSTD atoi;
-_EXPORT_STD using _CSTD atol;
-_EXPORT_STD using _CSTD bsearch;
-_EXPORT_STD using _CSTD calloc;
-_EXPORT_STD using _CSTD div;
-_EXPORT_STD using _CSTD exit;
-_EXPORT_STD using _CSTD free;
-_EXPORT_STD using _CSTD labs;
-_EXPORT_STD using _CSTD ldiv;
-_EXPORT_STD using _CSTD malloc;
-_EXPORT_STD using _CSTD mblen;
-_EXPORT_STD using _CSTD mbstowcs;
-_EXPORT_STD using _CSTD mbtowc;
-_EXPORT_STD using _CSTD qsort;
-_EXPORT_STD using _CSTD rand;
-_EXPORT_STD using _CSTD realloc;
-_EXPORT_STD using _CSTD srand;
-_EXPORT_STD using _CSTD strtod;
-_EXPORT_STD using _CSTD strtol;
-_EXPORT_STD using _CSTD strtoul;
-_EXPORT_STD using _CSTD wcstombs;
-_EXPORT_STD using _CSTD wctomb;
+export namespace std {
 
-_EXPORT_STD using _CSTD lldiv_t;
+using ::div_t;
+using ::ldiv_t;
+using ::lldiv_t;
 
-_EXPORT_STD using _CSTD getenv;
-_EXPORT_STD using _CSTD system;
+////////////////////////////////////////////////////////////////////////////////
+// PROCESS CONTROL
 
-_EXPORT_STD using _CSTD atoll;
-_EXPORT_STD using _CSTD llabs;
-_EXPORT_STD using _CSTD lldiv;
-_EXPORT_STD using _CSTD strtof;
-_EXPORT_STD using _CSTD strtold;
-_EXPORT_STD using _CSTD strtoll;
-_EXPORT_STD using _CSTD strtoull;
+[[noreturn]] inline void exit(int status) { ::exit(status); }
+[[noreturn]] inline void _Exit(int status) { ::_Exit(status); }
+[[noreturn]] inline void quick_exit(int status) { ::quick_exit(status); }
+[[noreturn]] inline void abort() { ::abort(); }
+inline int atexit(void(__cdecl* func)()) { return ::atexit(func); }
+inline int at_quick_exit(void(__cdecl* func)()) { return ::at_quick_exit(func); }
+inline int system(const char* command) { return ::system(command); }
+inline char* getenv(const char* name) { return ::getenv(name); }
 
-_EXPORT_STD using _CSTD _Exit;
-_EXPORT_STD using _CSTD at_quick_exit;
-_EXPORT_STD using _CSTD quick_exit;
-_STD_END
+////////////////////////////////////////////////////////////////////////////////
+// MEMORY MANAGEMENT
 
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma warning(pop)
-#pragma pack(pop)
+inline void* malloc(size_t size) { return ::malloc(size); }
+inline void* calloc(size_t num, size_t size) { return ::calloc(num, size); }
+inline void* realloc(void* ptr, size_t size) { return ::realloc(ptr, size); }
+inline void free(void* ptr) { ::free(ptr); }
 
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _CSTDLIB_
+////////////////////////////////////////////////////////////////////////////////
+// NUMERIC STRING CONVERSION
+
+inline int atoi(const char* str) { return ::atoi(str); }
+inline long atol(const char* str) { return ::atol(str); }
+inline long long atoll(const char* str) { return ::atoll(str); }
+inline double atof(const char* str) { return ::atof(str); }
+inline long strtol(const char* str, char** endptr, int base) { return ::strtol(str, endptr, base); }
+inline unsigned long strtoul(const char* str, char** endptr, int base) { return ::strtoul(str, endptr, base); }
+inline long long strtoll(const char* str, char** endptr, int base) { return ::strtoll(str, endptr, base); }
+inline unsigned long long strtoull(const char* str, char** endptr, int base) { return ::strtoull(str, endptr, base); }
+inline float strtof(const char* str, char** endptr) { return ::strtof(str, endptr); }
+inline double strtod(const char* str, char** endptr) { return ::strtod(str, endptr); }
+inline long double strtold(const char* str, char** endptr) { return ::strtold(str, endptr); }
+
+////////////////////////////////////////////////////////////////////////////////
+// WIDE STRING MANIPULATION
+
+inline int mblen(const char* s, size_t n) { return ::mblen(s, n); }
+inline int mbtowc(wchar_t* pwc, const char* s, size_t n) { return ::mbtowc(pwc, s, n); }
+inline int wctomb(char* s, wchar_t wc) { return ::wctomb(s, wc); }
+inline size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n) { return ::mbstowcs(pwcs, s, n); }
+inline size_t wcstombs(char* s, const wchar_t* pwcs, size_t n) { return ::wcstombs(s, pwcs, n); }
+
+////////////////////////////////////////////////////////////////////////////////
+// MISCELLANEOUS ALGORITHMS AND MATH
+
+inline int rand() { return ::rand(); }
+inline void srand(unsigned int seed) { ::srand(seed); }
+inline void qsort(void* base, size_t num, size_t size, int(__cdecl* compare)(const void*, const void*)) {
+  ::qsort(base, num, size, compare);
+}
+inline void* bsearch(const void* key, const void* base, size_t num, size_t size,
+                     int(__cdecl* compare)(const void*, const void*)) {
+  return ::bsearch(key, base, num, size, compare);
+}
+
+constexpr int abs(int i) {
+  if (!__builtin_is_constant_evaluated()) return ::abs(i);
+  else return i < 0 ? -i : i;
+}
+
+constexpr long labs(long i) {
+  if (!__builtin_is_constant_evaluated()) return ::labs(i);
+  else return i < 0 ? -i : i;
+}
+
+constexpr long long llabs(long long i) {
+  if (!__builtin_is_constant_evaluated()) return ::llabs(i);
+  else return i < 0 ? -i : i;
+}
+
+constexpr long abs(long i) { return std::labs(i); }
+constexpr long long abs(long long i) { return std::llabs(i); }
+
+constexpr div_t div(int num, int den) {
+  if (!__builtin_is_constant_evaluated()) return ::div(num, den);
+  else return {num / den, num % den};
+}
+
+constexpr ldiv_t ldiv(long num, long den) {
+  if (!__builtin_is_constant_evaluated()) return ::ldiv(num, den);
+  else return {num / den, num % den};
+}
+
+constexpr lldiv_t lldiv(long long num, long long den) {
+  if (!__builtin_is_constant_evaluated()) return ::lldiv(num, den);
+  else return {num / den, num % den};
+}
+
+constexpr ldiv_t div(long num, long den) { return std::ldiv(num, den); }
+constexpr lldiv_t div(long long num, long long den) { return std::lldiv(num, den); }
+}

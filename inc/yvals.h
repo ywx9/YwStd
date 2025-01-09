@@ -237,7 +237,42 @@ _STL_DISABLE_CLANG_WARNINGS
 #define _ATOMIC_REF_CHECK_ALIGNMENT(cond, mesg) _Analysis_assume_(cond)
 #endif
 
-#include "use_ansi.h"
+// #include "use_ansi.h" >
+
+#undef _DEBUG_AFFIX
+#undef _IDL_AFFIX
+#undef _IDL_DEFAULT
+#undef _LIB_STEM
+
+#ifdef _DEBUG
+#define _DEBUG_AFFIX "d"
+#define _IDL_DEFAULT 2
+#else
+#define _DEBUG_AFFIX ""
+#define _IDL_DEFAULT 0
+#endif
+
+#if defined(_DLL) && !defined(_STATIC_CPPLIB)
+#define _LIB_STEM "msvcprt"
+#else
+#define _LIB_STEM "libcpmt"
+#if _ITERATOR_DEBUG_LEVEL != _IDL_DEFAULT
+#define _IDL_AFFIX _STL_STRINGIZE(_ITERATOR_DEBUG_LEVEL)
+#endif
+#endif
+
+#ifndef _IDL_AFFIX
+#define _IDL_AFFIX ""
+#endif
+
+#pragma comment(lib, _LIB_STEM _DEBUG_AFFIX _IDL_AFFIX)
+
+#undef _DEBUG_AFFIX
+#undef _IDL_AFFIX
+#undef _IDL_DEFAULT
+#undef _LIB_STEM
+
+// < use_ansi.h
 
 #ifdef _STATIC_CPPLIB
 #ifndef _DISABLE_DEPRECATE_STATIC_CPPLIB

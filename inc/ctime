@@ -1,98 +1,55 @@
-// ctime standard header (core)
+/// \file ctime
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-#ifndef _CTIME_
-#define _CTIME_
 #include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
 
-#include "time.h"
+#if ywstd_is_exported
+extern "C" {
 
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
+using clock_t = long;
 
-_STD_BEGIN
-_EXPORT_STD using _CSTD clock_t;
-_EXPORT_STD using _CSTD size_t;
-_EXPORT_STD using _CSTD time_t;
-_EXPORT_STD using _CSTD tm;
-_EXPORT_STD using _CSTD asctime;
-_EXPORT_STD using _CSTD clock;
-_EXPORT_STD using _CSTD strftime;
-#if _HAS_CXX17
-_EXPORT_STD using _CSTD timespec;
-#endif // _HAS_CXX17
+struct tm {
+  int tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday, tm_yday, tm_isdst;
+};
 
-#ifdef _BUILD_STD_MODULE // TRANSITION, OS-33790456; `template <int = 0>` avoids ambiguity
-_STL_DISABLE_DEPRECATED_WARNING
+struct timespec {
+  time_t tv_sec;
+  long tv_nsec;
+};
 
-_EXPORT_STD template <int = 0>
-_Check_return_ _CRT_INSECURE_DEPRECATE(ctime_s) inline char* __CRTDECL ctime(_In_ const time_t* const _Time) noexcept
-/* strengthened */ {
-    return _CSTD _ctime64(_Time);
+clock_t __cdecl clock();
+time_t __cdecl time(time_t*);
+double __cdecl difftime(time_t, time_t);
+int __cdecl timespec_get(timespec*, int);
+
+char* __cdecl ctime(const time_t*);
+char* __cdecl asctime(const tm*);
+size_t __cdecl strftime(char*, size_t, const char*, const tm*);
+tm* __cdecl gmtime(const time_t*);
+tm* __cdecl localtime(const time_t*);
+time_t __cdecl mktime(tm*);
 }
+#endif
 
-_EXPORT_STD template <int = 0>
-_Check_return_ inline double __CRTDECL difftime(_In_ const time_t _Time1, _In_ const time_t _Time2) noexcept
-/* strengthened */ {
-    return _CSTD _difftime64(_Time1, _Time2);
+export namespace std {
+
+////////////////////////////////////////////////////////////////////////////////
+// TIME MANIPULATION
+
+inline clock_t clock() { return ::clock(); }
+inline time_t time(time_t* Time) { return ::time(Time); }
+inline double difftime(time_t Time1, time_t Time2) { return ::difftime(Time1, Time2); }
+inline int timespec_get(timespec* ts, int Base) { return ::timespec_get(ts, Base); }
+
+////////////////////////////////////////////////////////////////////////////////
+// FORMAT CONVERSION
+
+inline char* ctime(const time_t* Time) { return ::ctime(Time); }
+inline char* asctime(const tm* Time) { return ::asctime(Time); }
+inline size_t strftime(char* Str, size_t Size, const char* Format, const tm* Time) { return ::strftime(Str, Size, Format, Time); }
+inline tm* gmtime(const time_t* Time) { return ::gmtime(Time); }
+inline tm* localtime(const time_t* Time) { return ::localtime(Time); }
+inline time_t mktime(tm* Time) { return ::mktime(Time); }
 }
-
-_EXPORT_STD template <int = 0>
-_Check_return_ _CRT_INSECURE_DEPRECATE(gmtime_s) inline tm* __CRTDECL gmtime(_In_ const time_t* const _Time) noexcept
-/* strengthened */ {
-    return _CSTD _gmtime64(_Time);
-}
-
-_EXPORT_STD template <int = 0>
-_CRT_INSECURE_DEPRECATE(localtime_s)
-inline tm* __CRTDECL localtime(_In_ const time_t* const _Time) noexcept /* strengthened */ {
-    return _CSTD _localtime64(_Time);
-}
-
-_EXPORT_STD template <int = 0>
-_Check_return_opt_ inline time_t __CRTDECL mktime(_Inout_ tm* const _Tm) noexcept /* strengthened */ {
-    return _CSTD _mktime64(_Tm);
-}
-
-_EXPORT_STD template <int = 0>
-inline time_t __CRTDECL time(_Out_opt_ time_t* const _Time) noexcept /* strengthened */ {
-    return _CSTD _time64(_Time);
-}
-
-_EXPORT_STD template <int = 0>
-_Check_return_ inline int __CRTDECL timespec_get(_Out_ timespec* const _Ts, _In_ const int _Base) noexcept
-/* strengthened */ {
-    return _CSTD _timespec64_get(reinterpret_cast<_timespec64*>(_Ts), _Base);
-}
-
-_STL_RESTORE_DEPRECATED_WARNING
-#else // ^^^ workaround / no workaround vvv
-
-// _EXPORT_STD has no effect while the workaround is present.
-_EXPORT_STD using _CSTD ctime;
-_EXPORT_STD using _CSTD difftime;
-_EXPORT_STD using _CSTD gmtime;
-_EXPORT_STD using _CSTD localtime;
-_EXPORT_STD using _CSTD mktime;
-_EXPORT_STD using _CSTD time;
-#if _HAS_CXX17
-_EXPORT_STD using _CSTD timespec_get;
-#endif // _HAS_CXX17
-
-#endif // ^^^ no workaround ^^^
-_STD_END
-
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma warning(pop)
-#pragma pack(pop)
-
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _CTIME_

@@ -5,7 +5,7 @@
 
 #ifndef _SEMAPHORE_
 #define _SEMAPHORE_
-#include "yvals.h"
+#include <yvals.h>
 #if _STL_COMPILER_PREPROCESSOR
 
 #ifdef _M_CEE_PURE
@@ -16,9 +16,9 @@
 _EMIT_STL_WARNING(STL4038, "The contents of <semaphore> are available only with C++20 or later.");
 #else // ^^^ !_HAS_CXX20 / _HAS_CXX20 vvv
 
-#include "__msvc_chrono.hpp"
-#include "atomic"
-#include "climits"
+#include <__msvc_chrono.hpp>
+#include <atomic>
+#include <climits>
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)

@@ -5,19 +5,19 @@
 
 #ifndef _MEMORY_RESOURCE_
 #define _MEMORY_RESOURCE_
-#include "yvals.h"
+#include <yvals.h>
 #if _STL_COMPILER_PREPROCESSOR
 
 #if !_HAS_CXX17
 _EMIT_STL_WARNING(STL4038, "The contents of <memory_resource> are available only with C++17 or later.");
 #else // ^^^ !_HAS_CXX17 / _HAS_CXX17 vvv
-#include "vector"
-#include "xbit_ops.h"
-#include "xpolymorphic_allocator.h"
-#include "xutility"
+#include <vector>
+#include <xbit_ops.h>
+#include <xpolymorphic_allocator.h>
+#include <xutility>
 
 #ifndef _M_CEE_PURE
-#include "mutex"
+#include <mutex>
 #endif // !defined(_M_CEE_PURE)
 
 #pragma pack(push, _CRT_PACKING)

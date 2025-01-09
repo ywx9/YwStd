@@ -12,9 +12,9 @@
 #error <shared_mutex> is not supported when compiling with /clr:pure.
 #endif // defined(_M_CEE_PURE)
 
-#include "condition_variable"
-#include "mutex"
-#include "xthreads.h"
+#include <condition_variable>
+#include <mutex>
+#include <xthreads.h>
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)

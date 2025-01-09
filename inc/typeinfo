@@ -1,73 +1,76 @@
-// typeinfo standard header
+/// \file typeinfo
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-#ifndef _TYPEINFO_
-#define _TYPEINFO_
-#include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
 #include "exception"
 
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
-
-#pragma warning(disable : 4275) // non dll-interface class 'X' used as base for dll-interface class 'Y'
-
-#pragma push_macro("raw_name") // TRANSITION, GH-2195
-#undef raw_name
-#include "vcruntime_typeinfo.h"
-#pragma pop_macro("raw_name")
-
-_STD_BEGIN
-
-// size in pointers of std::function and std::any (roughly 3 pointers larger than std::string when building debug)
-_INLINE_VAR constexpr int _Small_object_num_ptrs = 6 + 16 / sizeof(void*);
-
-#if !_HAS_EXCEPTIONS
-_EXPORT_STD class bad_cast : public exception { // base of all bad cast exceptions
-public:
-    bad_cast(const char* _Message = "bad cast") noexcept : exception(_Message) {}
-
-    ~bad_cast() noexcept override {}
-
-protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
-};
-
-_EXPORT_STD class bad_typeid : public exception { // base of all bad typeid exceptions
-public:
-    bad_typeid(const char* _Message = "bad typeid") noexcept : exception(_Message) {}
-
-    ~bad_typeid() noexcept override {}
-
-protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
-};
-
-class __non_rtti_object : public bad_typeid { // report a non-RTTI object
-public:
-    __non_rtti_object(const char* _Message) : bad_typeid(_Message) {}
-};
-#endif // ^^^ !_HAS_EXCEPTIONS ^^^
-
-[[noreturn]] inline void _Throw_bad_cast() {
-    _THROW(bad_cast{});
+#if ywstd_is_exported
+extern "C++" {
+struct __type_info_node;
+extern __type_info_node __type_info_root_node;
 }
+extern "C" {
+struct __std_type_info_data {
+  const char* _UndecoratedName;
+  const char _DecoratedName[1];
+  __std_type_info_data() = delete;
+  __std_type_info_data(const __std_type_info_data&) = delete;
+  __std_type_info_data(__std_type_info_data&&) = delete;
+  __std_type_info_data& operator=(const __std_type_info_data&) = delete;
+  __std_type_info_data& operator=(__std_type_info_data&&) = delete;
+};
+int __cdecl __std_type_info_compare(const __std_type_info_data*, const __std_type_info_data*);
+size_t __cdecl __std_type_info_hash(const __std_type_info_data*);
+const char* __cdecl __std_type_info_name(__std_type_info_data*, __type_info_node*);
+}
+namespace std {
+inline constexpr int _Small_object_num_ptrs = 6 + 16 / sizeof(void*);
+}
+#endif
 
-_STD_END
+extern "C++" class type_info {
+  mutable __std_type_info_data _data;
+public:
+  virtual ~type_info() noexcept;
+  type_info(const type_info&) = delete;
+  type_info& operator=(const type_info&) = delete;
+  [[nodiscard]] size_t hash_code() const noexcept { return __std_type_info_hash(&_data); }
+  [[nodiscard]] constexpr bool operator==(const type_info& ti) const noexcept {
+    if (__builtin_is_constant_evaluated()) { return &_data == &ti._data; }
+    return __std_type_info_compare(&_data, &ti._data) == 0;
+  }
+  [[nodiscard]] bool before(const type_info& ti) const noexcept {
+    return __std_type_info_compare(&_data, &ti._data) < 0;
+  }
+  [[nodiscard]] const char* name() const noexcept { return __std_type_info_name(&_data, &__type_info_root_node); }
+  [[nodiscard]] const char* raw_name() const noexcept { return _data._DecoratedName; }
+};
 
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma pack(pop)
-#pragma warning(pop)
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _TYPEINFO_
+export namespace std {
+
+using ::type_info;
+
+class bad_cast : public exception {
+  bad_cast(const char* const s, int) noexcept : exception(s, 1) {}
+public:
+  bad_cast() noexcept : exception("bad cast", 1) {}
+  static bad_cast __construct_from_string_literal(const char* const s) noexcept { return bad_cast(s, 1); }
+};
+
+class bad_typeid : public exception {
+  friend class __non_rtti_object;
+  bad_typeid(const char* const s, int) noexcept : exception(s, 1) {}
+public:
+  bad_typeid() noexcept : exception("bad typeid", 1) {}
+  static bad_typeid __construct_from_string_literal(const char* const s) noexcept { return bad_typeid(s, 1); }
+};
+
+class __non_rtti_object : public bad_typeid {
+  __non_rtti_object(const char* const s, int) noexcept : bad_typeid(s, 1) {}
+public:
+  static __non_rtti_object __construct_from_string_literal(const char* const s) noexcept {
+    return __non_rtti_object(s, 1);
+  }
+};
+}

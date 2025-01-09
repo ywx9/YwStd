@@ -137,11 +137,6 @@ template <>
 struct is_execution_policy<execution::unsequenced_policy> : true_type {};
 #endif // _HAS_CXX20
 
-template <class _Ty, class _FwdIt>
-void _Construct_in_place_by_deref(_Ty& _Val, const _FwdIt& _Iter) {
-    ::new (static_cast<void*>(_STD addressof(_Val))) _Ty(*_Iter);
-}
-
 template <class _Ty, class _UnaryOp, class _FwdIt>
 void _Construct_in_place_by_transform_deref(_Ty& _Val, _UnaryOp _Transform_op, const _FwdIt& _Iter) {
     ::new (static_cast<void*>(_STD addressof(_Val))) _Ty(_Transform_op(*_Iter));
@@ -166,7 +161,7 @@ void _Implicitly_construct_in_place_by_binary_op_transform_deref_rhs(
         _Ty([&]() -> _Ty { return _Reduce_op(_STD forward<_LeftTy>(_Left), _Transform_op(*_Iter)); }());
 }
 
-struct _Parallelism_resources_exhausted : exception {
+struct _NODISCARD _Parallelism_resources_exhausted : exception {
     _NODISCARD const char* __CLR_OR_THIS_CALL what() const noexcept override {
         // return pointer to message string
         return "Insufficient resources were available to use additional parallelism.";
@@ -351,7 +346,7 @@ struct _Generalized_sum_drop { // drop off point for GENERALIZED_SUM intermediat
 
     explicit _Generalized_sum_drop(const size_t _Slots)
         : _Data(static_cast<_Ty*>(
-            _Allocate<_New_alignof<_Ty>, _Parallelism_allocate_traits>(_Get_size_of_n<sizeof(_Ty)>(_Slots)))),
+              _Allocate<_New_alignof<_Ty>, _Parallelism_allocate_traits>(_Get_size_of_n<sizeof(_Ty)>(_Slots)))),
           _Slots(_Slots), _Frontier(0) {}
 
     ~_Generalized_sum_drop() noexcept {
@@ -681,7 +676,7 @@ public:
 private:
     atomic<size_t> _Bottom{0}; // modified by only owning thread
     atomic<size_t> _Top{0}; // modified by all threads
-    _Guarded_by_(_Segment_lock) _Circular_buffer<_Ty>* _Segment{_Circular_buffer<_Ty>::_New_circular_buffer()};
+    _Guarded_by_(_Segment_lock) _Circular_buffer<_Ty>* _Segment { _Circular_buffer<_Ty>::_New_circular_buffer() };
     mutex _Segment_lock{};
 };
 
@@ -2945,7 +2940,7 @@ struct _Static_partitioned_stable_sort3 {
                     const size_t _Base = _Visitor._Base;
                     const size_t _Mid  = _Base + _Visitor._Shift;
                     const size_t _End  = _Mid + _Visitor._Shift;
-                    _STD _Merge_move(_Temp_buf._Get_first(_Base), _Temp_buf._Get_first(_Mid),
+                    _STD _Merge_move_unchecked(_Temp_buf._Get_first(_Base), _Temp_buf._Get_first(_Mid),
                         _Temp_buf._Get_first(_End), _Basis._Get_first(_Base, _Team._Get_chunk_offset(_Base)), _Pred);
                 }
 
@@ -2963,7 +2958,7 @@ struct _Static_partitioned_stable_sort3 {
                     const size_t _Base = _Visitor._Base;
                     const size_t _Mid  = _Base + _Visitor._Shift;
                     const size_t _End  = _Mid + _Visitor._Shift;
-                    _STD _Merge_move(_Basis._Get_first(_Base, _Team._Get_chunk_offset(_Base)),
+                    _STD _Merge_move_unchecked(_Basis._Get_first(_Base, _Team._Get_chunk_offset(_Base)),
                         _Basis._Get_first(_Mid, _Team._Get_chunk_offset(_Mid)),
                         _Basis._Get_first(_End, _Team._Get_chunk_offset(_End)), _Temp_buf._Get_first(_Base), _Pred);
                 }

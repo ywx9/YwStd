@@ -1,9 +1,15 @@
-// cassert standard header (core)
+/// \file cassert
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-// NOTE: no include guard
 #include "yvals_core.h"
 
-#include "assert.h"
+#if ywstd_is_exported
+extern "C" void __cdecl _wassert(const wchar_t*, const wchar_t*, unsigned);
+#ifdef NDEBUG
+#define assert(expression) ((void)0)
+#else
+#define assert(expression) (void)((!!(expression)) || (_wassert(L#expression, __FILEW__, (unsigned)(__LINE__)), 0))
+#endif
+#endif

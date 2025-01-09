@@ -1,106 +1,243 @@
-// cwchar standard header (core)
+/// \file cwchar
+/// \copyright (c) 2022 ywx9.com
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#pragma once
 
-#ifndef _CWCHAR_
-#define _CWCHAR_
-#include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
+#include "cstdarg"
+#include "cstdio"
+#include "ctime"
 
-#include "cstdio" // TRANSITION, VSO-661721
-#include "wchar.h"
-
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
-
-_EXTERN_CXX_WORKAROUND
-using _Mbstatet = mbstate_t;
-_END_EXTERN_CXX_WORKAROUND
-
-_STD_BEGIN
 #pragma warning(push)
-#pragma warning(disable : 4995) // name was marked as #pragma deprecated
+#pragma warning(disable : 4996)
 
-using _CSTD _Mbstatet;
+#if ywstd_is_exported
+extern "C" {
 
-_EXPORT_STD using _CSTD mbstate_t;
-_EXPORT_STD using _CSTD size_t;
-_EXPORT_STD using _CSTD tm;
-_EXPORT_STD using _CSTD wint_t;
+#define WEOF ((wint_t)(0xFFFF))
 
-_EXPORT_STD using _CSTD btowc;
-_EXPORT_STD using _CSTD fgetwc;
-_EXPORT_STD using _CSTD fgetws;
-_EXPORT_STD using _CSTD fputwc;
-_EXPORT_STD using _CSTD fputws;
-_EXPORT_STD using _CSTD fwide;
-_EXPORT_STD using _CSTD fwprintf;
-_EXPORT_STD using _CSTD fwscanf;
-_EXPORT_STD using _CSTD getwc;
-_EXPORT_STD using _CSTD getwchar;
-_EXPORT_STD using _CSTD mbrlen;
-_EXPORT_STD using _CSTD mbrtowc;
-_EXPORT_STD using _CSTD mbsrtowcs;
-_EXPORT_STD using _CSTD mbsinit;
-_EXPORT_STD using _CSTD putwc;
-_EXPORT_STD using _CSTD putwchar;
-_EXPORT_STD using _CSTD swprintf;
-_EXPORT_STD using _CSTD swscanf;
-_EXPORT_STD using _CSTD ungetwc;
-_EXPORT_STD using _CSTD vfwprintf;
-_EXPORT_STD using _CSTD vswprintf;
-_EXPORT_STD using _CSTD vwprintf;
-_EXPORT_STD using _CSTD wcrtomb;
-_EXPORT_STD using _CSTD wprintf;
-_EXPORT_STD using _CSTD wscanf;
-_EXPORT_STD using _CSTD wcsrtombs;
-_EXPORT_STD using _CSTD wcstol;
-_EXPORT_STD using _CSTD wcscat;
-_EXPORT_STD using _CSTD wcschr;
-_EXPORT_STD using _CSTD wcscmp;
-_EXPORT_STD using _CSTD wcscoll;
-_EXPORT_STD using _CSTD wcscpy;
-_EXPORT_STD using _CSTD wcscspn;
-_EXPORT_STD using _CSTD wcslen;
-_EXPORT_STD using _CSTD wcsncat;
-_EXPORT_STD using _CSTD wcsncmp;
-_EXPORT_STD using _CSTD wcsncpy;
-_EXPORT_STD using _CSTD wcspbrk;
-_EXPORT_STD using _CSTD wcsrchr;
-_EXPORT_STD using _CSTD wcsspn;
-_EXPORT_STD using _CSTD wcstod;
-_EXPORT_STD using _CSTD wcstoul;
-_EXPORT_STD using _CSTD wcsstr;
-_EXPORT_STD using _CSTD wcstok;
-_EXPORT_STD using _CSTD wcsxfrm;
-_EXPORT_STD using _CSTD wctob;
-_EXPORT_STD using _CSTD wmemchr;
-_EXPORT_STD using _CSTD wmemcmp;
-_EXPORT_STD using _CSTD wmemcpy;
-_EXPORT_STD using _CSTD wmemmove;
-_EXPORT_STD using _CSTD wmemset;
-_EXPORT_STD using _CSTD wcsftime;
+wchar_t* __cdecl wcscpy(wchar_t*, const wchar_t*);
+wchar_t* __cdecl wcsncpy(wchar_t*, const wchar_t*, size_t);
+wchar_t* __cdecl wcscat(wchar_t*, const wchar_t*);
+wchar_t* __cdecl wcsncat(wchar_t*, const wchar_t*, size_t);
+size_t __cdecl wcsxfrm(wchar_t*, const wchar_t*, size_t);
 
-_EXPORT_STD using _CSTD vfwscanf;
-_EXPORT_STD using _CSTD vswscanf;
-_EXPORT_STD using _CSTD vwscanf;
-_EXPORT_STD using _CSTD wcstof;
-_EXPORT_STD using _CSTD wcstold;
-_EXPORT_STD using _CSTD wcstoll;
-_EXPORT_STD using _CSTD wcstoull;
+size_t __cdecl wcslen(const wchar_t*);
+int __cdecl wcscmp(const wchar_t*, const wchar_t*);
+int __cdecl wcsncmp(const wchar_t*, const wchar_t*, size_t);
+int __cdecl wcscoll(const wchar_t*, const wchar_t*);
+const wchar_t* __cdecl wcschr(const wchar_t*, wchar_t);
+const wchar_t* __cdecl wcsrchr(const wchar_t*, wchar_t);
+size_t __cdecl wcsspn(const wchar_t*, const wchar_t*);
+size_t __cdecl wcscspn(const wchar_t*, const wchar_t*);
+const wchar_t* __cdecl wcspbrk(const wchar_t*, const wchar_t*);
+const wchar_t* __cdecl wcsstr(const wchar_t*, const wchar_t*);
+wchar_t* __cdecl wcstok(wchar_t*, const wchar_t*, wchar_t**);
+
+wchar_t* __cdecl wmemcpy(wchar_t*, const wchar_t*, size_t);
+wchar_t* __cdecl wmemmove(wchar_t*, const wchar_t*, size_t);
+int __cdecl wmemcmp(const wchar_t*, const wchar_t*, size_t);
+const wchar_t* __cdecl wmemchr(const wchar_t*, wchar_t, size_t);
+wchar_t* __cdecl wmemset(wchar_t*, wchar_t, size_t);
+
+int __cdecl mbsinit(const mbstate_t*);
+wint_t __cdecl btowc(int);
+int __cdecl wctob(wint_t);
+size_t __cdecl mbrlen(const char*, size_t, mbstate_t*);
+size_t __cdecl mbrtowc(wchar_t*, const char*, size_t, mbstate_t*);
+size_t __cdecl wcrtomb(char*, wchar_t, mbstate_t*);
+size_t __cdecl mbsrtowcs(wchar_t*, const char**, size_t, mbstate_t*);
+size_t __cdecl wcsrtombs(char*, const wchar_t**, size_t, mbstate_t*);
+
+wint_t __cdecl getwc(FILE*);
+wint_t __cdecl fgetwc(FILE*);
+wchar_t* __cdecl fgetws(wchar_t*, int, FILE*);
+wint_t __cdecl putwc(wchar_t, FILE*);
+wint_t __cdecl fputwc(wchar_t, FILE*);
+int __cdecl fputws(const wchar_t*, FILE*);
+wint_t __cdecl getwchar();
+wint_t __cdecl putwchar(wchar_t);
+wint_t __cdecl ungetwc(wint_t, FILE*);
+int __cdecl fwide(FILE*, int);
+
+size_t __cdecl wcsftime(wchar_t*, size_t, const wchar_t*, const tm*);
+long __cdecl wcstol(const wchar_t*, wchar_t**, int);
+long long __cdecl wcstoll(const wchar_t*, wchar_t**, int);
+unsigned long __cdecl wcstoul(const wchar_t*, wchar_t**, int);
+unsigned long long __cdecl wcstoull(const wchar_t*, wchar_t**, int);
+float __cdecl wcstof(const wchar_t*, wchar_t**);
+double __cdecl wcstod(const wchar_t*, wchar_t**);
+long double __cdecl wcstold(const wchar_t*, wchar_t**);
+
+int __cdecl __stdio_common_vfwprintf(unsigned long long, FILE*, const wchar_t*, _locale_t, va_list);
+int __cdecl __stdio_common_vswprintf(unsigned long long, wchar_t*, size_t, wchar_t const*, _locale_t, va_list);
+int __cdecl __stdio_common_vfwscanf(unsigned long long, FILE*, wchar_t const*, _locale_t, va_list);
+int __cdecl __stdio_common_vswscanf(unsigned long long, wchar_t const*, size_t, wchar_t const*, _locale_t, va_list);
+}
+
+inline int __cdecl _scwprintf(const wchar_t* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = __stdio_common_vswprintf(                                                   //
+    _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR, //
+    nullptr, 0, format, nullptr, args);
+  va_end(args);
+  return result;
+}
+
+inline int __cdecl swprintf_s(wchar_t* buffer, size_t size, const wchar_t* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = __stdio_common_vswprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, buffer, size, format, nullptr, args);
+  va_end(args);
+  return result;
+}
+#endif
+
+export namespace std {
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING MANIPULATION
+
+inline wchar_t* wcscpy(wchar_t* dest, const wchar_t* src) { return ::wcscpy(dest, src); }
+inline wchar_t* wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) { return ::wcsncpy(dest, src, count); }
+inline wchar_t* wcscat(wchar_t* dest, const wchar_t* src) { return ::wcscat(dest, src); }
+inline wchar_t* wcsncat(wchar_t* dest, const wchar_t* src, size_t count) { return ::wcsncat(dest, src, count); }
+inline size_t wcsxfrm(wchar_t* dest, const wchar_t* src, size_t count) { return ::wcsxfrm(dest, src, count); }
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING EXAMINATION
+
+inline size_t wcslen(const wchar_t* str) { return ::wcslen(str); }
+inline int wcscmp(const wchar_t* str1, const wchar_t* str2) { return ::wcscmp(str1, str2); }
+inline int wcsncmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wcsncmp(str1, str2, count); }
+inline int wcscoll(const wchar_t* str1, const wchar_t* str2) { return ::wcscoll(str1, str2); }
+inline const wchar_t* wcschr(const wchar_t* str, wchar_t ch) { return ::wcschr(str, ch); }
+inline const wchar_t* wcsrchr(const wchar_t* str, wchar_t ch) { return ::wcsrchr(str, ch); }
+inline size_t wcsspn(const wchar_t* str, const wchar_t* accept) { return ::wcsspn(str, accept); }
+inline size_t wcscspn(const wchar_t* str, const wchar_t* reject) { return ::wcscspn(str, reject); }
+inline const wchar_t* wcspbrk(const wchar_t* str, const wchar_t* accept) { return ::wcspbrk(str, accept); }
+inline const wchar_t* wcsstr(const wchar_t* str, const wchar_t* substr) { return ::wcsstr(str, substr); }
+inline wchar_t* wcstok(wchar_t* str, const wchar_t* delims, wchar_t** context) {
+  return ::wcstok(str, delims, context);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// WIDE CHARACTER ARRAY MANIPULATION
+
+inline wchar_t* wmemcpy(wchar_t* dest, const wchar_t* src, size_t count) { return ::wmemcpy(dest, src, count); }
+inline wchar_t* wmemmove(wchar_t* dest, const wchar_t* src, size_t count) { return ::wmemmove(dest, src, count); }
+inline int wmemcmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wmemcmp(str1, str2, count); }
+inline const wchar_t* wmemchr(const wchar_t* str, wchar_t ch, size_t count) { return ::wmemchr(str, ch, count); }
+inline wchar_t* wmemset(wchar_t* dest, wchar_t ch, size_t count) { return ::wmemset(dest, ch, count); }
+
+////////////////////////////////////////////////////////////////////////////////
+// MULTIBYTE/WIDE CHARACTER CONVERSION
+
+inline int mbsinit(const mbstate_t* state) { return ::mbsinit(state); }
+inline wint_t btowc(int ch) { return ::btowc(ch); }
+inline int wctob(wint_t ch) { return ::wctob(ch); }
+inline size_t mbrlen(const char* s, size_t n, mbstate_t* state) { return ::mbrlen(s, n, state); }
+inline size_t mbrtowc(wchar_t* dest, const char* src, size_t n, mbstate_t* state) {
+  return ::mbrtowc(dest, src, n, state);
+}
+inline size_t wcrtomb(char* dest, wchar_t ch, mbstate_t* state) { return ::wcrtomb(dest, ch, state); }
+inline size_t mbsrtowcs(wchar_t* dest, const char** src, size_t n, mbstate_t* state) {
+  return ::mbsrtowcs(dest, src, n, state);
+}
+inline size_t wcsrtombs(char* dest, const wchar_t** src, size_t n, mbstate_t* state) {
+  return ::wcsrtombs(dest, src, n, state);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// WIDE CHARACTER I/O
+
+inline wint_t getwc(FILE* stream) { return ::getwc(stream); }
+inline wint_t fgetwc(FILE* stream) { return ::fgetwc(stream); }
+inline wchar_t* fgetws(wchar_t* str, int count, FILE* stream) { return ::fgetws(str, count, stream); }
+inline wint_t putwc(wchar_t ch, FILE* stream) { return ::putwc(ch, stream); }
+inline wint_t fputwc(wchar_t ch, FILE* stream) { return ::fputwc(ch, stream); }
+inline int fputws(const wchar_t* str, FILE* stream) { return ::fputws(str, stream); }
+inline wint_t getwchar() { return ::getwchar(); }
+inline wint_t putwchar(wint_t ch) { return ::putwchar(ch); }
+inline int ungetwc(wint_t ch, FILE* stream) { return ::ungetwc(ch, stream); }
+inline int fwide(FILE* stream, int mode) { return ::fwide(stream, mode); }
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING CONVERSION
+
+inline size_t wcsftime(wchar_t* str, size_t count, const wchar_t* format, const tm* timeptr) {
+  return ::wcsftime(str, count, format, timeptr);
+}
+inline long wcstol(const wchar_t* str, wchar_t** endptr, int base) { return ::wcstol(str, endptr, base); }
+inline long long wcstoll(const wchar_t* str, wchar_t** endptr, int base) { return ::wcstoll(str, endptr, base); }
+inline unsigned long wcstoul(const wchar_t* str, wchar_t** endptr, int base) { return ::wcstoul(str, endptr, base); }
+inline unsigned long long wcstoull(const wchar_t* str, wchar_t** endptr, int base) {
+  return ::wcstoull(str, endptr, base);
+}
+inline float wcstof(const wchar_t* str, wchar_t** endptr) { return ::wcstof(str, endptr); }
+inline double wcstod(const wchar_t* str, wchar_t** endptr) { return ::wcstod(str, endptr); }
+inline long double wcstold(const wchar_t* str, wchar_t** endptr) { return ::wcstold(str, endptr); }
+
+////////////////////////////////////////////////////////////////////////////////
+// FORMATTED INPUT/OUTPUT
+
+inline int vfwprintf(FILE* stream, const wchar_t* format, va_list argptr) {
+  return __stdio_common_vfwprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, stream, format, nullptr, argptr);
+}
+inline int vswprintf(wchar_t* buffer, size_t count, const wchar_t* format, va_list argptr) {
+  return __stdio_common_vswprintf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, buffer, count, format, nullptr, argptr);
+}
+inline int vwprintf(const wchar_t* format, va_list argptr) { return vfwprintf(stdout, format, argptr); }
+inline int fwprintf(FILE* stream, const wchar_t* format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  int result = vfwprintf(stream, format, argptr);
+  va_end(argptr);
+  return result;
+}
+inline int swprintf(wchar_t* buffer, size_t count, const wchar_t* format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  int result = vswprintf(buffer, count, format, argptr);
+  va_end(argptr);
+  return result;
+}
+inline int wprintf(const wchar_t* format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  int result = vwprintf(format, argptr);
+  va_end(argptr);
+  return result;
+}
+
+inline int vfwscanf(FILE* stream, const wchar_t* format, va_list argptr) {
+  return __stdio_common_vfwscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, stream, format, nullptr, argptr);
+}
+inline int vswscanf(const wchar_t* buffer, const wchar_t* format, va_list argptr) {
+  return __stdio_common_vswscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, buffer, (unsigned int)-1, format, nullptr, argptr);
+}
+inline int vwscanf(const wchar_t* format, va_list argptr) { return vfwscanf(stdin, format, argptr); }
+inline int fwscanf(FILE* stream, const wchar_t* format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  int result = vfwscanf(stream, format, argptr);
+  va_end(argptr);
+  return result;
+}
+inline int swscanf(const wchar_t* buffer, const wchar_t* format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  int result = vswscanf(buffer, format, argptr);
+  va_end(argptr);
+  return result;
+}
+inline int wscanf(const wchar_t* format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  int result = vwscanf(format, argptr);
+  va_end(argptr);
+  return result;
+}
+}
 
 #pragma warning(pop)
-_STD_END
-
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma warning(pop)
-#pragma pack(pop)
-
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _CWCHAR_
