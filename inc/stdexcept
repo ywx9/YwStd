@@ -1,3 +1,4 @@
+/// \file stdexcept
 // stdexcept standard header
 
 // Copyright (c) Microsoft Corporation.
@@ -19,151 +20,149 @@ _STL_DISABLE_CLANG_WARNINGS
 _STD_BEGIN
 _EXPORT_STD class _NODISCARD logic_error : public exception { // base of all logic-error exceptions
 public:
-    using _Mybase = exception;
+  using _Mybase = exception;
 
-    explicit logic_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit logic_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit logic_error(const char* _Message) : _Mybase(_Message) {}
+  explicit logic_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD domain_error : public logic_error { // base of all domain-error exceptions
 public:
-    using _Mybase = logic_error;
+  using _Mybase = logic_error;
 
-    explicit domain_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit domain_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit domain_error(const char* _Message) : _Mybase(_Message) {}
+  explicit domain_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD invalid_argument : public logic_error { // base of all invalid-argument exceptions
 public:
-    using _Mybase = logic_error;
+  using _Mybase = logic_error;
 
-    explicit invalid_argument(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit invalid_argument(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit invalid_argument(const char* _Message) : _Mybase(_Message) {}
+  explicit invalid_argument(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD length_error : public logic_error { // base of all length-error exceptions
 public:
-    using _Mybase = logic_error;
+  using _Mybase = logic_error;
 
-    explicit length_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit length_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit length_error(const char* _Message) : _Mybase(_Message) {}
+  explicit length_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD out_of_range : public logic_error { // base of all out-of-range exceptions
 public:
-    using _Mybase = logic_error;
+  using _Mybase = logic_error;
 
-    explicit out_of_range(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit out_of_range(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit out_of_range(const char* _Message) : _Mybase(_Message) {}
+  explicit out_of_range(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD runtime_error : public exception { // base of all runtime-error exceptions
 public:
-    using _Mybase = exception;
+  using _Mybase = exception;
 
-    explicit runtime_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit runtime_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit runtime_error(const char* _Message) : _Mybase(_Message) {}
+  explicit runtime_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD overflow_error : public runtime_error { // base of all overflow-error exceptions
 public:
-    using _Mybase = runtime_error;
+  using _Mybase = runtime_error;
 
-    explicit overflow_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit overflow_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit overflow_error(const char* _Message) : _Mybase(_Message) {}
+  explicit overflow_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD underflow_error : public runtime_error { // base of all underflow-error exceptions
 public:
-    using _Mybase = runtime_error;
+  using _Mybase = runtime_error;
 
-    explicit underflow_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit underflow_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit underflow_error(const char* _Message) : _Mybase(_Message) {}
+  explicit underflow_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
 _EXPORT_STD class _NODISCARD range_error : public runtime_error { // base of all range-error exceptions
 public:
-    using _Mybase = runtime_error;
+  using _Mybase = runtime_error;
 
-    explicit range_error(const string& _Message) : _Mybase(_Message.c_str()) {}
+  explicit range_error(const string& _Message) : _Mybase(_Message.c_str()) {}
 
-    explicit range_error(const char* _Message) : _Mybase(_Message) {}
+  explicit range_error(const char* _Message) : _Mybase(_Message) {}
 
 #if !_HAS_EXCEPTIONS
 protected:
-    void _Doraise() const override { // perform class-specific exception handling
-        _RAISE(*this);
-    }
+  void _Doraise() const override { // perform class-specific exception handling
+    _RAISE(*this);
+  }
 #endif // !_HAS_EXCEPTIONS
 };
 
-[[noreturn]] inline void _Throw_range_error(const char* const _Message) {
-    _THROW(range_error{_Message});
-}
+[[noreturn]] inline void _Throw_range_error(const char* const _Message) { _THROW(range_error{_Message}); }
 _STD_END
 #pragma pop_macro("new")
 _STL_RESTORE_CLANG_WARNINGS

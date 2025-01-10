@@ -1,3 +1,4 @@
+/// \file __msvc_threads_core.hpp
 // __msvc_threads_core.hpp internal header (core)
 
 // Copyright (c) Microsoft Corporation.
@@ -19,8 +20,8 @@ _STL_DISABLE_CLANG_WARNINGS
 extern "C" {
 using _Thrd_id_t = unsigned int;
 struct _Thrd_t { // thread identifier for Win32
-    void* _Hnd; // Win32 HANDLE
-    _Thrd_id_t _Id;
+  void* _Hnd;    // Win32 HANDLE
+  _Thrd_id_t _Id;
 };
 
 using _Smtx_t = void*;
@@ -28,32 +29,32 @@ using _Smtx_t = void*;
 enum class _Thrd_result : int { _Success, _Nomem, _Timedout, _Busy, _Error };
 
 struct _Stl_critical_section {
-    void* _Unused       = nullptr; // TRANSITION, ABI: was the vptr
-    _Smtx_t _M_srw_lock = nullptr;
+  void* _Unused = nullptr; // TRANSITION, ABI: was the vptr
+  _Smtx_t _M_srw_lock = nullptr;
 };
 
 struct _Mtx_internal_imp_t {
 // TRANSITION, ABI: We should directly store _M_srw_lock above.
 #ifdef _WIN64
-    static constexpr size_t _Critical_section_size = 64;
-#else // ^^^ 64-bit / 32-bit vvv
-    static constexpr size_t _Critical_section_size = 36;
+  static constexpr size_t _Critical_section_size = 64;
+#else  // ^^^ 64-bit / 32-bit vvv
+  static constexpr size_t _Critical_section_size = 36;
 #endif // ^^^ 32-bit ^^^
 
-    int _Type{};
-    union {
-        _Stl_critical_section _Critical_section{};
-        _STD _Aligned_storage_t<_Critical_section_size, alignof(void*)> _Cs_storage;
-    };
-    long _Thread_id{};
-    int _Count{};
+  int _Type{};
+  union {
+    _Stl_critical_section _Critical_section{};
+    _STD _Aligned_storage_t<_Critical_section_size, alignof(void*)> _Cs_storage;
+  };
+  long _Thread_id{};
+  int _Count{};
 };
 
 using _Mtx_t = _Mtx_internal_imp_t*;
 
 struct _Stl_condition_variable {
-    void* _Unused = nullptr; // TRANSITION, ABI: was the vptr
-    void* _Win_cv = nullptr;
+  void* _Unused = nullptr; // TRANSITION, ABI: was the vptr
+  void* _Win_cv = nullptr;
 };
 
 #pragma warning(push)
@@ -61,15 +62,15 @@ struct _Stl_condition_variable {
 struct _Cnd_internal_imp_t {
 // TRANSITION, ABI: We should directly store _Win_cv above.
 #ifdef _WIN64
-    static constexpr size_t _Cnd_internal_imp_size = 72;
-#else // ^^^ 64-bit / 32-bit vvv
-    static constexpr size_t _Cnd_internal_imp_size = 40;
+  static constexpr size_t _Cnd_internal_imp_size = 72;
+#else  // ^^^ 64-bit / 32-bit vvv
+  static constexpr size_t _Cnd_internal_imp_size = 40;
 #endif // ^^^ 32-bit ^^^
 
-    union {
-        _Stl_condition_variable _Stl_cv{};
-        _STD _Aligned_storage_t<_Cnd_internal_imp_size, alignof(void*)> _Cv_storage;
-    };
+  union {
+    _Stl_condition_variable _Stl_cv{};
+    _STD _Aligned_storage_t<_Cnd_internal_imp_size, alignof(void*)> _Cv_storage;
+  };
 };
 #pragma warning(pop)
 

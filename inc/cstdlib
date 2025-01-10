@@ -3,41 +3,58 @@
 
 #pragma once
 
+////////////////////////////////////////////////////////////////////////////////
+// PROCESS CONTROL
+
 #if ywstd_is_exported
 extern "C" {
-
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
-#define RAND_MAX 0x7fff
-#define MB_CUR_MAX ___mb_cur_max_func()
-int __cdecl ___mb_cur_max_func();
-
-struct div_t {
-  int quot, rem;
-};
-
-struct ldiv_t {
-  long quot, rem;
-};
-
-struct lldiv_t {
-  long long quot, rem;
-};
-
+[[noreturn]] void __cdecl abort();
 [[noreturn]] void __cdecl exit(int);
 [[noreturn]] void __cdecl _Exit(int);
 [[noreturn]] void __cdecl quick_exit(int);
-[[noreturn]] void __cdecl abort();
 int __cdecl atexit(void(__cdecl*)());
 int __cdecl at_quick_exit(void(__cdecl*)());
-int __cdecl system(const char*);
 char* __cdecl getenv(const char*);
+int __cdecl system(const char*);
+}
+#endif
+namespace std {
+export [[noreturn]] inline void abort() { ::abort(); }
+export [[noreturn]] inline void exit(int code) { ::exit(code); }
+export [[noreturn]] inline void _Exit(int code) { ::_Exit(code); }
+export [[noreturn]] inline void quick_exit(int code) { ::quick_exit(code); }
+export inline int atexit(void(*func)()) { return ::atexit(func); }
+export inline int at_quick_exit(void(*func)()) { return ::at_quick_exit(func); }
+export inline char* getenv(const char* name) { return ::getenv(name); }
+export inline int system(const char* command) { return ::system(command); }
+}
 
-void* __cdecl malloc(size_t);
-void* __cdecl calloc(size_t, size_t);
-void* __cdecl realloc(void*, size_t);
+////////////////////////////////////////////////////////////////////////////////
+// MEMORY MANAGEMENT
+
+#if ywstd_is_exported
+extern "C" {
+__declspec(restrict) void* __cdecl malloc(size_t);
+__declspec(restrict) void* __cdecl calloc(size_t, size_t);
+__declspec(restrict) void* __cdecl realloc(void*, size_t);
 void __cdecl free(void*);
+}
+#endif
+namespace std {
+export using size_t = decltype(sizeof(0));
+export inline void* malloc(size_t size) { return ::malloc(size); }
+export inline void* calloc(size_t num, size_t size) { return ::calloc(num, size); }
+export inline void* realloc(void* ptr, size_t size) { return ::realloc(ptr, size); }
+export inline void free(void* ptr) { return ::free(ptr); }
+}
 
+////////////////////////////////////////////////////////////////////////////////
+// NUMERIC STRING CONVERSION
+
+#if ywstd_is_exported
+extern "C" {
 int __cdecl atoi(const char*);
 long __cdecl atol(const char*);
 long long __cdecl atoll(const char*);
@@ -49,122 +66,171 @@ unsigned long long __cdecl strtoull(const char*, char**, int);
 float __cdecl strtof(const char*, char**);
 double __cdecl strtod(const char*, char**);
 long double __cdecl strtold(const char*, char**);
+}
+#endif
+namespace std {
+export inline int atoi(const char* s) { return ::atoi(s); }
+export inline long atol(const char* s) { return ::atol(s); }
+export inline long long atoll(const char* s) { return ::atoll(s); }
+export inline double atof(const char* s) { return ::atof(s); }
+export inline long strtol(const char* s, char** end, int base) { return ::strtol(s, end, base); }
+export inline unsigned long strtoul(const char* s, char** end, int base) { return ::strtoul(s, end, base); }
+export inline long long strtoll(const char* s, char** end, int base) { return ::strtoll(s, end, base); }
+export inline unsigned long long strtoull(const char* s, char** end, int base) { return ::strtoull(s, end, base); }
+export inline float strtof(const char* s, char** end) { return ::strtof(s, end); }
+export inline double strtod(const char* s, char** end) { return ::strtod(s, end); }
+export inline long double strtold(const char* s, char** end) { return ::strtold(s, end); }
+}
 
+////////////////////////////////////////////////////////////////////////////////
+// WIDE STRING MANIPULATION
+
+#if ywstd_is_exported
+extern "C" {
+int __cdecl ___mb_cur_max_func();
+#define MB_CUR_MAX ___mb_cur_max_func()
 int __cdecl mblen(const char*, size_t);
 int __cdecl mbtowc(wchar_t*, const char*, size_t);
 int __cdecl wctomb(char*, wchar_t);
 size_t __cdecl mbstowcs(wchar_t*, const char*, size_t);
 size_t __cdecl wcstombs(char*, const wchar_t*, size_t);
+}
+#endif
+namespace std {
+#pragma push_macro("MB_CUR_MAX")
+#undef MB_CUR_MAX
+export inline const int MB_CUR_MAX = ___mb_cur_max_func();
+#pragma pop_macro("MB_CUR_MAX")
+export inline int mblen(const char* s, size_t n) { return ::mblen(s, n); }
+export inline int mbtowc(wchar_t* wc, const char* s, size_t n) { return ::mbtowc(wc, s, n); }
+export inline int wctomb(char* s, wchar_t wc) { return ::wctomb(s, wc); }
+export inline size_t mbstowcs(wchar_t* wcs, const char* mbs, size_t n) { return ::mbstowcs(wcs, mbs, n); }
+export inline size_t wcstombs(char* mbs, const wchar_t* wcs, size_t n) { return ::wcstombs(mbs, wcs, n); }
+}
 
+////////////////////////////////////////////////////////////////////////////////
+// ALGORITHM
+
+#if ywstd_is_exported
+extern "C" {
+using _secure_compare_pred = int(__cdecl*)(void*, const void*, const void*);
+using _compare_pred = int(__cdecl*)(const void*, const void*);
+void* __cdecl bsearch_s(const void*, const void*, rsize_t, rsize_t, _secure_compare_pred, void*);
+void __cdecl qsort_s(void*, rsize_t, rsize_t, _secure_compare_pred, void*);
+void* __cdecl bsearch(const void*, const void*, size_t, size_t, _compare_pred);
+void __cdecl qsort(void*, size_t, size_t, _compare_pred);
+void* __cdecl _lfind_s(const void*, const void*, unsigned*, size_t, _secure_compare_pred, void*);
+void* __cdecl _lfind(const void*, const void*, unsigned*, unsigned, _compare_pred);
+void* __cdecl _lsearch_s(const void*, void*, unsigned*, size_t, _secure_compare_pred, void*);
+void* __cdecl _lsearch(const void*, void*, unsigned*, unsigned, _compare_pred);
+void* __cdecl lfind(const void*, const void*, unsigned*, unsigned, _compare_pred);
+void* __cdecl lsearch(const void*, void*, unsigned*, unsigned, _compare_pred);
+}
+#endif
+namespace std {
+export using _compare_pred = int(*)(const void*, const void*);
+export inline void qsort(void* base, size_t num, size_t size, _compare_pred pred) { ::qsort(base, num, size, pred); }
+export inline void* bsearch(const void* key, const void* base, size_t num, size_t size, _compare_pred pred) {
+  return ::bsearch(key, base, num, size, pred);
+}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RANDOM
+
+#if ywstd_is_exported
+extern "C" {
+#define RAND_MAX 0x7fff
+void __cdecl srand(unsigned);
 int __cdecl rand();
-void __cdecl srand(unsigned int);
-void __cdecl qsort(void*, size_t, size_t, int(__cdecl*)(const void*, const void*));
-void* __cdecl bsearch(const void*, const void*, size_t, size_t, int(__cdecl*)(const void*, const void*));
+}
+#endif
+namespace std {
+#pragma push_macro("RAND_MAX")
+#undef RAND_MAX
+export constexpr int RAND_MAX = 0x7fff;
+#pragma pop_macro("RAND_MAX")
+export inline void srand(unsigned seed) { ::srand(seed); }
+export inline int rand() { return ::rand(); }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ABS
+
+#if ywstd_is_exported
+extern "C" {
 int __cdecl abs(int);
 long __cdecl labs(long);
 long long __cdecl llabs(long long);
+float __cdecl fabsf(float);
+double __cdecl fabs(double);
+long double __cdecl fabsl(long double);
+}
+#endif
+namespace std {
+export constexpr int abs(int x) noexcept {
+  if (!__builtin_is_constant_evaluated()) return ::abs(x);
+  else return x < 0 ? -x : x;
+}
+export constexpr long labs(long x) noexcept {
+  if (!__builtin_is_constant_evaluated()) return ::labs(x);
+  else return x < 0 ? -x : x;
+}
+export constexpr long long llabs(long long x) noexcept {
+  if (!__builtin_is_constant_evaluated()) return ::llabs(x);
+  else return x < 0 ? -x : x;
+}
+export constexpr long abs(long x) noexcept { return std::labs(x); }
+export constexpr long long abs(long long x) noexcept { return std::llabs(x); }
+export constexpr float abs(float x) noexcept {
+  if (!__builtin_is_constant_evaluated()) return ::fabsf(x);
+  else return x < 0 ? -x : x;
+}
+export constexpr double abs(double x) noexcept {
+  if (!__builtin_is_constant_evaluated()) return ::fabs(x);
+  else return x < 0 ? -x : x;
+}
+export constexpr long double abs(long double x) noexcept {
+  if (!__builtin_is_constant_evaluated()) return ::fabsl(x);
+  else return x < 0 ? -x : x;
+}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// DIVISION
+
+#if ywstd_is_exported
+extern "C" {
+struct div_t {
+  int quot, rem;
+};
+struct ldiv_t {
+  long quot, rem;
+};
+struct lldiv_t {
+  long long quot, rem;
+};
 div_t __cdecl div(int, int);
 ldiv_t __cdecl ldiv(long, long);
 lldiv_t __cdecl lldiv(long long, long long);
 }
 #endif
-
-export namespace std {
-
-using ::div_t;
-using ::ldiv_t;
-using ::lldiv_t;
-
-////////////////////////////////////////////////////////////////////////////////
-// PROCESS CONTROL
-
-[[noreturn]] inline void exit(int status) { ::exit(status); }
-[[noreturn]] inline void _Exit(int status) { ::_Exit(status); }
-[[noreturn]] inline void quick_exit(int status) { ::quick_exit(status); }
-[[noreturn]] inline void abort() { ::abort(); }
-inline int atexit(void(__cdecl* func)()) { return ::atexit(func); }
-inline int at_quick_exit(void(__cdecl* func)()) { return ::at_quick_exit(func); }
-inline int system(const char* command) { return ::system(command); }
-inline char* getenv(const char* name) { return ::getenv(name); }
-
-////////////////////////////////////////////////////////////////////////////////
-// MEMORY MANAGEMENT
-
-inline void* malloc(size_t size) { return ::malloc(size); }
-inline void* calloc(size_t num, size_t size) { return ::calloc(num, size); }
-inline void* realloc(void* ptr, size_t size) { return ::realloc(ptr, size); }
-inline void free(void* ptr) { ::free(ptr); }
-
-////////////////////////////////////////////////////////////////////////////////
-// NUMERIC STRING CONVERSION
-
-inline int atoi(const char* str) { return ::atoi(str); }
-inline long atol(const char* str) { return ::atol(str); }
-inline long long atoll(const char* str) { return ::atoll(str); }
-inline double atof(const char* str) { return ::atof(str); }
-inline long strtol(const char* str, char** endptr, int base) { return ::strtol(str, endptr, base); }
-inline unsigned long strtoul(const char* str, char** endptr, int base) { return ::strtoul(str, endptr, base); }
-inline long long strtoll(const char* str, char** endptr, int base) { return ::strtoll(str, endptr, base); }
-inline unsigned long long strtoull(const char* str, char** endptr, int base) { return ::strtoull(str, endptr, base); }
-inline float strtof(const char* str, char** endptr) { return ::strtof(str, endptr); }
-inline double strtod(const char* str, char** endptr) { return ::strtod(str, endptr); }
-inline long double strtold(const char* str, char** endptr) { return ::strtold(str, endptr); }
-
-////////////////////////////////////////////////////////////////////////////////
-// WIDE STRING MANIPULATION
-
-inline int mblen(const char* s, size_t n) { return ::mblen(s, n); }
-inline int mbtowc(wchar_t* pwc, const char* s, size_t n) { return ::mbtowc(pwc, s, n); }
-inline int wctomb(char* s, wchar_t wc) { return ::wctomb(s, wc); }
-inline size_t mbstowcs(wchar_t* pwcs, const char* s, size_t n) { return ::mbstowcs(pwcs, s, n); }
-inline size_t wcstombs(char* s, const wchar_t* pwcs, size_t n) { return ::wcstombs(s, pwcs, n); }
-
-////////////////////////////////////////////////////////////////////////////////
-// MISCELLANEOUS ALGORITHMS AND MATH
-
-inline int rand() { return ::rand(); }
-inline void srand(unsigned int seed) { ::srand(seed); }
-inline void qsort(void* base, size_t num, size_t size, int(__cdecl* compare)(const void*, const void*)) {
-  ::qsort(base, num, size, compare);
-}
-inline void* bsearch(const void* key, const void* base, size_t num, size_t size,
-                     int(__cdecl* compare)(const void*, const void*)) {
-  return ::bsearch(key, base, num, size, compare);
-}
-
-constexpr int abs(int i) {
-  if (!__builtin_is_constant_evaluated()) return ::abs(i);
-  else return i < 0 ? -i : i;
-}
-
-constexpr long labs(long i) {
-  if (!__builtin_is_constant_evaluated()) return ::labs(i);
-  else return i < 0 ? -i : i;
-}
-
-constexpr long long llabs(long long i) {
-  if (!__builtin_is_constant_evaluated()) return ::llabs(i);
-  else return i < 0 ? -i : i;
-}
-
-constexpr long abs(long i) { return std::labs(i); }
-constexpr long long abs(long long i) { return std::llabs(i); }
-
-constexpr div_t div(int num, int den) {
+namespace std {
+export using ::div_t;
+export using ::ldiv_t;
+export using ::lldiv_t;
+export constexpr div_t div(int num, int den) noexcept {
   if (!__builtin_is_constant_evaluated()) return ::div(num, den);
   else return {num / den, num % den};
 }
-
-constexpr ldiv_t ldiv(long num, long den) {
+export constexpr ldiv_t ldiv(long num, long den) noexcept {
   if (!__builtin_is_constant_evaluated()) return ::ldiv(num, den);
   else return {num / den, num % den};
 }
-
-constexpr lldiv_t lldiv(long long num, long long den) {
+export constexpr lldiv_t lldiv(long long num, long long den) noexcept {
   if (!__builtin_is_constant_evaluated()) return ::lldiv(num, den);
   else return {num / den, num % den};
 }
-
-constexpr ldiv_t div(long num, long den) { return std::ldiv(num, den); }
-constexpr lldiv_t div(long long num, long long den) { return std::lldiv(num, den); }
+export constexpr ldiv_t div(long num, long den) noexcept { return std::ldiv(num, den); }
+export constexpr lldiv_t div(long long num, long long den) noexcept { return std::lldiv(num, den); }
 }

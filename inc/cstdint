@@ -1,10 +1,45 @@
 /// \file cstdint
-/// \copyright (c) 2022 ywx9.com
+// cstdint standard header (core)
 
-#pragma once
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-#if ywstd_is_exported
+#ifndef _CSTDINT_
+#define _CSTDINT_
+#include "yvals_core.h"
+#if _STL_COMPILER_PREPROCESSOR
 
+typedef signed char int8_t;
+typedef short int16_t;
+typedef int int32_t;
+typedef long long int64_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
+typedef signed char int_least8_t;
+typedef short int_least16_t;
+typedef int int_least32_t;
+typedef long long int_least64_t;
+typedef unsigned char uint_least8_t;
+typedef unsigned short uint_least16_t;
+typedef unsigned int uint_least32_t;
+typedef unsigned long long uint_least64_t;
+
+typedef signed char int_fast8_t;
+typedef int int_fast16_t;
+typedef int int_fast32_t;
+typedef long long int_fast64_t;
+typedef unsigned char uint_fast8_t;
+typedef unsigned int uint_fast16_t;
+typedef unsigned int uint_fast32_t;
+typedef unsigned long long uint_fast64_t;
+
+typedef long long intmax_t;
+typedef unsigned long long uintmax_t;
+
+// These macros must exactly match those in the Windows SDK's intsafe.h.
 #define INT8_MIN (-127i8 - 1)
 #define INT16_MIN (-32767i16 - 1)
 #define INT32_MIN (-2147483647i32 - 1)
@@ -44,9 +79,15 @@
 #define UINT_FAST32_MAX UINT32_MAX
 #define UINT_FAST64_MAX UINT64_MAX
 
+#ifdef _WIN64
 #define INTPTR_MIN INT64_MIN
 #define INTPTR_MAX INT64_MAX
 #define UINTPTR_MAX UINT64_MAX
+#else
+#define INTPTR_MIN INT32_MIN
+#define INTPTR_MAX INT32_MAX
+#define UINTPTR_MAX UINT32_MAX
+#endif
 
 #define INTMAX_MIN INT64_MIN
 #define INTMAX_MAX INT64_MAX
@@ -55,94 +96,118 @@
 #define PTRDIFF_MIN INTPTR_MIN
 #define PTRDIFF_MAX INTPTR_MAX
 
+#ifndef SIZE_MAX
+// SIZE_MAX definition must match exactly with limits.h for modules support.
+#ifdef _WIN64
 #define SIZE_MAX 0xffffffffffffffffui64
-
-#define SIG_ATOMIC_MIN   INT32_MIN
-#define SIG_ATOMIC_MAX   INT32_MAX
-
-#define WCHAR_MIN        0x0000
-#define WCHAR_MAX        0xffff
-
-#define WINT_MIN         0x0000
-#define WINT_MAX         0xffff
-
-#define INT8_C(x)    (x)
-#define INT16_C(x)   (x)
-#define INT32_C(x)   (x)
-#define INT64_C(x)   (x ## LL)
-
-#define UINT8_C(x)   (x)
-#define UINT16_C(x)  (x)
-#define UINT32_C(x)  (x ## U)
-#define UINT64_C(x)  (x ## ULL)
-
-#define INTMAX_C(x)  INT64_C(x)
-#define UINTMAX_C(x) UINT64_C(x)
-
-using int8_t = signed char;
-using int16_t =  short;
-using int32_t =  int;
-using int64_t =  long long;
-using uint8_t = unsigned char;
-using uint16_t = unsigned short;
-using uint32_t = unsigned int;
-using uint64_t = unsigned long long;
-
-using int_least8_t = signed char;
-using int_least16_t =  short;
-using int_least32_t =  int;
-using int_least64_t =  long long;
-using uint_least8_t = unsigned char;
-using uint_least16_t = unsigned short;
-using uint_least32_t = unsigned int;
-using uint_least64_t = unsigned long long;
-
-using int_fast8_t = signed char;
-using int_fast16_t =  int;
-using int_fast32_t =  int;
-using int_fast64_t =  long long;
-using uint_fast8_t = unsigned char;
-using uint_fast16_t = unsigned int;
-using uint_fast32_t = unsigned int;
-using uint_fast64_t = unsigned long long;
-
-using intmax_t = long long;
-using intptr_t = long long;
-using uintmax_t = unsigned long long;
-using uintptr_t = unsigned long long;
+#else
+#define SIZE_MAX 0xffffffffui32
+#endif
 #endif
 
-export namespace std {
+#define SIG_ATOMIC_MIN INT32_MIN
+#define SIG_ATOMIC_MAX INT32_MAX
 
-using int8_t = signed char;
-using int16_t =  short;
-using int32_t =  int;
-using int64_t =  long long;
-using uint8_t = unsigned char;
-using uint16_t = unsigned short;
-using uint32_t = unsigned int;
-using uint64_t = unsigned long long;
+#define WCHAR_MIN 0x0000
+#define WCHAR_MAX 0xffff
 
-using int_least8_t = signed char;
-using int_least16_t =  short;
-using int_least32_t =  int;
-using int_least64_t =  long long;
-using uint_least8_t = unsigned char;
-using uint_least16_t = unsigned short;
-using uint_least32_t = unsigned int;
-using uint_least64_t = unsigned long long;
+#define WINT_MIN 0x0000
+#define WINT_MAX 0xffff
 
-using int_fast8_t = signed char;
-using int_fast16_t =  int;
-using int_fast32_t =  int;
-using int_fast64_t =  long long;
-using uint_fast8_t = unsigned char;
-using uint_fast16_t = unsigned int;
-using uint_fast32_t = unsigned int;
-using uint_fast64_t = unsigned long long;
+#define INT8_C(x) (x)
+#define INT16_C(x) (x)
+#define INT32_C(x) (x)
+#define INT64_C(x) (x##LL)
 
-using intmax_t = long long;
-using intptr_t = long long;
-using uintmax_t = unsigned long long;
-using uintptr_t = unsigned long long;
-}
+#define UINT8_C(x) (x)
+#define UINT16_C(x) (x)
+#define UINT32_C(x) (x##U)
+#define UINT64_C(x) (x##ULL)
+
+#define INTMAX_C(x) INT64_C(x)
+#define UINTMAX_C(x) UINT64_C(x)
+
+#pragma pack(push, _CRT_PACKING)
+#pragma warning(push, _STL_WARNING_LEVEL)
+#pragma warning(disable : _STL_DISABLED_WARNINGS)
+_STL_DISABLE_CLANG_WARNINGS
+#pragma push_macro("new")
+#undef new
+
+_STD_BEGIN
+_EXPORT_STD using _CSTD int8_t;
+_EXPORT_STD using _CSTD int16_t;
+_EXPORT_STD using _CSTD int32_t;
+_EXPORT_STD using _CSTD int64_t;
+_EXPORT_STD using _CSTD uint8_t;
+_EXPORT_STD using _CSTD uint16_t;
+_EXPORT_STD using _CSTD uint32_t;
+_EXPORT_STD using _CSTD uint64_t;
+
+_EXPORT_STD using _CSTD int_least8_t;
+_EXPORT_STD using _CSTD int_least16_t;
+_EXPORT_STD using _CSTD int_least32_t;
+_EXPORT_STD using _CSTD int_least64_t;
+_EXPORT_STD using _CSTD uint_least8_t;
+_EXPORT_STD using _CSTD uint_least16_t;
+_EXPORT_STD using _CSTD uint_least32_t;
+_EXPORT_STD using _CSTD uint_least64_t;
+
+_EXPORT_STD using _CSTD int_fast8_t;
+_EXPORT_STD using _CSTD int_fast16_t;
+_EXPORT_STD using _CSTD int_fast32_t;
+_EXPORT_STD using _CSTD int_fast64_t;
+_EXPORT_STD using _CSTD uint_fast8_t;
+_EXPORT_STD using _CSTD uint_fast16_t;
+_EXPORT_STD using _CSTD uint_fast32_t;
+_EXPORT_STD using _CSTD uint_fast64_t;
+
+_EXPORT_STD using _CSTD intmax_t;
+_EXPORT_STD using _CSTD intptr_t;
+_EXPORT_STD using _CSTD uintmax_t;
+_EXPORT_STD using _CSTD uintptr_t;
+
+#if _HAS_TR1_NAMESPACE
+namespace _DEPRECATE_TR1_NAMESPACE tr1 {
+using _CSTD int8_t;
+using _CSTD int16_t;
+using _CSTD int32_t;
+using _CSTD int64_t;
+using _CSTD uint8_t;
+using _CSTD uint16_t;
+using _CSTD uint32_t;
+using _CSTD uint64_t;
+
+using _CSTD int_least8_t;
+using _CSTD int_least16_t;
+using _CSTD int_least32_t;
+using _CSTD int_least64_t;
+using _CSTD uint_least8_t;
+using _CSTD uint_least16_t;
+using _CSTD uint_least32_t;
+using _CSTD uint_least64_t;
+
+using _CSTD int_fast8_t;
+using _CSTD int_fast16_t;
+using _CSTD int_fast32_t;
+using _CSTD int_fast64_t;
+using _CSTD uint_fast8_t;
+using _CSTD uint_fast16_t;
+using _CSTD uint_fast32_t;
+using _CSTD uint_fast64_t;
+
+using _CSTD intmax_t;
+using _CSTD intptr_t;
+using _CSTD uintmax_t;
+using _CSTD uintptr_t;
+} // namespace _DEPRECATE_TR1_NAMESPACE tr1
+#endif // _HAS_TR1_NAMESPACE
+_STD_END
+
+#pragma pop_macro("new")
+_STL_RESTORE_CLANG_WARNINGS
+#pragma warning(pop)
+#pragma pack(pop)
+
+#endif // _STL_COMPILER_PREPROCESSOR
+#endif // _CSTDINT_

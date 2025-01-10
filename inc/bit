@@ -3,6 +3,22 @@
 
 #pragma once
 
+#include "type_traits"
+
+////////////////////////////////////////////////////////////////////////////////
+// BITCAST
+
+namespace std {
+export template<typename T, typename U>
+requires (sizeof(T) == sizeof(U)) && is_trivially_copyable_v<T> && is_trivially_copyable_v<U>
+[[nodiscard]] constexpr T bit_cast(const U& v) noexcept {
+  return __builtin_bit_cast(T, v);
+}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BYTESWAP
+
 #if ywstd_is_exported
 extern "C" {
 unsigned short __cdecl _byteswap_ushort(unsigned short);
@@ -10,82 +26,34 @@ unsigned long __cdecl _byteswap_ulong(unsigned long);
 unsigned long long __cdecl _byteswap_uint64(unsigned long long);
 }
 #endif
-
-// bit standard header (core)
-
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
-
-#ifndef _BIT_
-#define _BIT_
-#include "yvals_core.h"
-#if _STL_COMPILER_PREPROCESSOR
-#if !_HAS_CXX20
-_EMIT_STL_WARNING(STL4038, "The contents of <bit> are available only with C++20 or later.");
-#else // ^^^ !_HAS_CXX20 / _HAS_CXX20 vvv
+namespace std {
+export template<typename T> requires is_integral_v<T> [[nodiscard]]
+constexpr T byteswap(const T v) noexcept {
+  if constexpr (sizeof(T) == 1) return v;
+  else if constexpr (sizeof(T) == 2) {
+    auto n = static_cast<unsigned short>(v);
+    if (!std::is_constant_evaluated()) return static_cast<T>(::_byteswap_ushort(n));
+    return static_cast<T>((n << 8) | (n >> 8));
+  } else if constexpr (sizeof(T) == 4) {
+    auto n = static_cast<unsigned long>(v);
+    if (!std::is_constant_evaluated()) return static_cast<T>(::_byteswap_ulong(n));
+    return static_cast<T>((n << 24) | ((n << 8) & 0x00FF0000) | ((n >> 8) & 0x0000FF00) | (n >> 24));
+  } else {
+    auto n = static_cast<unsigned long long>(v);
+    if (!std::is_constant_evaluated()) return static_cast<T>(::_byteswap_uint64(n));
+    return static_cast<T>((n << 56) | ((n << 40) & 0x00FF'0000'0000'0000) | ((n << 24) & 0x0000'FF00'0000'0000) |
+                          ((n << 8) & 0x0000'00FF'0000'0000) | ((n >> 8) & 0x0000'0000'FF00'0000) |
+                          ((n >> 24) & 0x0000'0000'00FF'0000) | ((n >> 40) & 0x0000'0000'0000'FF00) | (n >> 56));
+  }
+}
+}
 
 #include "__msvc_bit_utils.hpp"
 #include "cstdlib"
-#include "type_traits"
 
-#include _STL_INTRIN_HEADER
-
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
+#include "intrin0.h"
 
 _STD_BEGIN
-
-_EXPORT_STD template<class _To, class _From>
-requires (sizeof(_To) == sizeof(_From)) && is_trivially_copyable_v<_To> && is_trivially_copyable_v<_From>
-_NODISCARD constexpr _To bit_cast(const _From& _Val) noexcept {
-  return __builtin_bit_cast(_To, _Val);
-}
-
-#if _HAS_CXX23
-_NODISCARD constexpr unsigned short _Byteswap_ushort(const unsigned short _Val) noexcept {
-  if (_STD is_constant_evaluated()) {
-    return static_cast<unsigned short>((_Val << 8) | (_Val >> 8));
-  } else {
-    return _byteswap_ushort(_Val);
-  }
-}
-
-_NODISCARD constexpr unsigned long _Byteswap_ulong(const unsigned long _Val) noexcept {
-  if (_STD is_constant_evaluated()) {
-    return (_Val << 24) | ((_Val << 8) & 0x00FF'0000) | ((_Val >> 8) & 0x0000'FF00) | (_Val >> 24);
-  } else {
-    return _byteswap_ulong(_Val);
-  }
-}
-
-_NODISCARD constexpr unsigned long long _Byteswap_uint64(const unsigned long long _Val) noexcept {
-  if (_STD is_constant_evaluated()) {
-    return (_Val << 56) | ((_Val << 40) & 0x00FF'0000'0000'0000) | ((_Val << 24) & 0x0000'FF00'0000'0000) |
-           ((_Val << 8) & 0x0000'00FF'0000'0000) | ((_Val >> 8) & 0x0000'0000'FF00'0000) |
-           ((_Val >> 24) & 0x0000'0000'00FF'0000) | ((_Val >> 40) & 0x0000'0000'0000'FF00) | (_Val >> 56);
-  } else {
-    return _byteswap_uint64(_Val);
-  }
-}
-
-_EXPORT_STD template<class _Ty> requires is_integral_v<_Ty> _NODISCARD constexpr _Ty byteswap(const _Ty _Val) noexcept {
-  if constexpr (sizeof(_Ty) == 1) {
-    return _Val;
-  } else if constexpr (sizeof(_Ty) == 2) {
-    return static_cast<_Ty>(_Byteswap_ushort(static_cast<unsigned short>(_Val)));
-  } else if constexpr (sizeof(_Ty) == 4) {
-    return static_cast<_Ty>(_Byteswap_ulong(static_cast<unsigned long>(_Val)));
-  } else if constexpr (sizeof(_Ty) == 8) {
-    return static_cast<_Ty>(_Byteswap_uint64(static_cast<unsigned long long>(_Val)));
-  } else {
-    _STL_INTERNAL_STATIC_ASSERT(false); // unexpected size
-  }
-}
-#endif // _HAS_CXX23
 
 template<class _Ty> concept _Standard_unsigned_integral = _Is_standard_unsigned_integer<_Ty>;
 
@@ -219,10 +187,3 @@ _EXPORT_STD template<_Standard_unsigned_integral _Ty> _NODISCARD constexpr int p
 _EXPORT_STD enum class endian { little = 0, big = 1, native = little };
 
 _STD_END
-#pragma pop_macro("new")
-_STL_RESTORE_CLANG_WARNINGS
-#pragma warning(pop)
-#pragma pack(pop)
-#endif // _HAS_CXX20
-#endif // _STL_COMPILER_PREPROCESSOR
-#endif // _BIT_

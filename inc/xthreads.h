@@ -1,3 +1,4 @@
+/// \file xthreads.h
 // xthreads.h internal header
 
 // Copyright (c) Microsoft Corporation.
@@ -29,10 +30,10 @@ void __stdcall _Thrd_sleep_for(unsigned long /*ms*/) noexcept;
 
 // mutexes
 enum { // mutex types
-    _Mtx_plain     = 0x01,
-    _Mtx_try       = 0x02,
-    _Mtx_timed     = 0x04,
-    _Mtx_recursive = 0x100
+  _Mtx_plain = 0x01,
+  _Mtx_try = 0x02,
+  _Mtx_timed = 0x04,
+  _Mtx_recursive = 0x100
 };
 
 #if defined(_CRTBLD) || defined(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
@@ -57,8 +58,8 @@ void __cdecl _Smtx_unlock_shared(_Smtx_t*) noexcept;
 _CRTIMP2_PURE void __cdecl _Cnd_init_in_situ(_Cnd_t) noexcept;
 #endif // ^^^ defined(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR) ^^^
 _CRTIMP2_PURE _Thrd_result __cdecl _Cnd_wait(_Cnd_t, _Mtx_t) noexcept; // TRANSITION, ABI: Always succeeds
-_CRTIMP2_PURE _Thrd_result __cdecl _Cnd_broadcast(_Cnd_t) noexcept; // TRANSITION, ABI: Always succeeds
-_CRTIMP2_PURE _Thrd_result __cdecl _Cnd_signal(_Cnd_t) noexcept; // TRANSITION, ABI: Always succeeds
+_CRTIMP2_PURE _Thrd_result __cdecl _Cnd_broadcast(_Cnd_t) noexcept;    // TRANSITION, ABI: Always succeeds
+_CRTIMP2_PURE _Thrd_result __cdecl _Cnd_signal(_Cnd_t) noexcept;       // TRANSITION, ABI: Always succeeds
 _CRTIMP2_PURE void __cdecl _Cnd_register_at_thread_exit(_Cnd_t, _Mtx_t, int*) noexcept;
 _CRTIMP2_PURE void __cdecl _Cnd_unregister_at_thread_exit(_Mtx_t) noexcept;
 _CRTIMP2_PURE void __cdecl _Cnd_do_broadcast_at_thread_exit() noexcept;
@@ -68,13 +69,13 @@ _Thrd_result __stdcall _Cnd_timedwait_for_unchecked(_Cnd_t, _Mtx_t, unsigned int
 
 _STD_BEGIN
 enum { // constants for error codes
-    _DEVICE_OR_RESOURCE_BUSY,
-    _INVALID_ARGUMENT,
-    _NO_SUCH_PROCESS,
-    _NOT_ENOUGH_MEMORY,
-    _OPERATION_NOT_PERMITTED,
-    _RESOURCE_DEADLOCK_WOULD_OCCUR,
-    _RESOURCE_UNAVAILABLE_TRY_AGAIN
+  _DEVICE_OR_RESOURCE_BUSY,
+  _INVALID_ARGUMENT,
+  _NO_SUCH_PROCESS,
+  _NOT_ENOUGH_MEMORY,
+  _OPERATION_NOT_PERMITTED,
+  _RESOURCE_DEADLOCK_WOULD_OCCUR,
+  _RESOURCE_UNAVAILABLE_TRY_AGAIN
 };
 
 extern "C++" [[noreturn]] _CRTIMP2_PURE void __cdecl _Throw_Cpp_error(int _Code);

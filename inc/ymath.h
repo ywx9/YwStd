@@ -1,3 +1,4 @@
+/// \file ymath.h
 // ymath.h internal header
 
 // Copyright (c) Microsoft Corporation.

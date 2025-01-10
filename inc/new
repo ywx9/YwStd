@@ -1,3 +1,4 @@
+/// \file new
 // new standard header
 
 // Copyright (c) Microsoft Corporation.
@@ -20,26 +21,25 @@ _STL_DISABLE_CLANG_WARNINGS
 _STD_BEGIN
 #if _HAS_CXX20
 _EXPORT_STD struct destroying_delete_t {
-    explicit destroying_delete_t() = default;
+  explicit destroying_delete_t() = default;
 };
 _EXPORT_STD inline constexpr destroying_delete_t destroying_delete{};
 #endif // _HAS_CXX20
 
 #if _HAS_CXX17
-_EXPORT_STD template <class _Ty>
-_NODISCARD_LAUNDER constexpr _Ty* launder(_Ty* _Ptr) noexcept {
-    static_assert(!is_function_v<_Ty> && !is_void_v<_Ty>,
-        "N4950 [ptr.launder]/1: Mandates: !is_function_v<T> && !is_void_v<T> is true.");
+_EXPORT_STD template<class _Ty> _NODISCARD_LAUNDER constexpr _Ty* launder(_Ty* _Ptr) noexcept {
+  static_assert(!is_function_v<_Ty> && !is_void_v<_Ty>,
+                "N4950 [ptr.launder]/1: Mandates: !is_function_v<T> && !is_void_v<T> is true.");
 #if defined(__clang__) || defined(__EDG__) // TRANSITION, DevCom-10456452
-    return __builtin_launder(_Ptr);
-#else // ^^^ no workaround / workaround vvv
-    return ::__builtin_launder(_Ptr);
+  return __builtin_launder(_Ptr);
+#else  // ^^^ no workaround / workaround vvv
+  return ::__builtin_launder(_Ptr);
 #endif // ^^^ workaround ^^^
 }
 
 #if defined(_M_IX86) || defined(_M_X64) || defined(_M_ARM) || defined(_M_ARM64)
 _EXPORT_STD inline constexpr size_t hardware_constructive_interference_size = 64;
-_EXPORT_STD inline constexpr size_t hardware_destructive_interference_size  = 64;
+_EXPORT_STD inline constexpr size_t hardware_destructive_interference_size = 64;
 #else // ^^^ supported hardware / unsupported hardware vvv
 #error Unsupported architecture
 #endif // ^^^ unsupported hardware ^^^

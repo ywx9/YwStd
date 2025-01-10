@@ -1,8 +1,8 @@
+/// \file xcharconv_ryu.h
 // xcharconv_ryu.h internal header
 
 // Copyright (c) Microsoft Corporation.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
-
 
 // Copyright 2018 Ulf Adams
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -31,14 +31,13 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-
 #ifndef _XCHARCONV_RYU_H
 #define _XCHARCONV_RYU_H
 #include "yvals_core.h"
 #if _STL_COMPILER_PREPROCESSOR
 
 #if !_HAS_CXX17
-#error The contents of <charconv> are only available with C++17. (Also, you should not include this internal header.)
+#error The contents of <charconv" are only available with C++17. (Also, you should not include this internal header.)
 #endif // !_HAS_CXX17
 
 #include "cstring"
@@ -56,11 +55,11 @@
 
 #if _HAS_CHARCONV_INTRINSICS
 #if defined(_M_ARM64) || defined(_M_ARM64EC) || defined(_M_HYBRID_X86_ARM64)
-#include "intrin.h"
+#include "intrin.h" // TRANSITION, VSO-1918426
 #else // ^^^ defined(_M_ARM64) || defined(_M_ARM64EC) || defined(_M_HYBRID_X86_ARM64) / defined(_M_X64) vvv
-#include _STL_INTRIN_HEADER // for _umul128(), __umulh(), and __shiftright128()
-#endif // ^^^ defined(_M_X64) ^^^
-#endif // ^^^ intrinsics available ^^^
+#include "intrin0.h" // for _umul128(), __umulh(), and __shiftright128()
+#endif                      // ^^^ defined(_M_X64) ^^^
+#endif                      // ^^^ intrinsics available ^^^
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)
@@ -2359,56 +2358,56 @@ _NODISCARD pair<_CharT*, errc> __d2s_buffered_n(_CharT* const _First, _CharT* co
 
 // clang-format on
 
-template <class _Floating>
-_NODISCARD to_chars_result _Floating_to_chars_ryu(
-    char* const _First, char* const _Last, const _Floating _Value, const chars_format _Fmt) noexcept {
-    if constexpr (is_same_v<_Floating, float>) {
-        return _Convert_to_chars_result(__f2s_buffered_n(_First, _Last, _Value, _Fmt));
-    } else {
-        return _Convert_to_chars_result(__d2s_buffered_n(_First, _Last, _Value, _Fmt));
-    }
+template<class _Floating> _NODISCARD to_chars_result _Floating_to_chars_ryu(char* const _First, char* const _Last,
+                                                                            const _Floating _Value,
+                                                                            const chars_format _Fmt) noexcept {
+  if constexpr (is_same_v<_Floating, float>) {
+    return _Convert_to_chars_result(__f2s_buffered_n(_First, _Last, _Value, _Fmt));
+  } else {
+    return _Convert_to_chars_result(__d2s_buffered_n(_First, _Last, _Value, _Fmt));
+  }
 }
 
-template <class _Floating>
-_NODISCARD to_chars_result _Floating_to_chars_scientific_precision(
-    char* const _First, char* const _Last, const _Floating _Value, int _Precision) noexcept {
+template<class _Floating>
+_NODISCARD to_chars_result _Floating_to_chars_scientific_precision(char* const _First, char* const _Last,
+                                                                   const _Floating _Value, int _Precision) noexcept {
 
-    // C11 7.21.6.1 "The fprintf function"/5:
-    // "A negative precision argument is taken as if the precision were omitted."
-    // /8: "e,E [...] if the precision is missing, it is taken as 6"
+  // C11 7.21.6.1 "The fprintf function"/5:
+  // "A negative precision argument is taken as if the precision were omitted."
+  // /8: "e,E [...] if the precision is missing, it is taken as 6"
 
-    if (_Precision < 0) {
-        _Precision = 6;
-    } else if (_Precision < 1'000'000'000) {
-        // _Precision is ok.
-    } else {
-        // Avoid integer overflow.
-        // (This defensive check is slightly nonconformant; it can be carefully improved in the future.)
-        return {_Last, errc::value_too_large};
-    }
+  if (_Precision < 0) {
+    _Precision = 6;
+  } else if (_Precision < 1'000'000'000) {
+    // _Precision is ok.
+  } else {
+    // Avoid integer overflow.
+    // (This defensive check is slightly nonconformant; it can be carefully improved in the future.)
+    return {_Last, errc::value_too_large};
+  }
 
-    return __d2exp_buffered_n(_First, _Last, _Value, static_cast<uint32_t>(_Precision));
+  return __d2exp_buffered_n(_First, _Last, _Value, static_cast<uint32_t>(_Precision));
 }
 
-template <class _Floating>
-_NODISCARD to_chars_result _Floating_to_chars_fixed_precision(
-    char* const _First, char* const _Last, const _Floating _Value, int _Precision) noexcept {
+template<class _Floating>
+_NODISCARD to_chars_result _Floating_to_chars_fixed_precision(char* const _First, char* const _Last,
+                                                              const _Floating _Value, int _Precision) noexcept {
 
-    // C11 7.21.6.1 "The fprintf function"/5:
-    // "A negative precision argument is taken as if the precision were omitted."
-    // /8: "f,F [...] If the precision is missing, it is taken as 6"
+  // C11 7.21.6.1 "The fprintf function"/5:
+  // "A negative precision argument is taken as if the precision were omitted."
+  // /8: "f,F [...] If the precision is missing, it is taken as 6"
 
-    if (_Precision < 0) {
-        _Precision = 6;
-    } else if (_Precision < 1'000'000'000) {
-        // _Precision is ok.
-    } else {
-        // Avoid integer overflow.
-        // (This defensive check is slightly nonconformant; it can be carefully improved in the future.)
-        return {_Last, errc::value_too_large};
-    }
+  if (_Precision < 0) {
+    _Precision = 6;
+  } else if (_Precision < 1'000'000'000) {
+    // _Precision is ok.
+  } else {
+    // Avoid integer overflow.
+    // (This defensive check is slightly nonconformant; it can be carefully improved in the future.)
+    return {_Last, errc::value_too_large};
+  }
 
-    return _Convert_to_chars_result(__d2fixed_buffered_n(_First, _Last, _Value, static_cast<uint32_t>(_Precision)));
+  return _Convert_to_chars_result(__d2fixed_buffered_n(_First, _Last, _Value, static_cast<uint32_t>(_Precision)));
 }
 
 _STD_END

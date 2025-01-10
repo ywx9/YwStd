@@ -1,3 +1,4 @@
+/// \file xatomic.h
 // xatomic.h internal header (core)
 
 // Copyright (c) Microsoft Corporation.
@@ -10,7 +11,7 @@
 
 #include "type_traits"
 
-#include _STL_INTRIN_HEADER
+#include "intrin0.h"
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)
@@ -20,11 +21,11 @@ _STL_DISABLE_CLANG_WARNINGS
 #undef new
 
 #define _CONCATX(x, y) x##y
-#define _CONCAT(x, y)  _CONCATX(x, y)
+#define _CONCAT(x, y) _CONCATX(x, y)
 
 // Interlocked intrinsic mapping for _nf/_acq/_rel
-#if defined(_M_CEE_PURE) || (defined(_M_IX86) && !defined(_M_HYBRID_X86_ARM64)) \
-    || (defined(_M_X64) && !defined(_M_ARM64EC))
+#if defined(_M_CEE_PURE) || (defined(_M_IX86) && !defined(_M_HYBRID_X86_ARM64)) || \
+  (defined(_M_X64) && !defined(_M_ARM64EC))
 #define _INTRIN_RELAXED(x) x
 #define _INTRIN_ACQUIRE(x) x
 #define _INTRIN_RELEASE(x) x
@@ -56,11 +57,11 @@ _STL_DISABLE_CLANG_WARNINGS
 #define _Compiler_barrier() _STL_DISABLE_DEPRECATED_WARNING _ReadWriteBarrier() _STL_RESTORE_DEPRECATED_WARNING
 
 #if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_ARM64EC) || defined(_M_HYBRID_X86_ARM64)
-#define _Memory_barrier()             __dmb(0xB) // inner shared data memory barrier
+#define _Memory_barrier() __dmb(0xB) // inner shared data memory barrier
 #define _Compiler_or_memory_barrier() _Memory_barrier()
 #if defined(_M_ARM64) || defined(_M_ARM64EC) || defined(_M_HYBRID_X86_ARM64)
 #define _Memory_load_acquire_barrier() __dmb(0x9) // inner shared data memory load barrier
-#else // ^^^ ARM64/ARM64EC/HYBRID_X86_ARM64 / ARM32 vvv
+#else                                             // ^^^ ARM64/ARM64EC/HYBRID_X86_ARM64 / ARM32 vvv
 #define _Memory_load_acquire_barrier() _Memory_barrier()
 #endif // ^^^ ARM32 ^^^
 #elif defined(_M_IX86) || defined(_M_X64)
@@ -74,20 +75,20 @@ _STD_BEGIN
 
 #if _HAS_CXX20
 _EXPORT_STD enum class memory_order : int {
-    relaxed,
-    consume,
-    acquire,
-    release,
-    acq_rel,
-    seq_cst,
+  relaxed,
+  consume,
+  acquire,
+  release,
+  acq_rel,
+  seq_cst,
 
-    // LWG-3268
-    memory_order_relaxed = relaxed,
-    memory_order_consume = consume,
-    memory_order_acquire = acquire,
-    memory_order_release = release,
-    memory_order_acq_rel = acq_rel,
-    memory_order_seq_cst = seq_cst
+  // LWG-3268
+  memory_order_relaxed = relaxed,
+  memory_order_consume = consume,
+  memory_order_acquire = acquire,
+  memory_order_release = release,
+  memory_order_acq_rel = acq_rel,
+  memory_order_seq_cst = seq_cst
 };
 _EXPORT_STD inline constexpr memory_order memory_order_relaxed = memory_order::relaxed;
 _EXPORT_STD inline constexpr memory_order memory_order_consume = memory_order::consume;
@@ -95,31 +96,30 @@ _EXPORT_STD inline constexpr memory_order memory_order_acquire = memory_order::a
 _EXPORT_STD inline constexpr memory_order memory_order_release = memory_order::release;
 _EXPORT_STD inline constexpr memory_order memory_order_acq_rel = memory_order::acq_rel;
 _EXPORT_STD inline constexpr memory_order memory_order_seq_cst = memory_order::seq_cst;
-#else // ^^^ _HAS_CXX20 / !_HAS_CXX20 vvv
+#else  // ^^^ _HAS_CXX20 / !_HAS_CXX20 vvv
 enum memory_order {
-    memory_order_relaxed,
-    memory_order_consume,
-    memory_order_acquire,
-    memory_order_release,
-    memory_order_acq_rel,
-    memory_order_seq_cst
+  memory_order_relaxed,
+  memory_order_consume,
+  memory_order_acquire,
+  memory_order_release,
+  memory_order_acq_rel,
+  memory_order_seq_cst
 };
 #endif // ^^^ !_HAS_CXX20 ^^^
 
 using _Atomic_counter_t = unsigned long;
 
-template <class _Integral, class _Ty>
-_NODISCARD volatile _Integral* _Atomic_address_as(_Ty& _Source) noexcept {
-    // gets a pointer to the argument as an integral type (to pass to intrinsics)
-    static_assert(is_integral_v<_Integral>, "Tried to reinterpret memory as non-integral");
-    return &reinterpret_cast<volatile _Integral&>(_Source);
+template<class _Integral, class _Ty> _NODISCARD volatile _Integral* _Atomic_address_as(_Ty& _Source) noexcept {
+  // gets a pointer to the argument as an integral type (to pass to intrinsics)
+  static_assert(is_integral_v<_Integral>, "Tried to reinterpret memory as non-integral");
+  return &reinterpret_cast<volatile _Integral&>(_Source);
 }
 
-template <class _Integral, class _Ty>
+template<class _Integral, class _Ty>
 _NODISCARD const volatile _Integral* _Atomic_address_as(const _Ty& _Source) noexcept {
-    // gets a pointer to the argument as an integral type (to pass to intrinsics)
-    static_assert(is_integral_v<_Integral>, "Tried to reinterpret memory as non-integral");
-    return &reinterpret_cast<const volatile _Integral&>(_Source);
+  // gets a pointer to the argument as an integral type (to pass to intrinsics)
+  static_assert(is_integral_v<_Integral>, "Tried to reinterpret memory as non-integral");
+  return &reinterpret_cast<const volatile _Integral&>(_Source);
 }
 
 _STD_END

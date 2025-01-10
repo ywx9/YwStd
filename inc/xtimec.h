@@ -1,3 +1,4 @@
+/// \file xtimec.h
 // xtimec.h internal header
 
 // Copyright (c) Microsoft Corporation.

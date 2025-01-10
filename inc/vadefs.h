@@ -1,3 +1,4 @@
+/// \file vadefs.h
 //
 // vadefs.h
 //

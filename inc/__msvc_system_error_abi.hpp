@@ -1,3 +1,4 @@
+/// \file __msvc_system_error_abi.hpp
 // __msvc_system_error_abi.hpp internal header (core)
 
 // Copyright (c) Microsoft Corporation.
@@ -23,11 +24,11 @@ _STL_DISABLE_CLANG_WARNINGS
 #endif
 
 extern "C" {
-_NODISCARD size_t __CLRCALL_PURE_OR_STDCALL __std_get_string_size_without_trailing_whitespace(
-    const char* _Str, size_t _Size) noexcept;
+_NODISCARD size_t __CLRCALL_PURE_OR_STDCALL __std_get_string_size_without_trailing_whitespace(const char* _Str,
+                                                                                              size_t _Size) noexcept;
 
-_NODISCARD size_t __CLRCALL_PURE_OR_STDCALL __std_system_error_allocate_message(
-    unsigned long _Message_id, char** _Ptr_str) noexcept;
+_NODISCARD size_t __CLRCALL_PURE_OR_STDCALL __std_system_error_allocate_message(unsigned long _Message_id,
+                                                                                char** _Ptr_str) noexcept;
 void __CLRCALL_PURE_OR_STDCALL __std_system_error_deallocate_message(char* _Str) noexcept;
 } // extern "C"
 

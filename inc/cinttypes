@@ -1,13 +1,76 @@
 /// \file cinttypes
-/// \copyright (c) 2022 ywx9.com
+// cinttypes standard header (core)
 
-#pragma once
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+#ifndef _CINTTYPES_
+#define _CINTTYPES_
+#include "yvals_core.h"
+#if _STL_COMPILER_PREPROCESSOR
+
+#ifndef _INTTYPES // include guard for 3rd party interop
+#define _INTTYPES
+
+#include "corecrt.h"
 #include "cstdint"
 
-#if ywstd_is_exported
-extern "C" {
+#pragma warning(push)
+#pragma warning(disable : _UCRT_DISABLED_WARNINGS)
+_UCRT_DISABLE_CLANG_WARNINGS
 
+_CRT_BEGIN_C_HEADER
+
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Types
+//
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+typedef struct {
+  intmax_t quot;
+  intmax_t rem;
+} _Lldiv_t;
+
+typedef _Lldiv_t imaxdiv_t;
+
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Functions
+//
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+_Check_return_ _ACRTIMP intmax_t __cdecl imaxabs(_In_ intmax_t _Number);
+
+_Check_return_ _ACRTIMP imaxdiv_t __cdecl imaxdiv(_In_ intmax_t _Numerator, _In_ intmax_t _Denominator);
+
+_ACRTIMP intmax_t __cdecl strtoimax(_In_z_ char const* _String, _Out_opt_ _Deref_post_z_ char** _EndPtr,
+                                    _In_ int _Radix);
+
+_ACRTIMP intmax_t __cdecl _strtoimax_l(_In_z_ char const* _String, _Out_opt_ _Deref_post_z_ char** _EndPtr,
+                                       _In_ int _Radix, _In_opt_ _locale_t _Locale);
+
+_ACRTIMP uintmax_t __cdecl strtoumax(_In_z_ char const* _String, _Out_opt_ _Deref_post_z_ char** _EndPtr,
+                                     _In_ int _Radix);
+
+_ACRTIMP uintmax_t __cdecl _strtoumax_l(_In_z_ char const* _String, _Out_opt_ _Deref_post_z_ char** _EndPtr,
+                                        _In_ int _Radix, _In_opt_ _locale_t _Locale);
+
+_ACRTIMP intmax_t __cdecl wcstoimax(_In_z_ wchar_t const* _String, _Out_opt_ _Deref_post_z_ wchar_t** _EndPtr,
+                                    _In_ int _Radix);
+
+_ACRTIMP intmax_t __cdecl _wcstoimax_l(_In_z_ wchar_t const* _String, _Out_opt_ _Deref_post_z_ wchar_t** _EndPtr,
+                                       _In_ int _Radix, _In_opt_ _locale_t _Locale);
+
+_ACRTIMP uintmax_t __cdecl wcstoumax(_In_z_ wchar_t const* _String, _Out_opt_ _Deref_post_z_ wchar_t** _EndPtr,
+                                     _In_ int _Radix);
+
+_ACRTIMP uintmax_t __cdecl _wcstoumax_l(_In_z_ wchar_t const* _String, _Out_opt_ _Deref_post_z_ wchar_t** _EndPtr,
+                                        _In_ int _Radix, _In_opt_ _locale_t _Locale);
+
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Output Format Specifier Macros
+//
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #define PRId8 "hhd"
 #define PRId16 "hd"
 #define PRId32 "d"
@@ -21,7 +84,11 @@ extern "C" {
 #define PRIdFAST32 PRId32
 #define PRIdFAST64 PRId64
 #define PRIdMAX PRId64
+#ifdef _WIN64
 #define PRIdPTR PRId64
+#else
+#define PRIdPTR PRId32
+#endif
 
 #define PRIi8 "hhi"
 #define PRIi16 "hi"
@@ -36,7 +103,11 @@ extern "C" {
 #define PRIiFAST32 PRIi32
 #define PRIiFAST64 PRIi64
 #define PRIiMAX PRIi64
+#ifdef _WIN64
 #define PRIiPTR PRIi64
+#else
+#define PRIiPTR PRIi32
+#endif
 
 #define PRIo8 "hho"
 #define PRIo16 "ho"
@@ -51,7 +122,11 @@ extern "C" {
 #define PRIoFAST32 PRIo32
 #define PRIoFAST64 PRIo64
 #define PRIoMAX PRIo64
+#ifdef _WIN64
 #define PRIoPTR PRIo64
+#else
+#define PRIoPTR PRIo32
+#endif
 
 #define PRIu8 "hhu"
 #define PRIu16 "hu"
@@ -66,7 +141,11 @@ extern "C" {
 #define PRIuFAST32 PRIu32
 #define PRIuFAST64 PRIu64
 #define PRIuMAX PRIu64
+#ifdef _WIN64
 #define PRIuPTR PRIu64
+#else
+#define PRIuPTR PRIu32
+#endif
 
 #define PRIx8 "hhx"
 #define PRIx16 "hx"
@@ -81,7 +160,11 @@ extern "C" {
 #define PRIxFAST32 PRIx32
 #define PRIxFAST64 PRIx64
 #define PRIxMAX PRIx64
+#ifdef _WIN64
 #define PRIxPTR PRIx64
+#else
+#define PRIxPTR PRIx32
+#endif
 
 #define PRIX8 "hhX"
 #define PRIX16 "hX"
@@ -96,8 +179,17 @@ extern "C" {
 #define PRIXFAST32 PRIX32
 #define PRIXFAST64 PRIX64
 #define PRIXMAX PRIX64
+#ifdef _WIN64
 #define PRIXPTR PRIX64
+#else
+#define PRIXPTR PRIX32
+#endif
 
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Input Format Specifier Macros
+//
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #define SCNd8 "hhd"
 #define SCNd16 "hd"
 #define SCNd32 "d"
@@ -111,7 +203,11 @@ extern "C" {
 #define SCNdFAST32 SCNd32
 #define SCNdFAST64 SCNd64
 #define SCNdMAX SCNd64
+#ifdef _WIN64
 #define SCNdPTR SCNd64
+#else
+#define SCNdPTR SCNd32
+#endif
 
 #define SCNi8 "hhi"
 #define SCNi16 "hi"
@@ -126,7 +222,11 @@ extern "C" {
 #define SCNiFAST32 SCNi32
 #define SCNiFAST64 SCNi64
 #define SCNiMAX SCNi64
+#ifdef _WIN64
 #define SCNiPTR SCNi64
+#else
+#define SCNiPTR SCNi32
+#endif
 
 #define SCNo8 "hho"
 #define SCNo16 "ho"
@@ -141,7 +241,11 @@ extern "C" {
 #define SCNoFAST32 SCNo32
 #define SCNoFAST64 SCNo64
 #define SCNoMAX SCNo64
+#ifdef _WIN64
 #define SCNoPTR SCNo64
+#else
+#define SCNoPTR SCNo32
+#endif
 
 #define SCNu8 "hhu"
 #define SCNu16 "hu"
@@ -156,7 +260,11 @@ extern "C" {
 #define SCNuFAST32 SCNu32
 #define SCNuFAST64 SCNu64
 #define SCNuMAX SCNu64
+#ifdef _WIN64
 #define SCNuPTR SCNu64
+#else
+#define SCNuPTR SCNu32
+#endif
 
 #define SCNx8 "hhx"
 #define SCNx16 "hx"
@@ -171,38 +279,45 @@ extern "C" {
 #define SCNxFAST32 SCNx32
 #define SCNxFAST64 SCNx64
 #define SCNxMAX SCNx64
+#ifdef _WIN64
 #define SCNxPTR SCNx64
-
-struct imaxdiv_t {
-  intmax_t quot;
-  intmax_t rem;
-};
-
-intmax_t __cdecl imaxabs(intmax_t);
-imaxdiv_t __cdecl imaxdiv(intmax_t, intmax_t);
-intmax_t __cdecl strtoimax(const char*, char**, int);
-uintmax_t __cdecl strtoumax(const char*, char**, int);
-intmax_t __cdecl wcstoimax(wchar_t const*, wchar_t**, int);
-uintmax_t __cdecl wcstoumax(wchar_t const*, wchar_t**, int);
-}
+#else
+#define SCNxPTR SCNx32
 #endif
 
-export namespace std {
+_CRT_END_C_HEADER
 
-using ::imaxdiv_t;
+/*
+ * Copyright (c) 1992-2010 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Consult your license regarding permissions and restrictions.
+V5.30:0009 */
 
-inline intmax_t strtoimax(const char* nptr, char** endptr, int base) { return ::strtoimax(nptr, endptr, base); }
-inline uintmax_t strtoumax(const char* nptr, char** endptr, int base) { return ::strtoumax(nptr, endptr, base); }
-inline intmax_t wcstoimax(const wchar_t* nptr, wchar_t** endptr, int base) { return ::wcstoimax(nptr, endptr, base); }
-inline uintmax_t wcstoumax(const wchar_t* nptr, wchar_t** endptr, int base) { return ::wcstoumax(nptr, endptr, base); }
+_UCRT_RESTORE_CLANG_WARNINGS
+#pragma warning(pop) // _UCRT_DISABLED_WARNINGS
+#endif               // _INTTYPES
 
-constexpr intmax_t imaxabs(intmax_t n) {
-  if (!__builtin_is_constant_evaluated()) return ::imaxabs(n);
-  else return n < 0 ? -n : n;
-}
+#pragma pack(push, _CRT_PACKING)
+#pragma warning(push, _STL_WARNING_LEVEL)
+#pragma warning(disable : _STL_DISABLED_WARNINGS)
+_STL_DISABLE_CLANG_WARNINGS
+#pragma push_macro("new")
+#undef new
 
-constexpr imaxdiv_t imaxdiv(intmax_t numer, intmax_t denom) {
-  if (!__builtin_is_constant_evaluated()) return ::imaxdiv(numer, denom);
-  else return {numer / denom, numer % denom};
-}
-}
+_STD_BEGIN
+_EXPORT_STD using _CSTD imaxdiv_t; // from <inttypes.h>
+
+_EXPORT_STD using _CSTD imaxabs;
+_EXPORT_STD using _CSTD imaxdiv;
+_EXPORT_STD using _CSTD strtoimax;
+_EXPORT_STD using _CSTD strtoumax;
+_EXPORT_STD using _CSTD wcstoimax;
+_EXPORT_STD using _CSTD wcstoumax;
+_STD_END
+
+#pragma pop_macro("new")
+_STL_RESTORE_CLANG_WARNINGS
+#pragma warning(pop)
+#pragma pack(pop)
+
+#endif // _STL_COMPILER_PREPROCESSOR
+#endif // _CINTTYPES_

@@ -1,243 +1,259 @@
 /// \file cwchar
-/// \copyright (c) 2022 ywx9.com
+// cwchar standard header (core)
 
-#pragma once
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-#include "cstdarg"
-#include "cstdio"
-#include "ctime"
+#ifndef _CWCHAR_
+#define _CWCHAR_
+#include "yvals_core.h"
+#if _STL_COMPILER_PREPROCESSOR
+
+#include "cstdio" // TRANSITION, VSO-661721
+
+#ifndef _INC_WCHAR // include guard for 3rd party interop
+#define _INC_WCHAR
+
+#include "corecrt.h"
+#include "corecrt_memcpy_s.h"
+#include "corecrt_wconio.h"
+#include "corecrt_wctype.h"
+#include "corecrt_wdirect.h"
+#include "corecrt_wio.h"
+#include "corecrt_wprocess.h"
+#include "corecrt_wstdio.h"
+#include "corecrt_wstdlib.h"
+#include "corecrt_wstring.h"
+#include "corecrt_wtime.h"
+#include "sys/stat.h"
+#include "sys/types.h"
+#include "vcruntime_string.h"
 
 #pragma warning(push)
-#pragma warning(disable : 4996)
+#pragma warning(disable : _UCRT_DISABLED_WARNINGS)
+_UCRT_DISABLE_CLANG_WARNINGS
 
-#if ywstd_is_exported
-extern "C" {
+_CRT_BEGIN_C_HEADER
 
-#define WEOF ((wint_t)(0xFFFF))
+#define WCHAR_MIN 0x0000
+#define WCHAR_MAX 0xffff
 
-wchar_t* __cdecl wcscpy(wchar_t*, const wchar_t*);
-wchar_t* __cdecl wcsncpy(wchar_t*, const wchar_t*, size_t);
-wchar_t* __cdecl wcscat(wchar_t*, const wchar_t*);
-wchar_t* __cdecl wcsncat(wchar_t*, const wchar_t*, size_t);
-size_t __cdecl wcsxfrm(wchar_t*, const wchar_t*, size_t);
+typedef wchar_t _Wint_t;
 
-size_t __cdecl wcslen(const wchar_t*);
-int __cdecl wcscmp(const wchar_t*, const wchar_t*);
-int __cdecl wcsncmp(const wchar_t*, const wchar_t*, size_t);
-int __cdecl wcscoll(const wchar_t*, const wchar_t*);
-const wchar_t* __cdecl wcschr(const wchar_t*, wchar_t);
-const wchar_t* __cdecl wcsrchr(const wchar_t*, wchar_t);
-size_t __cdecl wcsspn(const wchar_t*, const wchar_t*);
-size_t __cdecl wcscspn(const wchar_t*, const wchar_t*);
-const wchar_t* __cdecl wcspbrk(const wchar_t*, const wchar_t*);
-const wchar_t* __cdecl wcsstr(const wchar_t*, const wchar_t*);
-wchar_t* __cdecl wcstok(wchar_t*, const wchar_t*, wchar_t**);
+#if _CRT_FUNCTIONS_REQUIRED
 
-wchar_t* __cdecl wmemcpy(wchar_t*, const wchar_t*, size_t);
-wchar_t* __cdecl wmemmove(wchar_t*, const wchar_t*, size_t);
-int __cdecl wmemcmp(const wchar_t*, const wchar_t*, size_t);
-const wchar_t* __cdecl wmemchr(const wchar_t*, wchar_t, size_t);
-wchar_t* __cdecl wmemset(wchar_t*, wchar_t, size_t);
+_Check_return_opt_ _Success_(return !=
+                                    0) _Ret_z_ _ACRTIMP wchar_t* __cdecl _wsetlocale(_In_ int _Category,
+                                                                                     _In_opt_z_ wchar_t const* _Locale);
 
-int __cdecl mbsinit(const mbstate_t*);
-wint_t __cdecl btowc(int);
-int __cdecl wctob(wint_t);
-size_t __cdecl mbrlen(const char*, size_t, mbstate_t*);
-size_t __cdecl mbrtowc(wchar_t*, const char*, size_t, mbstate_t*);
-size_t __cdecl wcrtomb(char*, wchar_t, mbstate_t*);
-size_t __cdecl mbsrtowcs(wchar_t*, const char**, size_t, mbstate_t*);
-size_t __cdecl wcsrtombs(char*, const wchar_t**, size_t, mbstate_t*);
+_Check_return_opt_ _ACRTIMP _locale_t __cdecl _wcreate_locale(_In_ int _Category, _In_z_ wchar_t const* _Locale);
 
-wint_t __cdecl getwc(FILE*);
-wint_t __cdecl fgetwc(FILE*);
-wchar_t* __cdecl fgetws(wchar_t*, int, FILE*);
-wint_t __cdecl putwc(wchar_t, FILE*);
-wint_t __cdecl fputwc(wchar_t, FILE*);
-int __cdecl fputws(const wchar_t*, FILE*);
-wint_t __cdecl getwchar();
-wint_t __cdecl putwchar(wchar_t);
-wint_t __cdecl ungetwc(wint_t, FILE*);
-int __cdecl fwide(FILE*, int);
+_ACRTIMP wint_t __cdecl btowc(_In_ int _Ch);
 
-size_t __cdecl wcsftime(wchar_t*, size_t, const wchar_t*, const tm*);
-long __cdecl wcstol(const wchar_t*, wchar_t**, int);
-long long __cdecl wcstoll(const wchar_t*, wchar_t**, int);
-unsigned long __cdecl wcstoul(const wchar_t*, wchar_t**, int);
-unsigned long long __cdecl wcstoull(const wchar_t*, wchar_t**, int);
-float __cdecl wcstof(const wchar_t*, wchar_t**);
-double __cdecl wcstod(const wchar_t*, wchar_t**);
-long double __cdecl wcstold(const wchar_t*, wchar_t**);
+_ACRTIMP size_t __cdecl mbrlen(_In_reads_bytes_opt_(_SizeInBytes) _Pre_opt_z_ char const* _Ch, _In_ size_t _SizeInBytes,
+                               _Inout_ mbstate_t* _State);
 
-int __cdecl __stdio_common_vfwprintf(unsigned long long, FILE*, const wchar_t*, _locale_t, va_list);
-int __cdecl __stdio_common_vswprintf(unsigned long long, wchar_t*, size_t, wchar_t const*, _locale_t, va_list);
-int __cdecl __stdio_common_vfwscanf(unsigned long long, FILE*, wchar_t const*, _locale_t, va_list);
-int __cdecl __stdio_common_vswscanf(unsigned long long, wchar_t const*, size_t, wchar_t const*, _locale_t, va_list);
+_ACRTIMP size_t __cdecl mbrtowc(_Pre_maybenull_ _Post_z_ wchar_t* _DstCh,
+                                _In_reads_bytes_opt_(_SizeInBytes) _Pre_opt_z_ char const* _SrcCh,
+                                _In_ size_t _SizeInBytes, _Inout_ mbstate_t* _State);
+
+_Success_(return == 0) _ACRTIMP errno_t
+  __cdecl mbsrtowcs_s(_Out_opt_ size_t* _Retval, _Out_writes_opt_z_(_Size) wchar_t* _Dst, _In_ size_t _Size,
+                      _Deref_pre_opt_z_ char const** _PSrc, _In_ size_t _N, _Inout_ mbstate_t* _State);
+
+__DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_3(_Success_(return == 0) errno_t, mbsrtowcs_s, _Out_opt_ size_t*, _Retval,
+                                      _Post_z_ wchar_t, _Dest, _Inout_ _Deref_prepost_opt_valid_ char const**, _PSource,
+                                      _In_ size_t, _Count, _Inout_ mbstate_t*, _State)
+
+__DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_3_SIZE(_Success_(return == 0) _ACRTIMP, mbsrtowcs, _Out_writes_opt_z_(_Count),
+                                              wchar_t, _Dest, _Deref_pre_opt_z_ char const**, _PSrc, _In_ size_t,
+                                              _Count, _Inout_ mbstate_t*, _State)
+
+_Success_(return == 0) _ACRTIMP errno_t
+  __cdecl wcrtomb_s(_Out_opt_ size_t* _Retval, _Out_writes_opt_z_(_SizeInBytes) char* _Dst, _In_ size_t _SizeInBytes,
+                    _In_ wchar_t _Ch, _Inout_opt_ mbstate_t* _State);
+
+__DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_2(_Success_(return == 0) errno_t, wcrtomb_s, _Out_opt_ size_t*, _Retval,
+                                      _Out_writes_opt_z_(_Size) char, _Dest, _In_ wchar_t, _Source,
+                                      _Inout_opt_ mbstate_t*, _State)
+
+__DEFINE_CPP_OVERLOAD_STANDARD_FUNC_0_2_SIZE(_ACRTIMP, wcrtomb, _Pre_maybenull_ _Post_z_, char, _Dest, _In_ wchar_t,
+                                             _Source, _Inout_opt_ mbstate_t*, _State)
+
+_Success_(return == 0) _ACRTIMP errno_t
+  __cdecl wcsrtombs_s(_Out_opt_ size_t* _Retval, _Out_writes_bytes_to_opt_(_SizeInBytes, *_Retval) char* _Dst,
+                      _In_ size_t _SizeInBytes, _Inout_ _Deref_prepost_z_ wchar_t const** _Src, _In_ size_t _Size,
+                      _Inout_opt_ mbstate_t* _State);
+
+__DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_3(_Success_(return == 0) errno_t, wcsrtombs_s, _Out_opt_ size_t*, _Retval,
+                                      _Out_writes_opt_z_(_Size) char, _Dest, _Inout_ _Deref_prepost_z_ wchar_t const**,
+                                      _PSrc, _In_ size_t, _Count, _Inout_opt_ mbstate_t*, _State)
+
+__DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_3_SIZE(_ACRTIMP, wcsrtombs, _Pre_maybenull_ _Post_z_, char, _Dest,
+                                              _Inout_ _Deref_prepost_z_ wchar_t const**, _PSource, _In_ size_t, _Count,
+                                              _Inout_opt_ mbstate_t*, _State)
+
+_ACRTIMP int __cdecl wctob(_In_ wint_t _WCh);
+
+#if __STDC_WANT_SECURE_LIB__
+
+_Success_(return == 0) errno_t __CRTDECL wmemcpy_s(_Out_writes_to_opt_(_N1, _N) wchar_t* _S1, _In_ rsize_t _N1,
+                                                   _In_reads_opt_(_N) wchar_t const* _S2, _In_ rsize_t _N);
+
+_Success_(return == 0) errno_t __CRTDECL wmemmove_s(_Out_writes_to_opt_(_N1, _N) wchar_t* _S1, _In_ rsize_t _N1,
+                                                    _In_reads_opt_(_N) wchar_t const* _S2, _In_ rsize_t _N);
+
+#endif // __STDC_WANT_SECURE_LIB__
+
+__inline int __CRTDECL fwide(_In_opt_ FILE* _F, _In_ int _M) {
+  _CRT_UNUSED(_F);
+  return (_M);
 }
 
-inline int __cdecl _scwprintf(const wchar_t* format, ...) {
-  va_list args;
-  va_start(args, format);
-  int result = __stdio_common_vswprintf(                                                   //
-    _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR, //
-    nullptr, 0, format, nullptr, args);
-  va_end(args);
-  return result;
+__inline int __CRTDECL mbsinit(_In_opt_ mbstate_t const* _P) { return _P == NULL || _P->_Wchar == 0; }
+
+__inline wchar_t _CONST_RETURN* __CRTDECL wmemchr(_In_reads_(_N) wchar_t const* _S, _In_ wchar_t _C, _In_ size_t _N) {
+  for (; 0 < _N; ++_S, --_N)
+    if (*_S == _C) return (wchar_t _CONST_RETURN*)_S;
+
+  return 0;
 }
 
-inline int __cdecl swprintf_s(wchar_t* buffer, size_t size, const wchar_t* format, ...) {
-  va_list args;
-  va_start(args, format);
-  int result = __stdio_common_vswprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, buffer, size, format, nullptr, args);
-  va_end(args);
-  return result;
-}
-#endif
+__inline int __CRTDECL wmemcmp(_In_reads_(_N) wchar_t const* _S1, _In_reads_(_N) wchar_t const* _S2, _In_ size_t _N) {
+  for (; 0 < _N; ++_S1, ++_S2, --_N)
+    if (*_S1 != *_S2) return *_S1 < *_S2 ? -1 : 1;
 
-export namespace std {
-
-////////////////////////////////////////////////////////////////////////////////
-// STRING MANIPULATION
-
-inline wchar_t* wcscpy(wchar_t* dest, const wchar_t* src) { return ::wcscpy(dest, src); }
-inline wchar_t* wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) { return ::wcsncpy(dest, src, count); }
-inline wchar_t* wcscat(wchar_t* dest, const wchar_t* src) { return ::wcscat(dest, src); }
-inline wchar_t* wcsncat(wchar_t* dest, const wchar_t* src, size_t count) { return ::wcsncat(dest, src, count); }
-inline size_t wcsxfrm(wchar_t* dest, const wchar_t* src, size_t count) { return ::wcsxfrm(dest, src, count); }
-
-////////////////////////////////////////////////////////////////////////////////
-// STRING EXAMINATION
-
-inline size_t wcslen(const wchar_t* str) { return ::wcslen(str); }
-inline int wcscmp(const wchar_t* str1, const wchar_t* str2) { return ::wcscmp(str1, str2); }
-inline int wcsncmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wcsncmp(str1, str2, count); }
-inline int wcscoll(const wchar_t* str1, const wchar_t* str2) { return ::wcscoll(str1, str2); }
-inline const wchar_t* wcschr(const wchar_t* str, wchar_t ch) { return ::wcschr(str, ch); }
-inline const wchar_t* wcsrchr(const wchar_t* str, wchar_t ch) { return ::wcsrchr(str, ch); }
-inline size_t wcsspn(const wchar_t* str, const wchar_t* accept) { return ::wcsspn(str, accept); }
-inline size_t wcscspn(const wchar_t* str, const wchar_t* reject) { return ::wcscspn(str, reject); }
-inline const wchar_t* wcspbrk(const wchar_t* str, const wchar_t* accept) { return ::wcspbrk(str, accept); }
-inline const wchar_t* wcsstr(const wchar_t* str, const wchar_t* substr) { return ::wcsstr(str, substr); }
-inline wchar_t* wcstok(wchar_t* str, const wchar_t* delims, wchar_t** context) {
-  return ::wcstok(str, delims, context);
+  return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// WIDE CHARACTER ARRAY MANIPULATION
-
-inline wchar_t* wmemcpy(wchar_t* dest, const wchar_t* src, size_t count) { return ::wmemcpy(dest, src, count); }
-inline wchar_t* wmemmove(wchar_t* dest, const wchar_t* src, size_t count) { return ::wmemmove(dest, src, count); }
-inline int wmemcmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wmemcmp(str1, str2, count); }
-inline const wchar_t* wmemchr(const wchar_t* str, wchar_t ch, size_t count) { return ::wmemchr(str, ch, count); }
-inline wchar_t* wmemset(wchar_t* dest, wchar_t ch, size_t count) { return ::wmemset(dest, ch, count); }
-
-////////////////////////////////////////////////////////////////////////////////
-// MULTIBYTE/WIDE CHARACTER CONVERSION
-
-inline int mbsinit(const mbstate_t* state) { return ::mbsinit(state); }
-inline wint_t btowc(int ch) { return ::btowc(ch); }
-inline int wctob(wint_t ch) { return ::wctob(ch); }
-inline size_t mbrlen(const char* s, size_t n, mbstate_t* state) { return ::mbrlen(s, n, state); }
-inline size_t mbrtowc(wchar_t* dest, const char* src, size_t n, mbstate_t* state) {
-  return ::mbrtowc(dest, src, n, state);
-}
-inline size_t wcrtomb(char* dest, wchar_t ch, mbstate_t* state) { return ::wcrtomb(dest, ch, state); }
-inline size_t mbsrtowcs(wchar_t* dest, const char** src, size_t n, mbstate_t* state) {
-  return ::mbsrtowcs(dest, src, n, state);
-}
-inline size_t wcsrtombs(char* dest, const wchar_t** src, size_t n, mbstate_t* state) {
-  return ::wcsrtombs(dest, src, n, state);
+_Post_equal_to_(_S1)
+  _At_buffer_(_S1, _Iter_, _N,
+              _Post_satisfies_(_S1[_Iter_] ==
+                               _S2[_Iter_])) __inline _CRT_INSECURE_DEPRECATE_MEMORY(wmemcpy_s) wchar_t* __CRTDECL
+  wmemcpy(_Out_writes_all_(_N) wchar_t* _S1, _In_reads_(_N) wchar_t const* _S2, _In_ size_t _N) {
+#pragma warning(suppress : 6386) // Buffer overrun
+  return (wchar_t*)memcpy(_S1, _S2, _N * sizeof(wchar_t));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// WIDE CHARACTER I/O
-
-inline wint_t getwc(FILE* stream) { return ::getwc(stream); }
-inline wint_t fgetwc(FILE* stream) { return ::fgetwc(stream); }
-inline wchar_t* fgetws(wchar_t* str, int count, FILE* stream) { return ::fgetws(str, count, stream); }
-inline wint_t putwc(wchar_t ch, FILE* stream) { return ::putwc(ch, stream); }
-inline wint_t fputwc(wchar_t ch, FILE* stream) { return ::fputwc(ch, stream); }
-inline int fputws(const wchar_t* str, FILE* stream) { return ::fputws(str, stream); }
-inline wint_t getwchar() { return ::getwchar(); }
-inline wint_t putwchar(wint_t ch) { return ::putwchar(ch); }
-inline int ungetwc(wint_t ch, FILE* stream) { return ::ungetwc(ch, stream); }
-inline int fwide(FILE* stream, int mode) { return ::fwide(stream, mode); }
-
-////////////////////////////////////////////////////////////////////////////////
-// STRING CONVERSION
-
-inline size_t wcsftime(wchar_t* str, size_t count, const wchar_t* format, const tm* timeptr) {
-  return ::wcsftime(str, count, format, timeptr);
-}
-inline long wcstol(const wchar_t* str, wchar_t** endptr, int base) { return ::wcstol(str, endptr, base); }
-inline long long wcstoll(const wchar_t* str, wchar_t** endptr, int base) { return ::wcstoll(str, endptr, base); }
-inline unsigned long wcstoul(const wchar_t* str, wchar_t** endptr, int base) { return ::wcstoul(str, endptr, base); }
-inline unsigned long long wcstoull(const wchar_t* str, wchar_t** endptr, int base) {
-  return ::wcstoull(str, endptr, base);
-}
-inline float wcstof(const wchar_t* str, wchar_t** endptr) { return ::wcstof(str, endptr); }
-inline double wcstod(const wchar_t* str, wchar_t** endptr) { return ::wcstod(str, endptr); }
-inline long double wcstold(const wchar_t* str, wchar_t** endptr) { return ::wcstold(str, endptr); }
-
-////////////////////////////////////////////////////////////////////////////////
-// FORMATTED INPUT/OUTPUT
-
-inline int vfwprintf(FILE* stream, const wchar_t* format, va_list argptr) {
-  return __stdio_common_vfwprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, stream, format, nullptr, argptr);
-}
-inline int vswprintf(wchar_t* buffer, size_t count, const wchar_t* format, va_list argptr) {
-  return __stdio_common_vswprintf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, buffer, count, format, nullptr, argptr);
-}
-inline int vwprintf(const wchar_t* format, va_list argptr) { return vfwprintf(stdout, format, argptr); }
-inline int fwprintf(FILE* stream, const wchar_t* format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  int result = vfwprintf(stream, format, argptr);
-  va_end(argptr);
-  return result;
-}
-inline int swprintf(wchar_t* buffer, size_t count, const wchar_t* format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  int result = vswprintf(buffer, count, format, argptr);
-  va_end(argptr);
-  return result;
-}
-inline int wprintf(const wchar_t* format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  int result = vwprintf(format, argptr);
-  va_end(argptr);
-  return result;
+__inline _CRT_INSECURE_DEPRECATE_MEMORY(wmemmove_s) wchar_t* __CRTDECL
+  wmemmove(_Out_writes_all_opt_(_N) wchar_t* _S1, _In_reads_opt_(_N) wchar_t const* _S2, _In_ size_t _N) {
+#pragma warning(suppress : 6386) // Buffer overrun
+  return (wchar_t*)memmove(_S1, _S2, _N * sizeof(wchar_t));
 }
 
-inline int vfwscanf(FILE* stream, const wchar_t* format, va_list argptr) {
-  return __stdio_common_vfwscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, stream, format, nullptr, argptr);
+_Post_equal_to_(_S) _At_buffer_(_S, _Iter_, _N, _Post_satisfies_(_S[_Iter_] == _C)) __inline wchar_t* __CRTDECL
+  wmemset(_Out_writes_all_(_N) wchar_t* _S, _In_ wchar_t _C, _In_ size_t _N) {
+  wchar_t* _Su = _S;
+  for (; 0 < _N; ++_Su, --_N) { *_Su = _C; }
+  return _S;
 }
-inline int vswscanf(const wchar_t* buffer, const wchar_t* format, va_list argptr) {
-  return __stdio_common_vswscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, buffer, (unsigned int)-1, format, nullptr, argptr);
+
+#ifdef __cplusplus
+
+extern "C++" inline wchar_t* __CRTDECL wmemchr(_In_reads_(_N) wchar_t* _S, _In_ wchar_t _C, _In_ size_t _N) {
+  wchar_t const* const _SC = _S;
+  return const_cast<wchar_t*>(wmemchr(_SC, _C, _N));
 }
-inline int vwscanf(const wchar_t* format, va_list argptr) { return vfwscanf(stdin, format, argptr); }
-inline int fwscanf(FILE* stream, const wchar_t* format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  int result = vfwscanf(stream, format, argptr);
-  va_end(argptr);
-  return result;
-}
-inline int swscanf(const wchar_t* buffer, const wchar_t* format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  int result = vswscanf(buffer, format, argptr);
-  va_end(argptr);
-  return result;
-}
-inline int wscanf(const wchar_t* format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  int result = vwscanf(format, argptr);
-  va_end(argptr);
-  return result;
-}
-}
+
+#endif // __cplusplus
+
+#endif // _CRT_FUNCTIONS_REQUIRED
+
+_CRT_END_C_HEADER
+_UCRT_RESTORE_CLANG_WARNINGS
+#pragma warning(pop) // _UCRT_DISABLED_WARNINGS
+#endif               // _INC_WCHAR
+
+#pragma pack(push, _CRT_PACKING)
+#pragma warning(push, _STL_WARNING_LEVEL)
+#pragma warning(disable : _STL_DISABLED_WARNINGS)
+_STL_DISABLE_CLANG_WARNINGS
+#pragma push_macro("new")
+#undef new
+
+_EXTERN_CXX_WORKAROUND
+using _Mbstatet = mbstate_t;
+_END_EXTERN_CXX_WORKAROUND
+
+_STD_BEGIN
+#pragma warning(push)
+#pragma warning(disable : 4995) // name was marked as #pragma deprecated
+
+using _CSTD _Mbstatet;
+
+_EXPORT_STD using _CSTD mbstate_t;
+_EXPORT_STD using _CSTD size_t;
+_EXPORT_STD using _CSTD tm;
+_EXPORT_STD using _CSTD wint_t;
+
+_EXPORT_STD using _CSTD btowc;
+_EXPORT_STD using _CSTD fgetwc;
+_EXPORT_STD using _CSTD fgetws;
+_EXPORT_STD using _CSTD fputwc;
+_EXPORT_STD using _CSTD fputws;
+_EXPORT_STD using _CSTD fwide;
+_EXPORT_STD using _CSTD fwprintf;
+_EXPORT_STD using _CSTD fwscanf;
+_EXPORT_STD using _CSTD getwc;
+_EXPORT_STD using _CSTD getwchar;
+_EXPORT_STD using _CSTD mbrlen;
+_EXPORT_STD using _CSTD mbrtowc;
+_EXPORT_STD using _CSTD mbsrtowcs;
+_EXPORT_STD using _CSTD mbsinit;
+_EXPORT_STD using _CSTD putwc;
+_EXPORT_STD using _CSTD putwchar;
+_EXPORT_STD using _CSTD swprintf;
+_EXPORT_STD using _CSTD swscanf;
+_EXPORT_STD using _CSTD ungetwc;
+_EXPORT_STD using _CSTD vfwprintf;
+_EXPORT_STD using _CSTD vswprintf;
+_EXPORT_STD using _CSTD vwprintf;
+_EXPORT_STD using _CSTD wcrtomb;
+_EXPORT_STD using _CSTD wprintf;
+_EXPORT_STD using _CSTD wscanf;
+_EXPORT_STD using _CSTD wcsrtombs;
+_EXPORT_STD using _CSTD wcstol;
+_EXPORT_STD using _CSTD wcscat;
+_EXPORT_STD using _CSTD wcschr;
+_EXPORT_STD using _CSTD wcscmp;
+_EXPORT_STD using _CSTD wcscoll;
+_EXPORT_STD using _CSTD wcscpy;
+_EXPORT_STD using _CSTD wcscspn;
+_EXPORT_STD using _CSTD wcslen;
+_EXPORT_STD using _CSTD wcsncat;
+_EXPORT_STD using _CSTD wcsncmp;
+_EXPORT_STD using _CSTD wcsncpy;
+_EXPORT_STD using _CSTD wcspbrk;
+_EXPORT_STD using _CSTD wcsrchr;
+_EXPORT_STD using _CSTD wcsspn;
+_EXPORT_STD using _CSTD wcstod;
+_EXPORT_STD using _CSTD wcstoul;
+_EXPORT_STD using _CSTD wcsstr;
+_EXPORT_STD using _CSTD wcstok;
+_EXPORT_STD using _CSTD wcsxfrm;
+_EXPORT_STD using _CSTD wctob;
+_EXPORT_STD using _CSTD wmemchr;
+_EXPORT_STD using _CSTD wmemcmp;
+_EXPORT_STD using _CSTD wmemcpy;
+_EXPORT_STD using _CSTD wmemmove;
+_EXPORT_STD using _CSTD wmemset;
+_EXPORT_STD using _CSTD wcsftime;
+
+_EXPORT_STD using _CSTD vfwscanf;
+_EXPORT_STD using _CSTD vswscanf;
+_EXPORT_STD using _CSTD vwscanf;
+_EXPORT_STD using _CSTD wcstof;
+_EXPORT_STD using _CSTD wcstold;
+_EXPORT_STD using _CSTD wcstoll;
+_EXPORT_STD using _CSTD wcstoull;
 
 #pragma warning(pop)
+_STD_END
+
+#pragma pop_macro("new")
+_STL_RESTORE_CLANG_WARNINGS
+#pragma warning(pop)
+#pragma pack(pop)
+
+#endif // _STL_COMPILER_PREPROCESSOR
+#endif // _CWCHAR_

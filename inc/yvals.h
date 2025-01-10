@@ -1,3 +1,4 @@
+/// \file yvals.h
 // yvals.h internal header
 
 // Copyright (c) Microsoft Corporation.
@@ -14,7 +15,7 @@
 
 #ifdef _ENFORCE_ONLY_CORE_HEADERS
 _EMIT_STL_ERROR(
-    STL1005, "Tried to include a non-core C++ Standard Library header file with _ENFORCE_ONLY_CORE_HEADERS defined.");
+  STL1005, "Tried to include a non-core C++ Standard Library header file with _ENFORCE_ONLY_CORE_HEADERS defined.");
 #endif // defined(_ENFORCE_ONLY_CORE_HEADERS)
 
 #include "crtdbg.h"
@@ -96,7 +97,7 @@ _STL_DISABLE_CLANG_WARNINGS
 #endif
 #endif // ^^^ !defined(_SECURE_SCL) ^^^
 
-#else // B. _ITERATOR_DEBUG_LEVEL is not yet defined.
+#else                          // B. _ITERATOR_DEBUG_LEVEL is not yet defined.
 
 // B1. Inspect _HAS_ITERATOR_DEBUGGING.
 #ifdef _HAS_ITERATOR_DEBUGGING // B1i. _HAS_ITERATOR_DEBUGGING is already defined, validate it.
@@ -111,7 +112,7 @@ _STL_DISABLE_CLANG_WARNINGS
 #else
 #define _HAS_ITERATOR_DEBUGGING 0
 #endif
-#endif // ^^^ !defined(_HAS_ITERATOR_DEBUGGING) ^^^
+#endif             // ^^^ !defined(_HAS_ITERATOR_DEBUGGING) ^^^
 
 // B2. Inspect _SECURE_SCL.
 #ifdef _SECURE_SCL // B2i. _SECURE_SCL is already defined, validate it.
@@ -174,41 +175,40 @@ _STL_DISABLE_CLANG_WARNINGS
 #define _STL_CRT_SECURE_INVALID_PARAMETER(expr) _CSTD abort()
 #elif defined(_DEBUG) // Avoid emitting unused long strings for function names; see GH-1956.
 // static_cast<unsigned int>(__LINE__) avoids warning C4365 (signed/unsigned mismatch) with the /ZI compiler option.
-#define _STL_CRT_SECURE_INVALID_PARAMETER(expr) \
-    ::_invalid_parameter(_CRT_WIDE(#expr), L"", __FILEW__, static_cast<unsigned int>(__LINE__), 0)
+#define _STL_CRT_SECURE_INVALID_PARAMETER(expr)                                                  \
+  ::_invalid_parameter(_CRT_WIDE(#expr), L"", __FILEW__, static_cast<unsigned int>(__LINE__), 0)
 #else // ^^^ defined(_DEBUG) / !defined(_DEBUG) vvv
 #define _STL_CRT_SECURE_INVALID_PARAMETER(expr) _CRT_SECURE_INVALID_PARAMETER(expr)
 #endif // ^^^ !defined(_DEBUG) ^^^
 #endif // !defined(_STL_CRT_SECURE_INVALID_PARAMETER)
 
-#define _STL_REPORT_ERROR(mesg)                  \
-    do {                                         \
-        _RPTF0(_CRT_ASSERT, mesg);               \
-        _STL_CRT_SECURE_INVALID_PARAMETER(mesg); \
-    } while (false)
+#define _STL_REPORT_ERROR(mesg)              \
+  do {                                       \
+    _RPTF0(_CRT_ASSERT, mesg);               \
+    _STL_CRT_SECURE_INVALID_PARAMETER(mesg); \
+  } while (false)
 
 #ifdef __clang__
-#define _STL_VERIFY(cond, mesg)                                                            \
-    _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wassume\"") do { \
-        if (cond) { /* contextually convertible to bool paranoia */                        \
-        } else {                                                                           \
-            _STL_REPORT_ERROR(mesg);                                                       \
-        }                                                                                  \
-                                                                                           \
-        _Analysis_assume_(cond);                                                           \
-    }                                                                                      \
-    while (false)                                                                          \
-    _Pragma("clang diagnostic pop")
+#define _STL_VERIFY(cond, mesg)                                                          \
+  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wassume\"") do { \
+    if (cond) { /* contextually convertible to bool paranoia */                          \
+    } else {                                                                             \
+      _STL_REPORT_ERROR(mesg);                                                           \
+    }                                                                                    \
+                                                                                         \
+    _Analysis_assume_(cond);                                                             \
+  }                                                                                      \
+  while (false) _Pragma("clang diagnostic pop")
 #else // ^^^ Clang / MSVC vvv
-#define _STL_VERIFY(cond, mesg)                                     \
-    do {                                                            \
-        if (cond) { /* contextually convertible to bool paranoia */ \
-        } else {                                                    \
-            _STL_REPORT_ERROR(mesg);                                \
-        }                                                           \
-                                                                    \
-        _Analysis_assume_(cond);                                    \
-    } while (false)
+#define _STL_VERIFY(cond, mesg)                                 \
+  do {                                                          \
+    if (cond) { /* contextually convertible to bool paranoia */ \
+    } else {                                                    \
+      _STL_REPORT_ERROR(mesg);                                  \
+    }                                                           \
+                                                                \
+    _Analysis_assume_(cond);                                    \
+  } while (false)
 #endif // ^^^ MSVC ^^^
 
 #ifdef _DEBUG
@@ -237,42 +237,7 @@ _STL_DISABLE_CLANG_WARNINGS
 #define _ATOMIC_REF_CHECK_ALIGNMENT(cond, mesg) _Analysis_assume_(cond)
 #endif
 
-// #include "use_ansi.h" >
-
-#undef _DEBUG_AFFIX
-#undef _IDL_AFFIX
-#undef _IDL_DEFAULT
-#undef _LIB_STEM
-
-#ifdef _DEBUG
-#define _DEBUG_AFFIX "d"
-#define _IDL_DEFAULT 2
-#else
-#define _DEBUG_AFFIX ""
-#define _IDL_DEFAULT 0
-#endif
-
-#if defined(_DLL) && !defined(_STATIC_CPPLIB)
-#define _LIB_STEM "msvcprt"
-#else
-#define _LIB_STEM "libcpmt"
-#if _ITERATOR_DEBUG_LEVEL != _IDL_DEFAULT
-#define _IDL_AFFIX _STL_STRINGIZE(_ITERATOR_DEBUG_LEVEL)
-#endif
-#endif
-
-#ifndef _IDL_AFFIX
-#define _IDL_AFFIX ""
-#endif
-
-#pragma comment(lib, _LIB_STEM _DEBUG_AFFIX _IDL_AFFIX)
-
-#undef _DEBUG_AFFIX
-#undef _IDL_AFFIX
-#undef _IDL_DEFAULT
-#undef _LIB_STEM
-
-// < use_ansi.h
+#include "use_ansi.h"
 
 #ifdef _STATIC_CPPLIB
 #ifndef _DISABLE_DEPRECATE_STATIC_CPPLIB
@@ -348,53 +313,51 @@ _EMIT_STL_WARNING(STL4001, "/clr:pure is deprecated and will be REMOVED.");
 
 #define _LOCK_LOCALE 0
 #define _LOCK_STREAM 2
-#define _LOCK_DEBUG  3
+#define _LOCK_DEBUG 3
 
 _STD_BEGIN
 enum _Uninitialized { // tag for suppressing initialization
-    _Noinit
+  _Noinit
 };
 
 extern "C++" class _CRTIMP2_PURE_IMPORT _Lockit { // lock while object in existence -- MUST NEST
 public:
 #ifdef _M_CEE_PURE
-    __CLR_OR_THIS_CALL _Lockit() noexcept : _Locktype(0) {
-        _Lockit_ctor(this);
-    }
+  __CLR_OR_THIS_CALL _Lockit() noexcept : _Locktype(0) { _Lockit_ctor(this); }
 
-    explicit __CLR_OR_THIS_CALL _Lockit(int _Kind) noexcept { // set the lock
-        _Lockit_ctor(this, _Kind);
-    }
+  explicit __CLR_OR_THIS_CALL _Lockit(int _Kind) noexcept { // set the lock
+    _Lockit_ctor(this, _Kind);
+  }
 
-    __CLR_OR_THIS_CALL ~_Lockit() noexcept { // clear the lock
-        _Lockit_dtor(this);
-    }
-#else // ^^^ defined(_M_CEE_PURE) / !defined(_M_CEE_PURE) vvv
-    __thiscall _Lockit() noexcept;
-    explicit __thiscall _Lockit(int) noexcept; // set the lock
-    __thiscall ~_Lockit() noexcept; // clear the lock
+  __CLR_OR_THIS_CALL ~_Lockit() noexcept { // clear the lock
+    _Lockit_dtor(this);
+  }
+#else  // ^^^ defined(_M_CEE_PURE) / !defined(_M_CEE_PURE) vvv
+  __thiscall _Lockit() noexcept;
+  explicit __thiscall _Lockit(int) noexcept; // set the lock
+  __thiscall ~_Lockit() noexcept;            // clear the lock
 #endif // ^^^ !defined(_M_CEE_PURE) ^^^
 
-    static void __cdecl _Lockit_ctor(int) noexcept;
-    static void __cdecl _Lockit_dtor(int) noexcept;
+  static void __cdecl _Lockit_ctor(int) noexcept;
+  static void __cdecl _Lockit_dtor(int) noexcept;
 
 private:
-    static void __cdecl _Lockit_ctor(_Lockit*) noexcept;
-    static void __cdecl _Lockit_ctor(_Lockit*, int) noexcept;
-    static void __cdecl _Lockit_dtor(_Lockit*) noexcept;
+  static void __cdecl _Lockit_ctor(_Lockit*) noexcept;
+  static void __cdecl _Lockit_ctor(_Lockit*, int) noexcept;
+  static void __cdecl _Lockit_dtor(_Lockit*) noexcept;
 
 public:
-    __CLR_OR_THIS_CALL _Lockit(const _Lockit&)            = delete;
-    _Lockit& __CLR_OR_THIS_CALL operator=(const _Lockit&) = delete;
+  __CLR_OR_THIS_CALL _Lockit(const _Lockit&) = delete;
+  _Lockit& __CLR_OR_THIS_CALL operator=(const _Lockit&) = delete;
 
 private:
-    int _Locktype;
+  int _Locktype;
 };
 
 #ifdef _M_CEE_PURE
 class _CRTIMP2_PURE_IMPORT _EmptyLockit { // empty lock class used for bin compat
 private:
-    int _Locktype;
+  int _Locktype;
 };
 #endif // defined(_M_CEE_PURE)
 
@@ -408,53 +371,51 @@ private:
 #endif // !defined(_PREPARE_CONSTRAINED_REGIONS)
 
 #if _PREPARE_CONSTRAINED_REGIONS
-#define _BEGIN_LOCK(_Kind)                                                                  \
-    {                                                                                       \
-        bool _MustReleaseLock = false;                                                      \
-        int _LockKind         = _Kind;                                                      \
-        System::Runtime::CompilerServices::RuntimeHelpers::PrepareConstrainedRegions();     \
-        try {                                                                               \
-            System::Runtime::CompilerServices::RuntimeHelpers::PrepareConstrainedRegions(); \
-            try {                                                                           \
-            } finally {                                                                     \
-                _STD _Lockit::_Lockit_ctor(_LockKind);                                      \
-                _MustReleaseLock = true;                                                    \
-            }
+#define _BEGIN_LOCK(_Kind)                                                            \
+  {                                                                                   \
+    bool _MustReleaseLock = false;                                                    \
+    int _LockKind = _Kind;                                                            \
+    System::Runtime::CompilerServices::RuntimeHelpers::PrepareConstrainedRegions();   \
+    try {                                                                             \
+      System::Runtime::CompilerServices::RuntimeHelpers::PrepareConstrainedRegions(); \
+      try {                                                                           \
+      } finally {                                                                     \
+        _STD _Lockit::_Lockit_ctor(_LockKind);                                        \
+        _MustReleaseLock = true;                                                      \
+      }
 
-#define _END_LOCK()                                \
-    }                                              \
-    finally {                                      \
-        if (_MustReleaseLock) {                    \
-            _STD _Lockit::_Lockit_dtor(_LockKind); \
-        }                                          \
-    }                                              \
-    }
+#define _END_LOCK()                                                  \
+  }                                                                  \
+  finally {                                                          \
+    if (_MustReleaseLock) { _STD _Lockit::_Lockit_dtor(_LockKind); } \
+  }                                                                  \
+  }
 
 #else // ^^^ _PREPARE_CONSTRAINED_REGIONS / !_PREPARE_CONSTRAINED_REGIONS vvv
-#define _BEGIN_LOCK(_Kind) \
-    {                      \
-        _STD _Lockit _Lock(_Kind);
+#define _BEGIN_LOCK(_Kind)     \
+  {                            \
+    _STD _Lockit _Lock(_Kind);
 
 #define _END_LOCK() }
 
 #endif // ^^^ !_PREPARE_CONSTRAINED_REGIONS ^^^
 
 #define _BEGIN_LOCINFO(_VarName) \
-    _BEGIN_LOCK(_LOCK_LOCALE)    \
-    _Locinfo _VarName;
+  _BEGIN_LOCK(_LOCK_LOCALE)      \
+  _Locinfo _VarName;
 
 #define _END_LOCINFO() _END_LOCK()
 
 #else // ^^^ defined(_M_CEE) / !defined(_M_CEE) vvv
-#define _BEGIN_LOCK(_Kind) \
-    {                      \
-        _STD _Lockit _Lock(_Kind);
+#define _BEGIN_LOCK(_Kind)     \
+  {                            \
+    _STD _Lockit _Lock(_Kind);
 
 #define _END_LOCK() }
 
 #define _BEGIN_LOCINFO(_VarName) \
-    {                            \
-        _Locinfo _VarName;
+  {                              \
+    _Locinfo _VarName;
 
 #define _END_LOCINFO() }
 #endif // ^^^ !defined(_M_CEE) ^^^
@@ -462,29 +423,29 @@ private:
 #if _HAS_EXCEPTIONS
 #define _TRY_BEGIN try {
 #define _CATCH(x) \
-    }             \
-    catch (x) {
+  }               \
+  catch (x) {
 #define _CATCH_ALL \
-    }              \
-    catch (...) {
+  }                \
+  catch (...) {
 #define _CATCH_END }
 
-#define _RERAISE    throw
+#define _RERAISE throw
 #define _THROW(...) throw(__VA_ARGS__)
 
 #else // ^^^ _HAS_EXCEPTIONS / !_HAS_EXCEPTIONS vvv
 #define _TRY_BEGIN \
-    {              \
-        if (1) {
+  {                \
+    if (1) {
 #define _CATCH(x) \
-    }             \
-    else if (0) {
+  }               \
+  else if (0) {
 #define _CATCH_ALL \
-    }              \
-    else if (0) {
+  }                \
+  else if (0) {
 #define _CATCH_END \
-    }              \
-    }
+  }                \
+  }
 
 #define _RAISE(x) _invoke_watson(nullptr, nullptr, nullptr, 0, 0)
 

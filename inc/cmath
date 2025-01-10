@@ -1,12 +1,39 @@
 /// \file cmath
-/// \copyright (c) 2022 ywx9.com
+// cmath standard header
 
-#pragma once
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-#include "corecrt.h"
+#ifndef _CMATH_
+#define _CMATH_
+#include "yvals.h"
+#if _STL_COMPILER_PREPROCESSOR
 
-#if ywstd_is_exported
-extern "C" {
+#include "xtr1common"
+
+#if !defined(__clang__) && !defined(__CUDACC__) && !defined(__INTEL_COMPILER) && \
+  !defined(_M_CEE) // TRANSITION, VSO-1663104
+#define _HAS_CMATH_INTRINSICS 1
+#else // ^^^ intrinsics available / intrinsics unavailable vvv
+#define _HAS_CMATH_INTRINSICS 0
+#endif // ^^^ intrinsics unavailable ^^^
+
+#if _HAS_CMATH_INTRINSICS
+#include "intrin0.h"
+#endif // _HAS_CMATH_INTRINSICS
+
+#if _HAS_CXX20
+#include "type_traits"
+#endif // _HAS_CXX20
+
+#pragma pack(push, _CRT_PACKING)
+#pragma warning(push, _STL_WARNING_LEVEL)
+#pragma warning(disable : _STL_DISABLED_WARNINGS)
+_STL_DISABLE_CLANG_WARNINGS
+#pragma push_macro("new")
+#undef new
+
+_CRT_BEGIN_C_HEADER
 
 #ifndef __assembler
 // Definition of the _exception struct, which is passed to the matherr function
@@ -785,43 +812,8 @@ _CRT_NONSTDC_DEPRECATE(_yn) _Check_return_ _ACRTIMP double __cdecl yn(_In_ int _
 #endif // !__assembler
 
 #endif // _CRT_INTERNAL_NONSTDC_NAMES
-}
-#endif
 
-// cmath standard header
-
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
-
-#ifndef _CMATH_
-#define _CMATH_
-#include "yvals.h"
-#if _STL_COMPILER_PREPROCESSOR
-
-#include "cstdlib"
-#include "xtr1common"
-
-#if !defined(__clang__) && !defined(__CUDACC__) && !defined(__INTEL_COMPILER) && \
-  !defined(_M_CEE) // TRANSITION, VSO-1663104
-#define _HAS_CMATH_INTRINSICS 1
-#else // ^^^ intrinsics available / intrinsics unavailable vvv
-#define _HAS_CMATH_INTRINSICS 0
-#endif // ^^^ intrinsics unavailable ^^^
-
-#if _HAS_CMATH_INTRINSICS
-#include _STL_INTRIN_HEADER
-#endif // _HAS_CMATH_INTRINSICS
-
-#if _HAS_CXX20
-#include "type_traits"
-#endif // _HAS_CXX20
-
-#pragma pack(push, _CRT_PACKING)
-#pragma warning(push, _STL_WARNING_LEVEL)
-#pragma warning(disable : _STL_DISABLED_WARNINGS)
-_STL_DISABLE_CLANG_WARNINGS
-#pragma push_macro("new")
-#undef new
+_CRT_END_C_HEADER
 
 _EXTERN_CXX_WORKAROUND
 _NODISCARD _Check_return_ inline float acos(_In_ float _Xx) noexcept /* strengthened */ { return _CSTD acosf(_Xx); }

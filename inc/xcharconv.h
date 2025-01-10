@@ -1,3 +1,4 @@
+/// \file xcharconv.h
 // xcharconv.h internal header
 
 // Copyright (c) Microsoft Corporation.
@@ -25,19 +26,19 @@ _STL_DISABLE_CLANG_WARNINGS
 
 _STD_BEGIN
 _EXPORT_STD enum class chars_format {
-    scientific = 0b001,
-    fixed      = 0b010,
-    hex        = 0b100,
-    general    = fixed | scientific,
+  scientific = 0b001,
+  fixed = 0b010,
+  hex = 0b100,
+  general = fixed | scientific,
 };
 
 _BITMASK_OPS(_EXPORT_STD, chars_format)
 
 _EXPORT_STD struct to_chars_result {
-    char* ptr;
-    errc ec;
+  char* ptr;
+  errc ec;
 #if _HAS_CXX20
-    _NODISCARD friend bool operator==(const to_chars_result&, const to_chars_result&) = default;
+  _NODISCARD friend bool operator==(const to_chars_result&, const to_chars_result&) = default;
 #endif // _HAS_CXX20
 };
 

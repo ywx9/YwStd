@@ -1,3 +1,4 @@
+/// \file xnode_handle.h
 // xnode_handle.h internal header
 
 // Copyright (c) Microsoft Corporation.

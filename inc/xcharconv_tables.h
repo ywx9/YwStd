@@ -1,3 +1,4 @@
+/// \file xcharconv_tables.h
 // xcharconv_tables.h internal header (core)
 
 // Copyright (c) Microsoft Corporation.
@@ -77,29 +78,26 @@ _STL_DISABLE_CLANG_WARNINGS
 
 _STD_BEGIN
 
-template <class _Floating>
-struct _General_precision_tables_2;
+template<class _Floating> struct _General_precision_tables_2;
 
-template <>
-struct _General_precision_tables_2<float> {
-    static constexpr int _Max_special_P = 7;
+template<> struct _General_precision_tables_2<float> {
+  static constexpr int _Max_special_P = 7;
 
-    static const uint32_t _Special_X_table[63];
+  static const uint32_t _Special_X_table[63];
 
-    static constexpr int _Max_P = 39;
+  static constexpr int _Max_P = 39;
 
-    static const uint32_t _Ordinary_X_table[44];
+  static const uint32_t _Ordinary_X_table[44];
 };
 
-template <>
-struct _General_precision_tables_2<double> {
-    static constexpr int _Max_special_P = 15;
+template<> struct _General_precision_tables_2<double> {
+  static constexpr int _Max_special_P = 15;
 
-    static const uint64_t _Special_X_table[195];
+  static const uint64_t _Special_X_table[195];
 
-    static constexpr int _Max_P = 309;
+  static constexpr int _Max_P = 309;
 
-    static const uint64_t _Ordinary_X_table[314];
+  static const uint64_t _Ordinary_X_table[314];
 };
 
 _STD_END

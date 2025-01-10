@@ -1,3 +1,4 @@
+/// \file xmmintrin.h
 /*
  *  Copyright (C) 1985-2015 Intel Corporation.
  *
@@ -22,8 +23,6 @@
  */
 
 #pragma once
-
-#include "crtdbg.h"
 
 #if !defined(_M_IX86) && !defined(_M_X64) && !(defined(_M_ARM64) && defined(USE_SOFT_INTRINSICS))
 #error This header is specific to X86, X64, ARM64, and ARM64EC targets
@@ -78,7 +77,7 @@ typedef union __declspec(intrin_type) __declspec(align(16)) __m128 {
 
 #if !defined _VCRT_BUILD && !defined _INC_MALLOC
 /* pick up _mm_malloc() and _mm_free() */
-// #include "malloc.h"
+#include "malloc.h"
 #endif /* !defined _VCRT_BUILD && !defined _INC_MALLOC */
 #endif /* __ICL */
 

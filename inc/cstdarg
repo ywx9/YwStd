@@ -1,11 +1,47 @@
 /// \file cstdarg
-/// \copyright (c) 2022 ywx9.com
+// cstdarg standard header (core)
 
-#pragma once
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-#include "vadefs.h"
+#ifndef _CSTDARG_
+#define _CSTDARG_
+#include "yvals_core.h"
+#if _STL_COMPILER_PREPROCESSOR
+
+#define _INC_STDARG
+
+#include "vcruntime.h"
+
+#pragma warning(push)
+#pragma warning(disable : _VCRUNTIME_DISABLED_WARNINGS)
+
+_CRT_BEGIN_C_HEADER
 
 #define va_start __crt_va_start
-#define va_arg   __crt_va_arg
-#define va_end   __crt_va_end
+#define va_arg __crt_va_arg
+#define va_end __crt_va_end
 #define va_copy(destination, source) ((destination) = (source))
+
+_CRT_END_C_HEADER
+
+#pragma warning(pop) // _VCRUNTIME_DISABLED_WARNINGS
+
+#pragma pack(push, _CRT_PACKING)
+#pragma warning(push, _STL_WARNING_LEVEL)
+#pragma warning(disable : _STL_DISABLED_WARNINGS)
+_STL_DISABLE_CLANG_WARNINGS
+#pragma push_macro("new")
+#undef new
+
+_STD_BEGIN
+_EXPORT_STD using ::va_list;
+_STD_END
+
+#pragma pop_macro("new")
+_STL_RESTORE_CLANG_WARNINGS
+#pragma warning(pop)
+#pragma pack(pop)
+
+#endif // _STL_COMPILER_PREPROCESSOR
+#endif // _CSTDARG_

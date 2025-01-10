@@ -1,8 +1,8 @@
+/// \file xcharconv_ryu_tables.h
 // xcharconv_ryu_tables.h internal header
 
 // Copyright (c) Microsoft Corporation.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
-
 
 // Copyright 2018 Ulf Adams
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -30,7 +30,6 @@
 // FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-
 
 #ifndef _XCHARCONV_RYU_TABLES_H
 #define _XCHARCONV_RYU_TABLES_H
