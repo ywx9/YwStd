@@ -1,4 +1,3 @@
-/// \file corecrt_terminate.h
 //
 // corecrt_terminate.h
 //

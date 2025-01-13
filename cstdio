@@ -1,0 +1,209 @@
+/// \file cstdio
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#include "inc/corecrt.h"
+#include "inc/yvals_core.h"
+
+#include "cstdarg"
+
+// clang-format off
+
+#if ywstd_is_exported
+extern "C" {
+struct FILE {
+  void* _Placeholder;
+};
+}
+namespace std {
+export using ::FILE;
+}
+#elif !defined(ywstd_import)
+namespace std {
+struct FILE;
+}
+#endif
+
+#if ywstd_is_exported
+extern "C" {
+#define _IOFBF 0x0000
+#define _IOLBF 0x0040
+#define _IONBF 0x0004
+#define BUFSIZ 512
+#define EOF (-1)
+#define FOPEN_MAX 20
+#define FILENAME_MAX 260
+#define L_tmpnam 260
+#define SEEK_CUR 1
+#define SEEK_END 2
+#define SEEK_SET 0
+#define TMP_MAX 0x7fff
+
+using fpos_t = long long;
+
+FILE* __cdecl fopen(const char*, const char*);
+FILE* __cdecl freopen(const char*, const char*, FILE*);
+int __cdecl fclose(FILE*);
+int __cdecl fflush(FILE*);
+void __cdecl setbuf(FILE*, char*);
+int __cdecl setvbuf(FILE*, char*, int, size_t);
+
+size_t __cdecl fread(void*, size_t, size_t, FILE*);
+size_t __cdecl fwrite(const void*, size_t, size_t, FILE*);
+
+int __cdecl getc(FILE*);
+int __cdecl fgetc(FILE*);
+char* __cdecl fgets(char*, int, FILE*);
+int __cdecl putc(int, FILE*);
+int __cdecl fputc(int, FILE*);
+int __cdecl fputs(const char* s, FILE*);
+int __cdecl getchar();
+int __cdecl putchar(int);
+int __cdecl puts(const char*);
+int __cdecl ungetc(int, FILE*);
+
+long __cdecl ftell(FILE*);
+int __cdecl fgetpos(FILE*, fpos_t*);
+int __cdecl fseek(FILE*, long int, int);
+int __cdecl fsetpos(FILE*, const fpos_t*);
+void __cdecl rewind(FILE*);
+
+void __cdecl clearerr(FILE*);
+int __cdecl feof(FILE*);
+int __cdecl ferror(FILE*);
+void __cdecl perror(const char*);
+
+int __cdecl remove(const char*);
+int __cdecl rename(const char*, const char*);
+FILE* __cdecl tmpfile();
+char* __cdecl tmpnam(char*);
+
+int __cdecl __stdio_common_vfprintf(unsigned __int64, FILE*, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vsprintf(unsigned __int64, char*, size_t, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vfscanf(unsigned __int64, FILE*, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vsscanf(unsigned __int64, char const*, size_t, const char*, _locale_t, va_list);
+
+}
+#else
+#define ywstd_export
+#endif
+
+#ifndef ywstd_import
+extern "C" {
+__declspec(noinline) inline unsigned __int64* __cdecl __local_stdio_printf_options() { static unsigned __int64 _OptionsStorage; return &_OptionsStorage; }
+__declspec(noinline) inline unsigned __int64* __cdecl __local_stdio_scanf_options() { static unsigned __int64 _OptionsStorage; return &_OptionsStorage; }
+#define _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS (*__local_stdio_printf_options())
+#define _CRT_INTERNAL_LOCAL_SCANF_OPTIONS  (*__local_stdio_scanf_options ())
+#define _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR (1ULL << 1)
+ywstd_export FILE* __cdecl __acrt_iob_func(unsigned);
+}
+#endif
+#define stdin (::__acrt_iob_func(0))
+#define stdout (::__acrt_iob_func(1))
+#define stderr (::__acrt_iob_func(2))
+
+#ifndef ywstd_import
+namespace std {
+ywstd_export using size_t = decltype(sizeof(0));
+ywstd_export using fpos_t = long long;
+
+ywstd_export inline FILE* __cdecl fopen(const char* filename, const char* mode) { return ::fopen(filename, mode); }
+ywstd_export inline FILE* __cdecl freopen(const char* filename, const char* mode, FILE* stream) { return ::freopen(filename, mode, stream); }
+ywstd_export inline int __cdecl fclose(FILE* stream) { return ::fclose(stream); }
+ywstd_export inline int __cdecl fflush(FILE* stream) { return ::fflush(stream); }
+ywstd_export inline void __cdecl setbuf(FILE* stream, char* buffer) { ::setbuf(stream, buffer); }
+ywstd_export inline int __cdecl setvbuf(FILE* stream, char* buffer, int mode, size_t size) { return ::setvbuf(stream, buffer, mode, size); }
+
+ywstd_export inline size_t __cdecl fread(void* buffer, size_t size, size_t count, FILE* stream) { return ::fread(buffer, size, count, stream); }
+ywstd_export inline size_t __cdecl fwrite(const void* buffer, size_t size, size_t count, FILE* stream) { return ::fwrite(buffer, size, count, stream); }
+
+ywstd_export inline int __cdecl getc(FILE* stream) { return ::getc(stream); }
+ywstd_export inline int __cdecl fgetc(FILE* stream) { return ::fgetc(stream); }
+ywstd_export inline char* __cdecl fgets(char* buffer, int count, FILE* stream) { return ::fgets(buffer, count, stream); }
+ywstd_export inline int __cdecl putc(int character, FILE* stream) { return ::putc(character, stream); }
+ywstd_export inline int __cdecl fputc(int character, FILE* stream) { return ::fputc(character, stream); }
+ywstd_export inline int __cdecl fputs(const char* string, FILE* stream) { return ::fputs(string, stream); }
+ywstd_export inline int __cdecl getchar() { return ::getchar(); }
+ywstd_export inline int __cdecl putchar(int character) { return ::putchar(character); }
+ywstd_export inline int __cdecl puts(const char* string) { return ::puts(string); }
+ywstd_export inline int __cdecl ungetc(int character, FILE* stream) { return ::ungetc(character, stream); }
+
+ywstd_export inline long __cdecl ftell(FILE* stream) { return ::ftell(stream); }
+ywstd_export inline int __cdecl fgetpos(FILE* stream, fpos_t* position) { return ::fgetpos(stream, position); }
+ywstd_export inline int __cdecl fseek(FILE* stream, long int offset, int origin) { return ::fseek(stream, offset, origin); }
+ywstd_export inline int __cdecl fsetpos(FILE* stream, const fpos_t* position) { return ::fsetpos(stream, position); }
+ywstd_export inline void __cdecl rewind(FILE* stream) { ::rewind(stream); }
+
+ywstd_export inline void __cdecl clearerr(FILE* stream) { ::clearerr(stream); }
+ywstd_export inline int __cdecl feof(FILE* stream) { return ::feof(stream); }
+ywstd_export inline int __cdecl ferror(FILE* stream) { return ::ferror(stream); }
+ywstd_export inline void __cdecl perror(const char* message) { ::perror(message); }
+
+ywstd_export inline int __cdecl remove(const char* filename) { return ::remove(filename); }
+ywstd_export inline int __cdecl rename(const char* oldname, const char* newname) { return ::rename(oldname, newname); }
+ywstd_export inline FILE* __cdecl tmpfile() { return ::tmpfile(); }
+ywstd_export inline char* __cdecl tmpnam(char* buffer) { return ::tmpnam(buffer); }
+
+ywstd_export inline int __cdecl vfprintf(FILE* stream, const char* format, va_list args) { return ::__stdio_common_vfprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, stream, format, nullptr, args); }
+ywstd_export inline int __cdecl vsprintf(char* buffer, const char* format, va_list args) { return ::__stdio_common_vsprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, buffer, size_t(-1), format, nullptr, args); }
+ywstd_export inline int __cdecl vfscanf(FILE* stream, const char* format, va_list args) { return ::__stdio_common_vfscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, stream, format, nullptr, args); }
+ywstd_export inline int __cdecl vsscanf(const char* buffer, const char* format, va_list args) { return ::__stdio_common_vsscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, buffer, size_t(-1), format, nullptr, args); }
+
+ywstd_export inline int __cdecl fprintf(FILE* stream, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vfprintf(stream, format, args);
+  va_end(args);
+  return result;
+}
+ywstd_export inline int __cdecl sprintf(char* buffer, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vsprintf(buffer, format, args);
+  va_end(args);
+  return result;
+}
+ywstd_export inline int __cdecl printf(const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vfprintf(stdout, format, args);
+  va_end(args);
+  return result;
+}
+
+ywstd_export inline int __cdecl fscanf(FILE* stream, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vfscanf(stream, format, args);
+  va_end(args);
+  return result;
+}
+ywstd_export inline int __cdecl sscanf(const char* buffer, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vsscanf(buffer, format, args);
+  va_end(args);
+  return result;
+}
+ywstd_export inline int __cdecl scanf(const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vfscanf(stdin, format, args);
+  va_end(args);
+  return result;
+}
+
+ywstd_export inline int __cdecl vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+  const unsigned __int64 options = _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR;
+  return ::__stdio_common_vsprintf(options, buffer, count, format, nullptr, args);
+}
+ywstd_export inline int __cdecl snprintf(char* buffer, size_t count, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = std::vsnprintf(buffer, count, format, args);
+  va_end(args);
+  return result;
+}
+}
+#endif

@@ -1,4 +1,3 @@
-/// \file crtdefs.h
 //
 // crtdefs.h
 //

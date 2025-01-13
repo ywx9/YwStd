@@ -1,4 +1,3 @@
-/// \file xutility
 // xutility internal header
 
 // Copyright (c) Microsoft Corporation.
@@ -10,10 +9,10 @@
 #if _STL_COMPILER_PREPROCESSOR
 
 #include "__msvc_iter_core.hpp"
-#include "climits"
-#include "cstdlib"
-#include "cstring"
-#include "cwchar"
+#include "../climits"
+#include "../cstdlib"
+#include "../cstring"
+#include "../cwchar"
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)

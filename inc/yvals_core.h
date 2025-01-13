@@ -1,9 +1,4 @@
-/// \file yvals_core.h
-// yvals_core.h internal header (core)
-
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
-
+#pragma once
 #ifndef _YVALS_CORE_H_
 #define _YVALS_CORE_H_
 #ifndef _STL_COMPILER_PREPROCESSOR
@@ -315,6 +310,7 @@
 // P2905R2 Runtime Format Strings
 // P2909R4 Fix Formatting Of Code Units As Integers
 // P2997R1 Removing The Common Reference Requirement From The Indirectly Invocable Concepts
+// P3136R1 Retiring Niebloids
 
 // _HAS_CXX20 indirectly controls:
 // P0619R4 Removing C++17-Deprecated Features

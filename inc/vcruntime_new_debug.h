@@ -1,4 +1,3 @@
-/// \file vcruntime_new_debug.h
 //
 // vcruntime_new_debug.h
 //

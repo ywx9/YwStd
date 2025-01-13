@@ -1,4 +1,3 @@
-/// \file use_ansi.h
 // use_ansi.h internal header
 
 // Copyright (c) Microsoft Corporation.

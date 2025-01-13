@@ -1,4 +1,3 @@
-/// \file corecrt_malloc.h
 //
 // corecrt_malloc.h
 //

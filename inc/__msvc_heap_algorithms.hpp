@@ -1,9 +1,21 @@
-/// \file __msvc_heap_algorithms.hpp
-/// \copyright (c) 2022 ywx9.com
+// __msvc_heap_algorithms.hpp internal header
 
-#pragma once
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+#ifndef __MSVC_HEAP_ALGORITHMS_HPP
+#define __MSVC_HEAP_ALGORITHMS_HPP
 #include "yvals_core.h"
+#if _STL_COMPILER_PREPROCESSOR
+
 #include "xutility"
+
+#pragma pack(push, _CRT_PACKING)
+#pragma warning(push, _STL_WARNING_LEVEL)
+#pragma warning(disable : _STL_DISABLED_WARNINGS)
+_STL_DISABLE_CLANG_WARNINGS
+#pragma push_macro("new")
+#undef new
 
 _STD_BEGIN
 template<class _RanIt, class _Ty, class _Pr> _CONSTEXPR20 void
@@ -120,3 +132,10 @@ _CONSTEXPR20 void make_heap(_RanIt _First, _RanIt _Last) { // make [_First, _Las
   _STD make_heap(_First, _Last, less<>{});
 }
 _STD_END
+
+#pragma pop_macro("new")
+_STL_RESTORE_CLANG_WARNINGS
+#pragma warning(pop)
+#pragma pack(pop)
+#endif // _STL_COMPILER_PREPROCESSOR
+#endif // __MSVC_HEAP_ALGORITHMS_HPP

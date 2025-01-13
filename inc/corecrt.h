@@ -1,11 +1,3 @@
-/// \file corecrt.h
-//
-// corecrt.h
-//
-//      Copyright (c) Microsoft Corporation. All rights reserved.
-//
-// Declarations used throughout the CoreCRT library.
-//
 #pragma once
 
 #include "vcruntime.h"
@@ -17,7 +9,7 @@
 //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #ifndef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #ifdef WINAPI_FAMILY
-#include "winapifamily.h"
+#include <winapifamily.h>
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM)
 #define _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #else

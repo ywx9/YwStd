@@ -1,4 +1,3 @@
-/// \file xsmf_control.h
 // xsmf_control.h internal header
 
 // Copyright (c) Microsoft Corporation.

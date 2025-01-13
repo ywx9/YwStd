@@ -1,4 +1,3 @@
-/// \file yvals.h
 // yvals.h internal header
 
 // Copyright (c) Microsoft Corporation.

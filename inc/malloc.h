@@ -1,4 +1,3 @@
-/// \file malloc.h
 //
 // malloc.h
 //

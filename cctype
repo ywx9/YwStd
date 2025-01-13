@@ -1,0 +1,45 @@
+/// \file cctype
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#include "inc/corecrt.h"
+#include "inc/yvals_core.h"
+
+#if ywstd_is_exported
+extern "C" {
+int __cdecl isalnum(int);
+int __cdecl isalpha(int);
+int __cdecl isblank(int);
+int __cdecl iscntrl(int);
+int __cdecl isdigit(int);
+int __cdecl isgraph(int);
+int __cdecl islower(int);
+int __cdecl isprint(int);
+int __cdecl ispunct(int);
+int __cdecl isspace(int);
+int __cdecl isupper(int);
+int __cdecl isxdigit(int);
+int __cdecl tolower(int);
+int __cdecl toupper(int);
+}
+#else
+#define ywstd_export
+#endif
+
+namespace std {
+ywstd_export inline int __cdecl isalnum(int c) { return ::isalnum(c); }
+ywstd_export inline int __cdecl isalpha(int c) { return ::isalpha(c); }
+ywstd_export inline int __cdecl isblank(int c) { return ::isblank(c); }
+ywstd_export inline int __cdecl iscntrl(int c) { return ::iscntrl(c); }
+ywstd_export inline int __cdecl isdigit(int c) { return ::isdigit(c); }
+ywstd_export inline int __cdecl isgraph(int c) { return ::isgraph(c); }
+ywstd_export inline int __cdecl islower(int c) { return ::islower(c); }
+ywstd_export inline int __cdecl isprint(int c) { return ::isprint(c); }
+ywstd_export inline int __cdecl ispunct(int c) { return ::ispunct(c); }
+ywstd_export inline int __cdecl isspace(int c) { return ::isspace(c); }
+ywstd_export inline int __cdecl isupper(int c) { return ::isupper(c); }
+ywstd_export inline int __cdecl isxdigit(int c) { return ::isxdigit(c); }
+ywstd_export inline int __cdecl tolower(int c) { return ::tolower(c); }
+ywstd_export inline int __cdecl toupper(int c) { return ::toupper(c); }
+}

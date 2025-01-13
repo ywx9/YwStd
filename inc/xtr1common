@@ -1,4 +1,8 @@
 /// \file xtr1common
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
 // xtr1common internal header (core)
 
 // Copyright (c) Microsoft Corporation.

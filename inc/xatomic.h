@@ -1,4 +1,3 @@
-/// \file xatomic.h
 // xatomic.h internal header (core)
 
 // Copyright (c) Microsoft Corporation.
@@ -9,9 +8,9 @@
 #include "yvals_core.h"
 #if _STL_COMPILER_PREPROCESSOR
 
-#include "type_traits"
+#include "../type_traits"
 
-#include "intrin0.h"
+// #include _STL_INTRIN_HEADER
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)

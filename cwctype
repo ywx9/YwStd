@@ -1,0 +1,62 @@
+/// \file cwctype
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#include "inc/corecrt.h"
+#include "inc/yvals_core.h"
+
+#if ywstd_is_exported
+extern "C" {
+using wctrans_t = wchar_t;
+int __cdecl iswalnum(wint_t);
+int __cdecl iswalpha(wint_t);
+int __cdecl iswlower(wint_t);
+int __cdecl iswupper(wint_t);
+int __cdecl iswdigit(wint_t);
+int __cdecl iswxdigit(wint_t);
+int __cdecl iswcntrl(wint_t);
+int __cdecl iswgraph(wint_t);
+int __cdecl iswspace(wint_t);
+int __cdecl iswblank(wint_t);
+int __cdecl iswprint(wint_t);
+int __cdecl iswpunct(wint_t);
+int __cdecl iswctype(wint_t, wctype_t);
+wctype_t __cdecl wctype(const char*);
+
+wint_t __cdecl towlower(wint_t);
+wint_t __cdecl towupper(wint_t);
+wint_t __cdecl towctrans(wint_t, wctrans_t);
+wctrans_t __cdecl wctrans(const char*);
+}
+#else
+#define ywstd_export
+#endif
+
+#ifndef ywstd_import
+namespace std {
+ywstd_export using wctrans_t = wchar_t;
+ywstd_export using ::wint_t;
+ywstd_export using ::wctype_t;
+
+ywstd_export inline int __cdecl iswalnum(wint_t wc) { return ::iswalnum(wc); }
+ywstd_export inline int __cdecl iswalpha(wint_t wc) { return ::iswalpha(wc); }
+ywstd_export inline int __cdecl iswlower(wint_t wc) { return ::iswlower(wc); }
+ywstd_export inline int __cdecl iswupper(wint_t wc) { return ::iswupper(wc); }
+ywstd_export inline int __cdecl iswdigit(wint_t wc) { return ::iswdigit(wc); }
+ywstd_export inline int __cdecl iswxdigit(wint_t wc) { return ::iswxdigit(wc); }
+ywstd_export inline int __cdecl iswcntrl(wint_t wc) { return ::iswcntrl(wc); }
+ywstd_export inline int __cdecl iswgraph(wint_t wc) { return ::iswgraph(wc); }
+ywstd_export inline int __cdecl iswspace(wint_t wc) { return ::iswspace(wc); }
+ywstd_export inline int __cdecl iswblank(wint_t wc) { return ::iswblank(wc); }
+ywstd_export inline int __cdecl iswprint(wint_t wc) { return ::iswprint(wc); }
+ywstd_export inline int __cdecl iswpunct(wint_t wc) { return ::iswpunct(wc); }
+ywstd_export inline int __cdecl iswctype(wint_t wc, wctype_t desc) { return ::iswctype(wc, desc); }
+ywstd_export inline wctype_t __cdecl wctype(const char* property) { return ::wctype(property); }
+
+ywstd_export inline wint_t __cdecl towlower(wint_t wc) { return ::towlower(wc); }
+ywstd_export inline wint_t __cdecl towupper(wint_t wc) { return ::towupper(wc); }
+ywstd_export inline wint_t __cdecl towctrans(wint_t wc, wctrans_t desc) { return ::towctrans(wc, desc); }
+ywstd_export inline wctrans_t __cdecl wctrans(const char* property) { return ::wctrans(property); }
+}
+#endif

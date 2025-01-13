@@ -1,0 +1,48 @@
+/// \file csignal
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#include "inc/corecrt.h"
+#include "inc/yvals_core.h"
+
+#if ywstd_is_exported
+extern "C" {
+using sig_atomic_t = int;
+using _crt_signal_t = void(__cdecl*)(int);
+
+#define NSIG 23
+#define SIGINT 2
+#define SIGILL 4
+#define SIGFPE 8
+#define SIGSEGV 11
+#define SIGTERM 15
+#define SIGBREAK 21
+#define SIGABRT 22
+#define SIGABRT_COMPAT 6
+#define SIG_DFL ((_crt_signal_t)0)
+#define SIG_IGN ((_crt_signal_t)1)
+#define SIG_GET ((_crt_signal_t)2)
+#define SIG_SGE ((_crt_signal_t)3)
+#define SIG_ACK ((_crt_signal_t)4)
+#define SIG_DIE ((_crt_signal_t)5)
+#define SIG_ERR ((_crt_signal_t) - 1)
+
+void** __cdecl __pxcptinfoptrs();
+#define _pxcptinfoptrs (*__pxcptinfoptrs())
+
+_crt_signal_t __cdecl signal(int, _crt_signal_t);
+int __cdecl raise(int);
+}
+#else
+#define ywstd_export
+#endif
+
+#ifndef ywstd_import
+namespace std {
+ywstd_export using sig_atomic_t = int;
+ywstd_export using _signal_t = void(__cdecl*)(int);
+ywstd_export inline int __cdecl raise(int sig) { return ::raise(sig); }
+ywstd_export inline _signal_t __cdecl signal(int sig, _signal_t func) { return ::signal(sig, func); }
+}
+#endif

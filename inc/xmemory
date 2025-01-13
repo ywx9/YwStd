@@ -1,4 +1,3 @@
-/// \file xmemory
 // xmemory internal header
 
 // Copyright (c) Microsoft Corporation.
@@ -8,10 +7,10 @@
 #define _XMEMORY_
 #include "yvals_core.h"
 #if _STL_COMPILER_PREPROCESSOR
-#include "cstdint"
-#include "cstdlib"
-#include "limits"
-#include "new"
+#include "../cstdint"
+#include "../cstdlib"
+#include "../limits"
+#include "../new"
 #include "xatomic.h"
 #include "xutility"
 

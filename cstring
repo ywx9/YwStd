@@ -1,0 +1,70 @@
+/// \file cstring
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#include "inc/corecrt.h"
+#include "inc/yvals_core.h"
+
+// clang-format off
+
+#if ywstd_is_exported
+extern "C" {
+void* __cdecl memcpy(void*, const void*, size_t);
+void* __cdecl memmove(void*, const void*, size_t);
+char* __cdecl strcpy(char*, const char*);
+char* __cdecl strncpy(char*, const char*, size_t);
+char* __cdecl strcat(char*, const char*);
+int __cdecl memcmp(const void*, const void*, size_t);
+int __cdecl strcmp(const char*, const char*);
+int __cdecl strcoll(const char*, const char*);
+int __cdecl strncmp(const char*, const char*, size_t);
+size_t __cdecl strxfrm(char*, const char*, size_t);
+const void* __cdecl memchr(const void*, int, size_t);
+const char* __cdecl strchr(const char*, int);
+size_t __cdecl strcspn(const char*, const char*);
+const char* __cdecl strpbrk(const char*, const char*);
+const char* __cdecl strrchr(const char*, int);
+size_t __cdecl strspn(const char*, const char*);
+const char* __cdecl strstr(const char*, const char*);
+char* __cdecl strtok(char*, const char*);
+void* __cdecl memset(void*, int, size_t);
+char* __cdecl strerror(int);
+size_t __cdecl strlen(const char*);
+}
+#else
+#define ywstd_export
+#endif
+
+#ifndef ywstd_import
+namespace std {
+ywstd_export using size_t = decltype(sizeof(0));
+ywstd_export inline void* __cdecl memcpy(void* dst, const void* src, size_t n) { return ::memcpy(dst, src, n); }
+ywstd_export inline void* __cdecl memmove(void* dst, const void* src, size_t n) { return ::memmove(dst, src, n); }
+ywstd_export inline char* __cdecl strcpy(char* dst, const char* src) { return ::strcpy(dst, src); }
+ywstd_export inline char* __cdecl strncpy(char* dst, const char* src, size_t n) { return ::strncpy(dst, src, n); }
+ywstd_export inline char* __cdecl strcat(char* dst, const char* src) { return ::strcat(dst, src); }
+ywstd_export inline int __cdecl memcmp(const void* s1, const void* s2, size_t n) { return ::memcmp(s1, s2, n); }
+ywstd_export inline int __cdecl strcmp(const char* s1, const char* s2) { return ::strcmp(s1, s2); }
+ywstd_export inline int __cdecl strcoll(const char* s1, const char* s2) { return ::strcoll(s1, s2); }
+ywstd_export inline int __cdecl strncmp(const char* s1, const char* s2, size_t n) { return ::strncmp(s1, s2, n); }
+ywstd_export inline size_t __cdecl strxfrm(char* dst, const char* src, size_t n) { return ::strxfrm(dst, src, n); }
+ywstd_export inline const void* __cdecl memchr(const void* s, int c, size_t n) { return ::memchr(s, c, n); }
+ywstd_export inline const char* __cdecl strchr(const char* s, int c) { return ::strchr(s, c); }
+ywstd_export inline size_t __cdecl strcspn(const char* s1, const char* s2) { return ::strcspn(s1, s2); }
+ywstd_export inline const char* __cdecl strpbrk(const char* s1, const char* s2) { return ::strpbrk(s1, s2); }
+ywstd_export inline const char* __cdecl strrchr(const char* s, int c) { return ::strrchr(s, c); }
+ywstd_export inline size_t __cdecl strspn(const char* s1, const char* s2) { return ::strspn(s1, s2); }
+ywstd_export inline const char* __cdecl strstr(const char* s1, const char* s2) { return ::strstr(s1, s2); }
+ywstd_export inline char* __cdecl strtok(char* s, const char* delim) { return ::strtok(s, delim); }
+ywstd_export inline void* __cdecl memset(void* s, int c, size_t n) { return ::memset(s, c, n); }
+ywstd_export inline char* __cdecl strerror(int errnum) { return ::strerror(errnum); }
+ywstd_export inline size_t __cdecl strlen(const char* s) { return ::strlen(s); }
+
+ywstd_export inline void* __cdecl memchr(void* s, int c, size_t n) { return const_cast<void*>(::memchr(const_cast<const void*>(s), c, n)); }
+ywstd_export inline char* __cdecl strchr(char* s, int c) { return const_cast<char*>(::strchr(const_cast<const char*>(s), c)); }
+ywstd_export inline char* __cdecl strpbrk(char* s1, const char* s2) { return const_cast<char*>(::strpbrk(const_cast<const char*>(s1), s2)); }
+ywstd_export inline char* __cdecl strrchr(char* s, int c) { return const_cast<char*>(::strrchr(const_cast<const char*>(s), c)); }
+ywstd_export inline char* __cdecl strstr(char* s1, const char* s2) { return const_cast<char*>(::strstr(const_cast<const char*>(s1), s2)); }
+}
+#endif

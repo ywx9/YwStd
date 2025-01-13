@@ -1,0 +1,29 @@
+/// \file cuchar
+/// \copyright (c) 2022 ywx9.com
+
+#pragma once
+
+#include "inc/corecrt.h"
+#include "inc/yvals_core.h"
+
+#if ywstd_is_exported
+extern "C" {
+size_t __cdecl mbrtoc16(char16_t*, const char*, size_t, mbstate_t*);
+size_t __cdecl c16rtomb(char*, char16_t, mbstate_t*);
+size_t __cdecl mbrtoc32(char32_t*, const char*, size_t, mbstate_t*);
+size_t __cdecl c32rtomb(char*, char32_t, mbstate_t*);
+}
+#else
+#define ywstd_export
+#endif
+
+#ifndef ywstd_import
+namespace std {
+ywstd_export using size_t = decltype(sizeof(0));
+ywstd_export using mbstate_t = ::mbstate_t;
+ywstd_export inline size_t __cdecl mbrtoc16(char16_t* pc16, const char* s, size_t n, mbstate_t* ps) { return ::mbrtoc16(pc16, s, n, ps); }
+ywstd_export inline size_t __cdecl c16rtomb(char* s, char16_t c16, mbstate_t* ps) { return ::c16rtomb(s, c16, ps); }
+ywstd_export inline size_t __cdecl mbrtoc32(char32_t* pc32, const char* s, size_t n, mbstate_t* ps) { return ::mbrtoc32(pc32, s, n, ps); }
+ywstd_export inline size_t __cdecl c32rtomb(char* s, char32_t c32, mbstate_t* ps) { return ::c32rtomb(s, c32, ps); }
+}
+#endif
