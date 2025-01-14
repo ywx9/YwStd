@@ -68,6 +68,39 @@ int __cdecl __stdio_common_vfwprintf(unsigned long long, FILE*, const wchar_t*, 
 int __cdecl __stdio_common_vswprintf(unsigned long long, wchar_t*, size_t, const wchar_t*, _locale_t, va_list);
 int __cdecl __stdio_common_vfwscanf(unsigned long long, FILE*, const wchar_t*, _locale_t, va_list);
 int __cdecl __stdio_common_vswscanf(unsigned long long, const wchar_t*, const wchar_t*, _locale_t, va_list);
+
+int __cdecl __stdio_common_vfwprintf_s(unsigned __int64, FILE*, const wchar_t*, _locale_t, va_list);
+int __cdecl __stdio_common_vswprintf_s(unsigned __int64, wchar_t*, size_t, const wchar_t*, _locale_t, va_list);
+
+inline int __cdecl _vscwprintf_l(const wchar_t* const format, const _locale_t locale, va_list args) {
+  const auto options = _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR;
+  const int result = __stdio_common_vswprintf(options, nullptr, 0, format, locale, args);
+  return result < 0 ? -1 : result;
+}
+inline int __cdecl _scwprintf(const wchar_t* const format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = _vscwprintf_l(format, nullptr, args);
+  va_end(args);
+  return result;
+}
+
+inline int __cdecl _vswprintf_s_l(wchar_t* const buffer, const size_t count, const wchar_t* const format,
+                                  const _locale_t locale, va_list args) {
+  const auto options = _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS;
+  const int result = __stdio_common_vswprintf_s(options, buffer, count, format, locale, args);
+  return result < 0 ? -1 : result;
+}
+
+inline int __cdecl swprintf_s(wchar_t* const buffer, const size_t count, const wchar_t* const format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = _vswprintf_s_l(buffer, count, format, nullptr, args);
+  va_end(args);
+  return result;
+}
+
+#define WEOF ((wint_t)(0xFFFF))
 }
 #else
 #define ywstd_export
@@ -108,10 +141,16 @@ ywstd_export inline int __cdecl mbsinit(const mbstate_t* ps) { return ::mbsinit(
 ywstd_export inline wint_t __cdecl btowc(int c) { return ::btowc(c); }
 ywstd_export inline int __cdecl wctob(wint_t c) { return ::wctob(c); }
 ywstd_export inline size_t __cdecl mbrlen(const char* s, size_t n, mbstate_t* ps) { return ::mbrlen(s, n, ps); }
-ywstd_export inline size_t __cdecl mbrtowc(wchar_t* pwc, const char* s, size_t n, mbstate_t* ps) { return ::mbrtowc(pwc, s, n, ps); }
+ywstd_export inline size_t __cdecl mbrtowc(wchar_t* pwc, const char* s, size_t n, mbstate_t* ps) {
+  return ::mbrtowc(pwc, s, n, ps);
+}
 ywstd_export inline size_t __cdecl wcrtomb(char* s, wchar_t wc, mbstate_t* ps) { return ::wcrtomb(s, wc, ps); }
-ywstd_export inline size_t __cdecl mbsrtowcs(wchar_t* dst, const char** src, size_t len, mbstate_t* ps) { return ::mbsrtowcs(dst, src, len, ps); }
-ywstd_export inline size_t __cdecl wcsrtombs(char* dst, const wchar_t** src, size_t len, mbstate_t* ps) { return ::wcsrtombs(dst, src, len, ps); }
+ywstd_export inline size_t __cdecl mbsrtowcs(wchar_t* dst, const char** src, size_t len, mbstate_t* ps) {
+  return ::mbsrtowcs(dst, src, len, ps);
+}
+ywstd_export inline size_t __cdecl wcsrtombs(char* dst, const wchar_t** src, size_t len, mbstate_t* ps) {
+  return ::wcsrtombs(dst, src, len, ps);
+}
 
 ywstd_export inline wint_t __cdecl getwc(FILE* f) { return ::getwc(f); }
 ywstd_export inline wint_t __cdecl fgetwc(FILE* f) { return ::fgetwc(f); }
@@ -127,22 +166,44 @@ ywstd_export inline int __cdecl fwide(FILE* f, int mode) { return ::fwide(f, mod
 ywstd_export inline long __cdecl wcstol(const wchar_t* s, wchar_t** e, int b) { return ::wcstol(s, e, b); }
 ywstd_export inline long long __cdecl wcstoll(const wchar_t* s, wchar_t** e, int b) { return ::wcstoll(s, e, b); }
 ywstd_export inline unsigned long __cdecl wcstoul(const wchar_t* s, wchar_t** e, int b) { return ::wcstoul(s, e, b); }
-ywstd_export inline unsigned long long __cdecl wcstoull(const wchar_t* s, wchar_t** e, int b) { return ::wcstoull(s, e, b); }
+ywstd_export inline unsigned long long __cdecl wcstoull(const wchar_t* s, wchar_t** e, int b) {
+  return ::wcstoull(s, e, b);
+}
 ywstd_export inline float __cdecl wcstof(const wchar_t* s, wchar_t** e) { return ::wcstof(s, e); }
 ywstd_export inline double __cdecl wcstod(const wchar_t* s, wchar_t** e) { return ::wcstod(s, e); }
 ywstd_export inline long double __cdecl wcstold(const wchar_t* s, wchar_t** e) { return ::wcstold(s, e); }
-ywstd_export inline size_t __cdecl wcsftime(wchar_t* s, size_t n, const wchar_t* f, const tm* t) { return ::wcsftime(s, n, f, t); }
+ywstd_export inline size_t __cdecl wcsftime(wchar_t* s, size_t n, const wchar_t* f, const tm* t) {
+  return ::wcsftime(s, n, f, t);
+}
 
-ywstd_export inline wchar_t* __cdecl wcschr(wchar_t* s, wchar_t c) { return const_cast<wchar_t*>(::wcschr(const_cast<const wchar_t*>(s), c)); }
-ywstd_export inline wchar_t* __cdecl wcsrchr(wchar_t* s, wchar_t c) { return const_cast<wchar_t*>(::wcsrchr(const_cast<const wchar_t*>(s), c)); }
-ywstd_export inline wchar_t* __cdecl wcspbrk(wchar_t* s1, const wchar_t* s2) { return const_cast<wchar_t*>(::wcspbrk(const_cast<const wchar_t*>(s1), s2)); }
-ywstd_export inline wchar_t* __cdecl wcsstr(wchar_t* s1, const wchar_t* s2) { return const_cast<wchar_t*>(::wcsstr(const_cast<const wchar_t*>(s1), s2)); }
-ywstd_export inline wchar_t* __cdecl wmemchr(wchar_t* s, wchar_t c, size_t n) { return const_cast<wchar_t*>(::wmemchr(const_cast<const wchar_t*>(s), c, n)); }
+ywstd_export inline wchar_t* __cdecl wcschr(wchar_t* s, wchar_t c) {
+  return const_cast<wchar_t*>(::wcschr(const_cast<const wchar_t*>(s), c));
+}
+ywstd_export inline wchar_t* __cdecl wcsrchr(wchar_t* s, wchar_t c) {
+  return const_cast<wchar_t*>(::wcsrchr(const_cast<const wchar_t*>(s), c));
+}
+ywstd_export inline wchar_t* __cdecl wcspbrk(wchar_t* s1, const wchar_t* s2) {
+  return const_cast<wchar_t*>(::wcspbrk(const_cast<const wchar_t*>(s1), s2));
+}
+ywstd_export inline wchar_t* __cdecl wcsstr(wchar_t* s1, const wchar_t* s2) {
+  return const_cast<wchar_t*>(::wcsstr(const_cast<const wchar_t*>(s1), s2));
+}
+ywstd_export inline wchar_t* __cdecl wmemchr(wchar_t* s, wchar_t c, size_t n) {
+  return const_cast<wchar_t*>(::wmemchr(const_cast<const wchar_t*>(s), c, n));
+}
 
-ywstd_export inline int __cdecl vfwprintf(FILE* f, const wchar_t* fmt, va_list args) { return ::__stdio_common_vfwprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, f, fmt, nullptr, args); }
-ywstd_export inline int __cdecl vswprintf(wchar_t* s, size_t n, const wchar_t* fmt, va_list args) { return ::__stdio_common_vswprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, s, n, fmt, nullptr, args); }
-ywstd_export inline int __cdecl vfwscanf(FILE* f, const wchar_t* fmt, va_list args) { return ::__stdio_common_vfwscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, f, fmt, nullptr, args); }
-ywstd_export inline int __cdecl vswscanf(const wchar_t* s, const wchar_t* fmt, va_list args) { return ::__stdio_common_vswscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, s, fmt, nullptr, args); }
+ywstd_export inline int __cdecl vfwprintf(FILE* f, const wchar_t* fmt, va_list args) {
+  return ::__stdio_common_vfwprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, f, fmt, nullptr, args);
+}
+ywstd_export inline int __cdecl vswprintf(wchar_t* s, size_t n, const wchar_t* fmt, va_list args) {
+  return ::__stdio_common_vswprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, s, n, fmt, nullptr, args);
+}
+ywstd_export inline int __cdecl vfwscanf(FILE* f, const wchar_t* fmt, va_list args) {
+  return ::__stdio_common_vfwscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, f, fmt, nullptr, args);
+}
+ywstd_export inline int __cdecl vswscanf(const wchar_t* s, const wchar_t* fmt, va_list args) {
+  return ::__stdio_common_vswscanf(_CRT_INTERNAL_LOCAL_SCANF_OPTIONS, s, fmt, nullptr, args);
+}
 
 ywstd_export inline int __cdecl fwprintf(FILE* f, const wchar_t* fmt, ...) {
   va_list args;

@@ -3,3 +3,5 @@
 *.ifc
 *.ixx
 *.obj
+
+!.test.cpp

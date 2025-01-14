@@ -8,10 +8,6 @@
 
 #if ywstd_is_exported
 extern "C" {
-#ifndef
-#define
-#endif
-
 #ifdef _M_FP_FAST
 #define FLT_EVAL_METHOD -1
 #else

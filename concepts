@@ -71,6 +71,8 @@ _EXPORT_STD template<class _Ty> concept unsigned_integral = integral<_Ty> && !si
 
 _EXPORT_STD template<class _Ty> concept floating_point = is_floating_point_v<_Ty>;
 
+ywstd_export template<typename T> concept _arithmetic = integral<T> || floating_point<T>;
+
 _EXPORT_STD template<class _LTy, class _RTy> concept assignable_from =
   is_lvalue_reference_v<_LTy> &&
   common_reference_with<const remove_reference_t<_LTy>&, const remove_reference_t<_RTy>&> &&

@@ -25,6 +25,20 @@ struct FILE;
 }
 #endif
 
+#ifndef ywstd_import
+extern "C" {
+__declspec(noinline) inline unsigned __int64* __cdecl __local_stdio_printf_options() { static unsigned __int64 _OptionsStorage; return &_OptionsStorage; }
+__declspec(noinline) inline unsigned __int64* __cdecl __local_stdio_scanf_options() { static unsigned __int64 _OptionsStorage; return &_OptionsStorage; }
+#define _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS (*__local_stdio_printf_options())
+#define _CRT_INTERNAL_LOCAL_SCANF_OPTIONS  (*__local_stdio_scanf_options ())
+#define _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR (1ULL << 1)
+ywstd_export FILE* __cdecl __acrt_iob_func(unsigned);
+}
+#endif
+#define stdin (::__acrt_iob_func(0))
+#define stdout (::__acrt_iob_func(1))
+#define stderr (::__acrt_iob_func(2))
+
 #if ywstd_is_exported
 extern "C" {
 #define _IOFBF 0x0000
@@ -82,26 +96,42 @@ char* __cdecl tmpnam(char*);
 int __cdecl __stdio_common_vfprintf(unsigned __int64, FILE*, const char*, _locale_t, va_list);
 int __cdecl __stdio_common_vsprintf(unsigned __int64, char*, size_t, const char*, _locale_t, va_list);
 int __cdecl __stdio_common_vfscanf(unsigned __int64, FILE*, const char*, _locale_t, va_list);
-int __cdecl __stdio_common_vsscanf(unsigned __int64, char const*, size_t, const char*, _locale_t, va_list);
+int __cdecl __stdio_common_vsscanf(unsigned __int64, const char*, size_t, const char*, _locale_t, va_list);
 
+int __cdecl __stdio_common_vfprintf_s(unsigned __int64, FILE*, const char *, _locale_t, va_list);
+int __cdecl __stdio_common_vsprintf_s(unsigned __int64, char*, size_t, const char*, _locale_t, va_list);
+
+inline int __cdecl _vscprintf_l(const char* const format, _locale_t const locale, va_list args) {
+  const auto options = _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR;
+  int const result = __stdio_common_vsprintf(options, nullptr, 0, format, locale, args);
+  return result < 0 ? -1 : result;
+}
+inline int __cdecl _vscprintf(const char* const format, va_list args) { return _vscprintf_l(format, nullptr, args); }
+inline int __cdecl _scprintf(const char* const format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = _vscprintf_l(format, NULL, args);
+  va_end(args);
+  return result;
+}
+
+inline int __cdecl _vsprintf_s_l(char* const buffer, const size_t count, const char* const format,
+                                 _locale_t const locale, va_list args) {
+  const auto options = _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS;
+  int const result = __stdio_common_vsprintf_s(options, buffer, count, format, locale, args);
+  return result < 0 ? -1 : result;
+}
+inline int __cdecl sprintf_s(char* const buffer, const size_t count, const char* const format, ...) {
+  va_list args;
+  va_start(args, format);
+  int result = _vsprintf_s_l(buffer, count, format, nullptr, args);
+  va_end(args);
+  return result;
+}
 }
 #else
 #define ywstd_export
 #endif
-
-#ifndef ywstd_import
-extern "C" {
-__declspec(noinline) inline unsigned __int64* __cdecl __local_stdio_printf_options() { static unsigned __int64 _OptionsStorage; return &_OptionsStorage; }
-__declspec(noinline) inline unsigned __int64* __cdecl __local_stdio_scanf_options() { static unsigned __int64 _OptionsStorage; return &_OptionsStorage; }
-#define _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS (*__local_stdio_printf_options())
-#define _CRT_INTERNAL_LOCAL_SCANF_OPTIONS  (*__local_stdio_scanf_options ())
-#define _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR (1ULL << 1)
-ywstd_export FILE* __cdecl __acrt_iob_func(unsigned);
-}
-#endif
-#define stdin (::__acrt_iob_func(0))
-#define stdout (::__acrt_iob_func(1))
-#define stderr (::__acrt_iob_func(2))
 
 #ifndef ywstd_import
 namespace std {
