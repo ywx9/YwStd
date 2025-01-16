@@ -5,9 +5,7 @@
             "includePath": [
                 "${workspaceFolder}"
             ],
-            "defines": [
-                // "YWSTD_INCLUDE"
-            ],
+            "defines": [],
             "compilerPath": "${workspaceFolder}/bin/cl.exe",
             "cppStandard": "c++23",
             "intelliSenseMode": "msvc-x64",
