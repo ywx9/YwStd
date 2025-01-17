@@ -1,95 +1,47 @@
 /// \file ctime
 /// \copyright (c) 2022 ywx9.com
 
+// clang-format off
 #pragma once
 
-#include "inc/corecrt.h"
-#include "inc/yvals_core.h"
+#include "abc.hpp"
 
 // clang-format off
-
-#if ywstd_is_exported
-extern "C" {
-struct timespec { time_t tv_sec; long tv_nsec; };
-struct tm { int tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday, tm_yday, tm_isdst; };
-}
-namespace std {
-export using clock_t = long;
-export using ::time_t;
-export using ::timespec;
-export using ::tm;
-}
-#elif !defined(ywstd_import)
-namespace std {
-using clock_t = long;
-using time_t = ::time_t;
-struct timespec { time_t tv_sec; long tv_nsec; };
-struct tm { int tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday, tm_yday, tm_isdst; };
-}
-#endif
-
-#if ywstd_is_exported
-extern "C" {
-using clock_t = long;
-struct _timespec32 { __time32_t tv_sec; long tv_nsec; };
-struct _timespec64 { __time64_t tv_sec; long tv_nsec; };
-clock_t __cdecl clock();
-char* __cdecl asctime(const tm*);
-size_t __cdecl strftime(char*, size_t, const char*, const tm*);
-
-char* __cdecl _ctime32(const __time32_t*);
-double __cdecl _difftime32(__time32_t, __time32_t);
-tm* __cdecl _gmtime32(const __time32_t*);
-tm* __cdecl _localtime32(const __time32_t*);
-__time32_t __cdecl _mktime32(tm*);
-__time32_t __cdecl _time32(__time32_t*);
-int __cdecl _timespec32_get(_timespec32*, int);
-
-char* __cdecl _ctime64(const __time64_t*);
-double __cdecl _difftime64(__time64_t, __time64_t);
-tm* __cdecl _gmtime64(const __time64_t*);
-tm* __cdecl _localtime64(const __time64_t*);
-__time64_t __cdecl _mktime64(tm*);
-__time64_t __cdecl _time64(__time64_t*);
-int __cdecl _timespec64_get(_timespec64*, int);
-}
-#else
-#define ywstd_export
-#endif
-
 #ifndef ywstd_import
-namespace std {
-ywstd_export inline clock_t clock() { return ::clock(); }
-ywstd_export inline char* asctime(const tm* t) { return ::asctime(t); }
-ywstd_export inline size_t strftime(char* s, size_t n, const char* f, const tm* t) { return ::strftime(s, n, f, t); }
+ywstd_export namespace std {
 
-ywstd_export inline char* __cdecl ctime(const time_t* t) {
-  if constexpr (sizeof(time_t) == 4) return ::_ctime32(reinterpret_cast<const __time32_t*>(t));
-  else return ::_ctime64(reinterpret_cast<const __time64_t*>(t));
+inline clock_t __cdecl clock() {
+  return ::clock();
 }
-ywstd_export inline double __cdecl difftime(time_t t1, time_t t2) {
-  if constexpr (sizeof(time_t) == 4) return ::_difftime32(static_cast<__time32_t>(t1), static_cast<__time32_t>(t2));
-  else return ::_difftime64(static_cast<__time64_t>(t1), static_cast<__time64_t>(t2));
+
+inline char* __cdecl asctime(const tm* t) {
+  return ::asctime(t);
 }
-ywstd_export inline tm* __cdecl gmtime(const time_t* t) {
-  if constexpr (sizeof(time_t) == 4) return ::_gmtime32(reinterpret_cast<const __time32_t*>(t));
-  else return ::_gmtime64(reinterpret_cast<const __time64_t*>(t));
+
+inline size_t __cdecl strftime(char* s, size_t n, const char* f, const tm* t) {
+  return ::strftime(s, n, f, t);
 }
-ywstd_export inline tm* __cdecl localtime(const time_t* t) {
-  if constexpr (sizeof(time_t) == 4) return ::_localtime32(reinterpret_cast<const __time32_t*>(t));
-  else return ::_localtime64(reinterpret_cast<const __time64_t*>(t));
+
+inline char* __cdecl ctime(const time_t* t) {
+  return ::_ctime64(reinterpret_cast<const __time64_t*>(t));
 }
-ywstd_export inline time_t __cdecl mktime(tm* t) {
-  if constexpr (sizeof(time_t) == 4) return ::_mktime32(t);
-  else return ::_mktime64(t);
+inline double __cdecl difftime(time_t t1, time_t t2) {
+  return ::_difftime64(static_cast<__time64_t>(t1), static_cast<__time64_t>(t2));
 }
-ywstd_export inline time_t __cdecl time(time_t* t) {
-  if constexpr (sizeof(time_t) == 4) return ::_time32(reinterpret_cast<__time32_t*>(t));
-  else return ::_time64(reinterpret_cast<__time64_t*>(t));
+inline tm* __cdecl gmtime(const time_t* t) {
+  return ::_gmtime64(reinterpret_cast<const __time64_t*>(t));
 }
-ywstd_export inline int __cdecl timespec_get(timespec* ts, int base) {
-  if constexpr (sizeof(time_t) == 4) return ::_timespec32_get(reinterpret_cast<_timespec32*>(ts), base);
-  else return ::_timespec64_get(reinterpret_cast<_timespec64*>(ts), base);
+inline tm* __cdecl localtime(const time_t* t) {
+  return ::_localtime64(reinterpret_cast<const __time64_t*>(t));
+}
+inline time_t __cdecl mktime(tm* t) {
+  return ::_mktime64(t);
+}
+inline time_t __cdecl time(time_t* t) {
+  return ::_time64(reinterpret_cast<__time64_t*>(t));
+}
+inline int __cdecl timespec_get(timespec* ts, int base) {
+  return ::_timespec64_get(reinterpret_cast<::_timespec64*>(ts), base);
 }
 }
 #endif

@@ -44,8 +44,17 @@ else:
     sys.exit(1)
 # Python code end */
 
-#define nat size_t
-#define wchar wchar_t
+#ifndef _M_X64
+#error "ywstd requires x64 architecture."
+#endif
+
+#ifndef _WIN64
+#error "ywstd requires Windows 64-bit."
+#endif
+
+#ifndef __cplusplus
+#error "ywstd requires C++ compiler."
+#endif
 
 #ifndef ywstd_export
 #define ywstd_export
@@ -60,44 +69,15 @@ else:
 #pragma comment(lib, "libcpmt.lib")
 #pragma comment(lib, "user32.lib")
 import ywstd;
-
-#define ywstd_wide_(x) L ## x
-#define ywstd_wide(x) ywstd_wide_(x)
-#define ywstd_filew ywstd_wide(__FILE__)
-#ifdef NDEBUG
-#define assert(e) ((void)0)
 #else
-#define assert(e) (void)((!!(e)) || (::_wassert(L#e, ywstd_filew, unsigned(__LINE__)), 0))
-#endif
-
-#define stdin (::__acrt_iob_func(0))
-#define stdout (::__acrt_iob_func(1))
-#define stderr (::__acrt_iob_func(2))
-
-#else
-#include "algorithm"
-#include "any"
-#include "array"
-#include "atomic"
-#include "barrier"
-#include "bit"
-#include "bitset"
 #include "cassert"
 #include "cctype"
 #include "cerrno"
 #include "cfenv"
 #include "cfloat"
-#include "charconv"
-#include "chrono"
 #include "cinttypes"
 #include "climits"
 #include "clocale"
-#include "cmath"
-#include "compare"
-#include "complex"
-#include "concepts"
-#include "condition_variable"
-#include "coroutine"
 #include "csetjmp"
 #include "csignal"
 #include "cstdarg"
@@ -110,6 +90,23 @@ import ywstd;
 #include "cuchar"
 #include "cwchar"
 #include "cwctype"
+
+#if 0
+#include "algorithm"
+#include "any"
+#include "array"
+#include "atomic"
+#include "barrier"
+#include "bit"
+#include "bitset"
+#include "charconv"
+#include "chrono"
+#include "cmath"
+#include "compare"
+#include "complex"
+#include "concepts"
+#include "condition_variable"
+#include "coroutine"
 #include "exception"
 #include "execution"
 #include "expected"
@@ -175,3 +172,7 @@ import ywstd;
 #include "variant"
 #include "vector"
 #endif
+
+#endif
+
+#include "abc.hpp"

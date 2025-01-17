@@ -1,181 +1,95 @@
 /// \file cstdlib
 /// \copyright (c) 2022 ywx9.com
 
+// clang-format off
 #pragma once
 
-#include "inc/corecrt.h"
-#include "inc/yvals_core.h"
-
-#if ywstd_is_exported
-extern "C" {
-struct div_t { int quot, rem; };
-struct ldiv_t { long quot, rem; };
-struct lldiv_t { long long quot, rem; };
-}
-namespace std {
-export using ::div_t;
-export using ::ldiv_t;
-export using ::lldiv_t;
-}
-#elif !defined(ywstd_import)
-namespace std {
-struct div_t { int quot, rem; };
-struct ldiv_t { long quot, rem; };
-struct lldiv_t { long long quot, rem; };
-}
-#endif
-
-#if ywstd_is_exported
-extern "C" {
-int __cdecl abs(int);
-long __cdecl labs(long);
-long long __cdecl llabs(long long);
-
-div_t __cdecl div(int, int);
-ldiv_t __cdecl ldiv(long, long);
-lldiv_t __cdecl lldiv(long long, long long);
-
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
-[[noreturn]] void __cdecl abort();
-[[noreturn]] void __cdecl exit(int);
-[[noreturn]] void __cdecl _Exit(int);
-[[noreturn]] void __cdecl quick_exit(int);
-
-using _atexit_handler = void(__cdecl*)();
-int __cdecl atexit(_atexit_handler);
-int __cdecl at_quick_exit(_atexit_handler);
-
-char* __cdecl getenv(const char*);
-int __cdecl system(const char*);
-
-void __cdecl free(void*);
-__declspec(restrict) void* __cdecl malloc(size_t);
-__declspec(restrict) void* __cdecl calloc(size_t, size_t);
-__declspec(restrict) void* __cdecl realloc(void*, size_t);
-
-#define RAND_MAX 0x7fff
-void __cdecl srand(unsigned);
-int __cdecl rand();
-
-using _compare_pred = int(__cdecl*)(const void*, const void*);
-void __cdecl qsort(void*, size_t, size_t, _compare_pred);
-void* __cdecl bsearch(const void*, const void*, size_t, size_t, _compare_pred);
-
-int __cdecl mblen(const char*, size_t);
-int __cdecl mbtowc(wchar_t*, const char*, size_t);
-int __cdecl wctomb(char*, wchar_t);
-size_t __cdecl mbstowcs(wchar_t*, const char*, size_t);
-size_t __cdecl wcstombs(char*, const wchar_t*, size_t);
-
-int __cdecl atoi(const char*);
-long __cdecl atol(const char*);
-long long __cdecl atoll(const char*);
-double __cdecl atof(const char*);
-
-long __cdecl strtol(const char*, char**, int);
-long long __cdecl strtoll(const char*, char**, int);
-unsigned long __cdecl strtoul(const char*, char**, int);
-unsigned long long __cdecl strtoull(const char*, char**, int);
-float __cdecl strtof(const char*, char**);
-double __cdecl strtod(const char*, char**);
-long double __cdecl strtold(const char*, char**);
-
-float __cdecl fabsf(float);
-double __cdecl fabs(double);
-long double __cdecl fabsl(long double);
-}
-#else
-#define ywstd_export
-#endif
+#include "abc.hpp"
 
 #ifndef ywstd_import
-namespace std {
-ywstd_export constexpr int __cdecl abs(int x) {
+ywstd_export namespace std {
+
+constexpr int __cdecl abs(int x) {
   if (!__builtin_is_constant_evaluated()) return ::abs(x);
   else return x < 0 ? -x : x;
 }
-ywstd_export constexpr long __cdecl labs(long x) {
+constexpr long __cdecl labs(long x) {
   if (!__builtin_is_constant_evaluated()) return ::labs(x);
   else return x < 0 ? -x : x;
 }
-ywstd_export constexpr long long __cdecl llabs(long long x) {
+constexpr long long __cdecl llabs(long long x) {
   if (!__builtin_is_constant_evaluated()) return ::llabs(x);
   else return x < 0 ? -x : x;
 }
-ywstd_export constexpr long __cdecl abs(long x) { return std::labs(x); }
-ywstd_export constexpr long long __cdecl abs(long long x) { return std::llabs(x); }
-ywstd_export constexpr float __cdecl abs(float x) {
+constexpr long __cdecl abs(long x) { return std::labs(x); }
+constexpr long long __cdecl abs(long long x) { return std::llabs(x); }
+constexpr float __cdecl abs(float x) {
   if (!__builtin_is_constant_evaluated()) return ::fabsf(x);
   else return x < 0 ? -x : x;
 }
-ywstd_export constexpr double __cdecl abs(double x) {
+constexpr double __cdecl abs(double x) {
   if (!__builtin_is_constant_evaluated()) return ::fabs(x);
   else return x < 0 ? -x : x;
 }
-ywstd_export constexpr long double __cdecl abs(long double x) {
+constexpr long double __cdecl abs(long double x) {
   if (!__builtin_is_constant_evaluated()) return ::fabsl(x);
   else return x < 0 ? -x : x;
 }
 
-ywstd_export constexpr div_t __cdecl div(int num, int den) {
+constexpr div_t __cdecl div(int num, int den) {
   if (!__builtin_is_constant_evaluated()) return ::div(num, den);
   else return {num / den, num % den};
 }
-ywstd_export constexpr ldiv_t __cdecl ldiv(long num, long den) {
+constexpr ldiv_t __cdecl ldiv(long num, long den) {
   if (!__builtin_is_constant_evaluated()) return ::ldiv(num, den);
   else return {num / den, num % den};
 }
-ywstd_export constexpr lldiv_t __cdecl lldiv(long long num, long long den) {
+constexpr lldiv_t __cdecl lldiv(long long num, long long den) {
   if (!__builtin_is_constant_evaluated()) return ::lldiv(num, den);
   else return {num / den, num % den};
 }
-ywstd_export constexpr ldiv_t __cdecl div(long num, long den) { return std::ldiv(num, den); }
-ywstd_export constexpr lldiv_t __cdecl div(long long num, long long den) { return std::lldiv(num, den); }
+constexpr ldiv_t __cdecl div(long num, long den) { return std::ldiv(num, den); }
+constexpr lldiv_t __cdecl div(long long num, long long den) { return std::lldiv(num, den); }
 
-ywstd_export [[noreturn]] inline void __cdecl abort() { ::abort(); }
-ywstd_export [[noreturn]] inline void __cdecl exit(int status) { ::exit(status); }
-ywstd_export [[noreturn]] inline void __cdecl _Exit(int status) { ::_Exit(status); }
-ywstd_export [[noreturn]] inline void __cdecl quick_exit(int status) { ::quick_exit(status); }
+[[noreturn]] inline void __cdecl abort() { ::abort(); }
+[[noreturn]] inline void __cdecl exit(int status) { ::exit(status); }
+[[noreturn]] inline void __cdecl _Exit(int status) { ::_Exit(status); }
+[[noreturn]] inline void __cdecl quick_exit(int status) { ::quick_exit(status); }
 
-ywstd_export using _atexit_handler = void(__cdecl*)();
+inline int __cdecl atexit(atexit_handler* func) { return ::atexit(func); }
+inline int __cdecl at_quick_exit(atexit_handler* func) { return ::at_quick_exit(func); }
 
-ywstd_export inline int __cdecl atexit(_atexit_handler func) { return ::atexit(func); }
-ywstd_export inline int __cdecl at_quick_exit(_atexit_handler func) { return ::at_quick_exit(func); }
+inline char* __cdecl getenv(const char* name) { return ::getenv(name); }
+inline int __cdecl system(const char* command) { return ::system(command); }
 
-ywstd_export inline char* __cdecl getenv(const char* name) { return ::getenv(name); }
-ywstd_export inline int __cdecl system(const char* command) { return ::system(command); }
+inline void __cdecl free(void* ptr) { ::free(ptr); }
+inline __declspec(restrict) void* __cdecl malloc(size_t size) { return ::malloc(size); }
+inline __declspec(restrict) void* __cdecl calloc(size_t num, size_t size) { return ::calloc(num, size); }
+inline __declspec(restrict) void* __cdecl realloc(void* ptr, size_t size) { return ::realloc(ptr, size); }
 
-ywstd_export inline void __cdecl free(void* ptr) { ::free(ptr); }
-ywstd_export inline __declspec(restrict) void* __cdecl malloc(size_t size) { return ::malloc(size); }
-ywstd_export inline __declspec(restrict) void* __cdecl calloc(size_t num, size_t size) { return ::calloc(num, size); }
-ywstd_export inline __declspec(restrict) void* __cdecl realloc(void* ptr, size_t size) { return ::realloc(ptr, size); }
+inline void __cdecl srand(unsigned seed) { ::srand(seed); }
+inline int __cdecl rand() { return ::rand(); }
 
-ywstd_export inline void __cdecl srand(unsigned seed) { ::srand(seed); }
-ywstd_export inline int __cdecl rand() { return ::rand(); }
+inline void __cdecl qsort(void* base, size_t num, size_t size, compare_pred* compare) { ::qsort(base, num, size, compare); }
+inline void* __cdecl bsearch(const void* key, const void* base, size_t num, size_t size, compare_pred* compare) { return ::bsearch(key, base, num, size, compare); }
 
-ywstd_export using _compare_pred = int(__cdecl*)(const void*, const void*);
+inline int __cdecl mblen(const char* s, size_t n) { return ::mblen(s, n); }
+inline int __cdecl mbtowc(wchar_t* pwc, const char* s, size_t n) { return ::mbtowc(pwc, s, n); }
+inline int __cdecl wctomb(char* s, wchar_t wc) { return ::wctomb(s, wc); }
+inline size_t __cdecl mbstowcs(wchar_t* pwcs, const char* s, size_t n) { return ::mbstowcs(pwcs, s, n); }
+inline size_t __cdecl wcstombs(char* s, const wchar_t* pwcs, size_t n) { return ::wcstombs(s, pwcs, n); }
 
-ywstd_export inline void __cdecl qsort(void* base, size_t num, size_t size, _compare_pred compare) { ::qsort(base, num, size, compare); }
-ywstd_export inline void* __cdecl bsearch(const void* key, const void* base, size_t num, size_t size, _compare_pred compare) { return ::bsearch(key, base, num, size, compare); }
+inline int __cdecl atoi(const char* s) { return ::atoi(s); }
+inline long __cdecl atol(const char* s) { return ::atol(s); }
+inline long long __cdecl atoll(const char* s) { return ::atoll(s); }
+inline double __cdecl atof(const char* s) { return ::atof(s); }
 
-ywstd_export inline int __cdecl mblen(const char* s, size_t n) { return ::mblen(s, n); }
-ywstd_export inline int __cdecl mbtowc(wchar_t* pwc, const char* s, size_t n) { return ::mbtowc(pwc, s, n); }
-ywstd_export inline int __cdecl wctomb(char* s, wchar_t wc) { return ::wctomb(s, wc); }
-ywstd_export inline size_t __cdecl mbstowcs(wchar_t* pwcs, const char* s, size_t n) { return ::mbstowcs(pwcs, s, n); }
-ywstd_export inline size_t __cdecl wcstombs(char* s, const wchar_t* pwcs, size_t n) { return ::wcstombs(s, pwcs, n); }
-
-ywstd_export inline int __cdecl atoi(const char* s) { return ::atoi(s); }
-ywstd_export inline long __cdecl atol(const char* s) { return ::atol(s); }
-ywstd_export inline long long __cdecl atoll(const char* s) { return ::atoll(s); }
-ywstd_export inline double __cdecl atof(const char* s) { return ::atof(s); }
-
-ywstd_export inline long __cdecl strtol(const char* s, char** end, int base) { return ::strtol(s, end, base); }
-ywstd_export inline long long __cdecl strtoll(const char* s, char** end, int base) { return ::strtoll(s, end, base); }
-ywstd_export inline unsigned long __cdecl strtoul(const char* s, char** end, int base) { return ::strtoul(s, end, base); }
-ywstd_export inline unsigned long long __cdecl strtoull(const char* s, char** end, int base) { return ::strtoull(s, end, base); }
-ywstd_export inline float __cdecl strtof(const char* s, char** end) { return ::strtof(s, end); }
-ywstd_export inline double __cdecl strtod(const char* s, char** end) { return ::strtod(s, end); }
-ywstd_export inline long double __cdecl strtold(const char* s, char** end) { return ::strtold(s, end); }
-};
+inline long __cdecl strtol(const char* s, char** end, int base) { return ::strtol(s, end, base); }
+inline long long __cdecl strtoll(const char* s, char** end, int base) { return ::strtoll(s, end, base); }
+inline unsigned long __cdecl strtoul(const char* s, char** end, int base) { return ::strtoul(s, end, base); }
+inline unsigned long long __cdecl strtoull(const char* s, char** end, int base) { return ::strtoull(s, end, base); }
+inline float __cdecl strtof(const char* s, char** end) { return ::strtof(s, end); }
+inline double __cdecl strtod(const char* s, char** end) { return ::strtod(s, end); }
+inline long double __cdecl strtold(const char* s, char** end) { return ::strtold(s, end); }
+}
 #endif

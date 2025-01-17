@@ -1,70 +1,80 @@
 /// \file cstddef
 /// \copyright (c) 2022 ywx9.com
 
+// clang-format off
 #pragma once
 
-#include "inc/corecrt.h"
-#include "inc/xtr1common"
-#include "inc/yvals_core.h"
+#include "abc.hpp"
 
-#ifndef ywstd_export
-#define ywstd_export
-#endif
-
-#define offsetof(s, m) ((::size_t)&reinterpret_cast<char const volatile&>((((s*)0)->m)))
+// All macros are defined in `abc.hpp`
 
 #ifndef ywstd_import
-namespace std {
-ywstd_export using ptrdiff_t = decltype((int*)0 - (int*)0);
-ywstd_export using size_t = decltype(sizeof(0));
-ywstd_export using nullptr_t = decltype(nullptr);
-ywstd_export using max_align_t = double;
+ywstd_export namespace std {
 
-ywstd_export enum class byte : unsigned char {};
+using size_t = decltype(sizeof(0));
+using ptrdiff_t = decltype((int*)0 - (int*)0);
+using nullptr_t = decltype(nullptr);
+using max_align_t = double;
 
-ywstd_export template<typename Int> requires is_integral_v<Int>
+enum class byte : unsigned char {};
+
+template<typename Int> requires is_integral_v<Int>
 [[nodiscard]] constexpr byte operator<<(const byte b, const Int s) noexcept {
   return static_cast<byte>(static_cast<unsigned char>(static_cast<unsigned int>(b) << s));
 }
 
-ywstd_export template<typename Int> requires is_integral_v<Int>
+template<typename Int> requires is_integral_v<Int>
 [[nodiscard]] constexpr byte operator>>(const byte b, const Int s) noexcept {
   return static_cast<byte>(static_cast<unsigned char>(static_cast<unsigned int>(b) >> s));
 }
 
-ywstd_export [[nodiscard]] constexpr byte operator|(const byte x, const byte y) noexcept {
+[[nodiscard]] constexpr byte operator|(const byte x, const byte y) noexcept {
   return static_cast<byte>(static_cast<unsigned char>(static_cast<unsigned int>(x) | static_cast<unsigned int>(y)));
 }
 
-ywstd_export [[nodiscard]] constexpr byte operator&(const byte x, const byte y) noexcept {
+[[nodiscard]] constexpr byte operator&(const byte x, const byte y) noexcept {
   return static_cast<byte>(static_cast<unsigned char>(static_cast<unsigned int>(x) & static_cast<unsigned int>(y)));
 }
 
-ywstd_export [[nodiscard]] constexpr byte operator^(const byte x, const byte y) noexcept {
+[[nodiscard]] constexpr byte operator^(const byte x, const byte y) noexcept {
   return static_cast<byte>(static_cast<unsigned char>(static_cast<unsigned int>(x) ^ static_cast<unsigned int>(y)));
 }
 
-ywstd_export [[nodiscard]] constexpr byte operator~(const byte _Arg) noexcept {
-  return static_cast<byte>(static_cast<unsigned char>(~static_cast<unsigned int>(_Arg)));
+[[nodiscard]] constexpr byte operator~(const byte b) noexcept {
+  return static_cast<byte>(static_cast<unsigned char>(~static_cast<unsigned int>(b)));
 }
 
-ywstd_export template<typename Int> requires is_integral_v<Int>
-constexpr byte& operator<<=(byte& _Arg, const Int s) noexcept {
-  return _Arg = _Arg << s;
-}
+template<typename Int> requires is_integral_v<Int>
+constexpr byte& operator<<=(byte& b, const Int s) noexcept { return b = b << s; }
 
-ywstd_export template<typename Int> requires is_integral_v<Int>
-constexpr byte& operator>>=(byte& _Arg, const Int s) noexcept {
-  return _Arg = _Arg >> s;
-}
+template<typename Int> requires is_integral_v<Int>
+constexpr byte& operator>>=(byte& b, const Int s) noexcept { return b = b >> s; }
 
-ywstd_export constexpr byte& operator|=(byte& x, const byte y) noexcept { return x = x | y; }
-ywstd_export constexpr byte& operator&=(byte& x, const byte y) noexcept { return x = x & y; }
-ywstd_export constexpr byte& operator^=(byte& x, const byte y) noexcept { return x = x ^ y; }
+constexpr byte& operator|=(byte& x, const byte y) noexcept { return x = x | y; }
+constexpr byte& operator&=(byte& x, const byte y) noexcept { return x = x & y; }
+constexpr byte& operator^=(byte& x, const byte y) noexcept { return x = x ^ y; }
 
-ywstd_export template<typename Int> requires is_integral_v<Int>
-[[nodiscard]] _MSVC_INTRINSIC constexpr Int to_integer(const byte _Arg) noexcept {
-  return static_cast<Int>(_Arg);
+template<typename Int> requires is_integral_v<Int>
+[[nodiscard]] [[msvc::intrinsic]] constexpr Int to_integer(const byte b) noexcept {
+  return static_cast<Int>(b);
 }
 }
+#endif
+
+#if ywstd_is_tested
+// #include "print"
+inline const bool cstddef_test = []{
+
+  // offsetof
+
+  struct Struct {
+    int a;
+    char b;
+    double c;
+  };
+
+  std::print("offsetof(Struct{int, char, double}, a) = {}\n", offsetof(Struct, a));
+  std::print("offsetof(Struct{int, char, double}, b) = {}\n", offsetof(Struct, b));
+  std::print("offsetof(Struct{int, char, double}, c) = {}\n", offsetof(Struct, c));
+}();
 #endif

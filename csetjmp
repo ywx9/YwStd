@@ -1,127 +1,17 @@
 /// \file csetjmp
 /// \copyright (c) 2022 ywx9.com
 
+// clang-format off
 #pragma once
 
-#include "inc/corecrt.h"
-#include "inc/yvals_core.h"
-
-#if ywstd_is_exported
-extern "C" {
-#if defined _M_IX86 ////////////////////////////////////////////////////////////
-#define _JBLEN 16
-using _JBTYPE = int;
-struct __JUMP_BUFFER {
-  unsigned long Ebp;
-  unsigned long Ebx;
-  unsigned long Edi;
-  unsigned long Esi;
-  unsigned long Esp;
-  unsigned long Eip;
-  unsigned long Registration;
-  unsigned long TryLevel;
-  unsigned long Cookie;
-  unsigned long UnwindFunc;
-  unsigned long UnwindData[6];
-};
-#elif defined _M_X64 ///////////////////////////////////////////////////////////
-struct alignas(16) SETJMP_FLOAT128 { unsigned __int64 Part[2]; };
-#define _JBLEN 16
-using _JBTYPE = SETJMP_FLOAT128;
-struct _JUMP_BUFFER {
-  unsigned __int64 Frame;
-  unsigned __int64 Rbx;
-  unsigned __int64 Rsp;
-  unsigned __int64 Rbp;
-  unsigned __int64 Rsi;
-  unsigned __int64 Rdi;
-  unsigned __int64 R12;
-  unsigned __int64 R13;
-  unsigned __int64 R14;
-  unsigned __int64 R15;
-  unsigned __int64 Rip;
-  unsigned long MxCsr;
-  unsigned short FpCsr;
-  unsigned short Spare;
-  SETJMP_FLOAT128 Xmm6;
-  SETJMP_FLOAT128 Xmm7;
-  SETJMP_FLOAT128 Xmm8;
-  SETJMP_FLOAT128 Xmm9;
-  SETJMP_FLOAT128 Xmm10;
-  SETJMP_FLOAT128 Xmm11;
-  SETJMP_FLOAT128 Xmm12;
-  SETJMP_FLOAT128 Xmm13;
-  SETJMP_FLOAT128 Xmm14;
-  SETJMP_FLOAT128 Xmm15;
-};
-#elif defined _M_ARM ///////////////////////////////////////////////////////////
-#define _JBLEN 28
-usign _JBTYPE = int;
-struct _JUMP_BUFFER {
-  unsigned long Frame;
-  unsigned long R4;
-  unsigned long R5;
-  unsigned long R6;
-  unsigned long R7;
-  unsigned long R8;
-  unsigned long R9;
-  unsigned long R10;
-  unsigned long R11;
-  unsigned long Sp;
-  unsigned long Pc;
-  unsigned long Fpscr;
-  unsigned long long D[8];
-};
-#elif defined _M_ARM64 /////////////////////////////////////////////////////////
-#define _JBLEN 24
-using _JBTYPE = unsigned __int64;
-struct _JUMP_BUFFER {
-  unsigned __int64 Frame;
-  unsigned __int64 Reserved;
-  unsigned __int64 X19;
-  unsigned __int64 X20;
-  unsigned __int64 X21;
-  unsigned __int64 X22;
-  unsigned __int64 X23;
-  unsigned __int64 X24;
-  unsigned __int64 X25;
-  unsigned __int64 X26;
-  unsigned __int64 X27;
-  unsigned __int64 X28;
-  unsigned __int64 Fp;
-  unsigned __int64 Lr;
-  unsigned __int64 Sp;
-  unsigned __int32 Fpcr;
-  unsigned __int32 Fpsr;
-  double D[8];
-};
-#endif
-using jmp_buf = _JBTYPE[_JBLEN];
-}
-namespace std {
-export using ::jmp_buf;
-}
-#else !defined(ywstd_import)
-namespace std {
-struct jmp_buf;
-}
-#endif
-
-#if ywstd_is_exported
-extern "C" {
-int __cdecl _setjmp(jmp_buf);
-[[noreturn]] void __cdecl longjmp(jmp_buf, int) noexcept(false);
-}
-#else
-#define ywstd_export
-#endif
-
-#define setjmp _setjmp
+#include "abc.hpp"
 
 #ifndef ywstd_import
-namespace std {
-ywstd_export using ::jmp_buf;
-ywstd_export using ::setjmp;
-ywstd_export [[noreturn]] inline void __cdecl longjmp(jmp_buf env, int val) { ::longjmp(env, val); }
+ywstd_export namespace std {
+
+/// jumps to specified location
+[[noreturn]] inline void __cdecl longjmp(jmp_buf env, int val) {
+  ::longjmp(env, val);
+}
 }
 #endif

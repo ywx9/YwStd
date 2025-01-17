@@ -1,20 +1,9 @@
 /// \file cassert
 /// \copyright (c) 2022 ywx9.com
 
+// clang-format off
 #pragma once
 
-#include "inc/corecrt.h"
-#include "inc/yvals_core.h"
+#include "abc.hpp"
 
-#if ywstd_is_exported
-extern "C" {
-export void __cdecl _wassert(wchar_t const*, wchar_t const*, unsigned);
-}
-#endif
-
-#undef assert
-#ifdef NDEBUG
-#define assert(e) ((void)0)
-#else
-#define assert(e) (void)((!!(e)) || (::_wassert(L#e, __FILEW__, (unsigned)(__LINE__)), 0))
-#endif
+// `assert` is defined in `abc.hpp` because macros cannot be exported.

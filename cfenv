@@ -1,115 +1,74 @@
 /// \file cfenv
 /// \copyright (c) 2022 ywx9.com
 
+// clang-format off
 #pragma once
 
-#include "inc/corecrt.h"
-#include "inc/yvals_core.h"
+#include "abc.hpp"
 
-#include "cfloat"
-
-#if ywstd_is_exported
-extern "C" struct fenv_t { unsigned long _Fe_ctl, _Fe_stat; };
-namespace std { export using ::fenv_t; }
-#elif !defined(ywstd_import)
-namespace std { struct fenv_t; }
-#endif
+// All macros are defined in `abc.hpp`
 
 #if ywstd_is_exported
 extern "C" {
-
-#define FE_TONEAREST _RC_NEAR
-#define FE_UPWARD _RC_UP
-#define FE_DOWNWARD _RC_DOWN
-#define FE_TOWARDZERO _RC_CHOP
-
-#define FE_ROUND_MASK _MCW_RC
-
-int __cdecl fegetround();
-int __cdecl fesetround(int);
-
-using fexcept_t = unsigned long;
-
-#define FE_INEXACT _SW_INEXACT
-#define FE_UNDERFLOW _SW_UNDERFLOW
-#define FE_OVERFLOW _SW_OVERFLOW
-#define FE_DIVBYZERO _SW_ZERODIVIDE
-#define FE_INVALID _SW_INVALID
-#define FE_ALL_EXCEPT (FE_DIVBYZERO | FE_INEXACT | FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW)
-
-int __cdecl fegetenv(fenv_t*);
-int __cdecl fesetenv(const fenv_t*);
-int __cdecl feclearexcept(int);
-int __cdecl feholdexcept(fenv_t*);
-int __cdecl fetestexcept(int);
-int __cdecl fegetexceptflag(fexcept_t*, int);
-int __cdecl fesetexceptflag(const fexcept_t*, int);
-
-#if defined _M_IX86
-__declspec(selectany) extern const fenv_t _Fenv1 = {0x3f3f103f, 0};
-#elif defined _M_X64
-__declspec(selectany) extern const fenv_t _Fenv1 = {0x3f00003f, 0};
-#else
-__declspec(selectany) extern const fenv_t _Fenv1 = {0x0000003f, 0};
-#endif
-#define FE_DFL_ENV (&_Fenv1)
-
-#if !defined(_BEGIN_PRAGMA_OPTIMIZE_DISABLE)
-#define _BEGIN_PRAGMA_OPTIMIZE_DISABLE(flags, bug, reason) __pragma(optimize(flags, off))
-#define _BEGIN_PRAGMA_OPTIMIZE_ENABLE(flags, bug, reason) __pragma(optimize(flags, on))
-#define _END_PRAGMA_OPTIMIZE() __pragma(optimize("", on))
-#endif
-_BEGIN_PRAGMA_OPTIMIZE_DISABLE("", MSFT : 4499495, "")
-inline int __cdecl feraiseexcept(int _Except) {
-  static struct {
-    int _Except_Val;
-    double _Num;
-    double _Denom;
-  } const _Table[] = {{FE_INVALID, 0.0, 0.0},
-                      {FE_DIVBYZERO, 1.0, 0.0},
-                      {FE_OVERFLOW, 1e+300, 1e-300},
-                      {FE_UNDERFLOW, 1e-300, 1e+300},
-                      {FE_INEXACT, 2.0, 3.0}};
-
-  double _Ans = 0.0;
-  (void)_Ans;
-  size_t _Index;
-  if ((_Except &= FE_ALL_EXCEPT) == 0) { return 0; }
-  for (_Index = 0; _Index < sizeof(_Table) / sizeof(_Table[0]); ++_Index) {
-    if ((_Except & _Table[_Index]._Except_Val) != 0) {
-      _Ans = _Table[_Index]._Num / _Table[_Index]._Denom;
-#if defined _M_IX86 && _M_IX86_FP == 0 && !defined _M_HYBRID_X86_ARM64
+__pragma(optimize("", off)) inline int __cdecl feraiseexcept(int except) {
+  static struct { int except; double num, den; } const table[] =
+    {{FE_INVALID, 0.0, 0.0}, {FE_DIVBYZERO, 1.0, 0.0}, {FE_OVERFLOW, 1e+300, 1e-300},
+     {FE_UNDERFLOW, 1e-300, 1e+300}, {FE_INEXACT, 2.0, 3.0}};
+  double ans = 0.0; (void) ans;
+  if ((except &= FE_ALL_EXCEPT) == 0) return 0;
+  for (size_t i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
+    if ((except & table[i].except) != 0) {
+      ans = table[i].num / table[i].den;
+      #if defined _M_IX86 && _M_IX86_FP == 0 && !defined _M_HYBRID_X86_ARM64
       __asm fwait;
-#endif
+      #endif
     }
   }
-  return 0;
 }
-_END_PRAGMA_OPTIMIZE()
-
-inline int __cdecl feupdateenv(const fenv_t* _Penv) {
-  int _Except = fetestexcept(FE_ALL_EXCEPT);
-  if (fesetenv(_Penv) != 0 || feraiseexcept(_Except) != 0) { return 1; }
-  return 0;
+__pragma(optimize("", on))
+inline int __cdecl feupdateenv(const fenv_t* fe) {
+  if (::fesetenv(fe) != 0) return 1;
+  else if (int e = ::fetestexcept(FE_ALL_EXCEPT); ::feraiseexcept(e) != 0) return 1;
+  else return 0;
 }
 }
-#else
-#define ywstd_export
 #endif
 
-// clang-format off
+ywstd_export namespace std {
 
-namespace std {
+/// represents all floating-point status flags collectively
 using fexcept_t = unsigned long;
+
+/// clears the specified floating-point status flags
 ywstd_export inline int __cdecl feclearexcept(int except) { return ::feclearexcept(except); }
-ywstd_export inline int __cdecl fegetexceptflag(fexcept_t* flag, int except) {return ::fegetexceptflag(flag, except); }
-ywstd_export inline int __cdecl feraiseexcept(int except) { return ::feraiseexcept(except); }
-ywstd_export inline int __cdecl fesetexceptflag(const fexcept_t* flag, int except) { return ::fesetexceptflag(flag, except); }
+
+/// determines which of the specified floating-point status flags are set
 ywstd_export inline int __cdecl fetestexcept(int except) { return ::fetestexcept(except); }
+
+/// raises the specified floating-point exceptions
+ywstd_export inline int __cdecl feraiseexcept(int except) { return ::feraiseexcept(except); }
+
+/// copies the state of the specified floating-point status flags from the floating-point environment
+ywstd_export inline int __cdecl fegetexceptflag(fexcept_t* flag, int except) {return ::fegetexceptflag(flag, except); }
+
+/// copies the state of the specified floating-point status flags to the floating-point environment
+ywstd_export inline int __cdecl fesetexceptflag(const fexcept_t* flag, int except) { return ::fesetexceptflag(flag, except); }
+
+/// gets rounding direction
 ywstd_export inline int __cdecl fegetround() { return ::fegetround(); }
+
+/// sets rounding direction
 ywstd_export inline int __cdecl fesetround(int mode) { return ::fesetround(mode); }
+
+/// saves the current floating-point environment
 ywstd_export inline int __cdecl fegetenv(fenv_t* env) { return ::fegetenv(env); }
-ywstd_export inline int __cdecl feholdexcept(fenv_t* env) { return ::feholdexcept(env); }
+
+/// installs the floating-point environment
 ywstd_export inline int __cdecl fesetenv(const fenv_t* env) { return ::fesetenv(env); }
+
+/// saves the environment, clears all status flags and ignores all future errors
+ywstd_export inline int __cdecl feholdexcept(fenv_t* env) { return ::feholdexcept(env); }
+
+/// restores the floating-point environment and raises the previously raised exceptions
 ywstd_export inline int __cdecl feupdateenv(const fenv_t* env) { return ::feupdateenv(env); }
 }

@@ -1,6 +1,8 @@
 /// \file print
 /// \copyright (c) 2022 ywx9.com
 
+#include "abc.hpp"
+
 #if ywstd_is_exported
 extern "C" {
 void __cdecl _lock_file(FILE*);
