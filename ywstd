@@ -1,9 +1,10 @@
 #pragma once /* clang-format off */ /* Python code start
 import os, sys, subprocess
+here = os.path.dirname(os.path.abspath(__file__))
 if len(sys.argv) > 1 :
   cpp_file = sys.argv[1]
   if (os.path.splitext(cpp_file)[1] != ".cpp"):
-    print("Usage: python ywstd [<cpp_file> [--run]]")
+    print("Usage: python .compile [<cpp_file> [--run]]")
   if (not os.path.exists(cpp_file)):
     print(f"{cpp_file} not found:")
     sys.exit(1)
@@ -11,9 +12,9 @@ if len(sys.argv) > 1 :
   obj_file = cpp_file.replace(".cpp", ".obj")
   if os.path.exists(exe_file): os.remove(exe_file)
   if os.path.exists(obj_file): os.remove(obj_file)
-  args = ["bin\\cl", cpp_file, f"/Fe{exe_file}", f"/Fo{obj_file}", "/Dywstd_import", ]
+  args = [fR"{here}\bin\cl", cpp_file, f"/Fe{exe_file}", f"/Fo{obj_file}", "/Dywstd_import", ]
   args+= ["/std:c++latest", "/EHsc", "/nologo", "/W4", "/O2", "/Qpar", "/utf-8", ]
-  args+= ["/link", "ywstd.obj", "/LIBPATH:lib", ]
+  args+= [fR"/I{here}", fR"/referenceywstd={here}/ywstd.ifc", "/link", fR"{here}\ywstd.obj", fR"/LIBPATH:{here}\lib", ]
   subprocess.run(args)
   if os.path.exists(obj_file): os.remove(obj_file)
   if os.path.exists(exe_file):
@@ -27,16 +28,17 @@ if len(sys.argv) > 1 :
     sys.exit(1)
 else:
   print("Compiling ywstd...")
-  # create ywstd.ixx
-  args = ["bin\\cl", "ywstd.ixx", "/c", "/Dywstd_export=export", ]
+  args = [fR"{here}\bin\cl", fR"{here}\ywstd.ixx", "/c", "/Dywstd_export=export", ]
+  args+= [fR"/ifcOutput{here}\ywstd.ifc", fR"/Fo{here}\ywstd.obj", fR"/I{here}", ]
   args+= ["/std:c++latest", "/EHsc", "/nologo", "/W4", "/O2", "/Qpar", "/utf-8", ]
-  if os.path.exists("ywstd.ifc"): os.remove("ywstd.ifc")
-  if os.path.exists("ywstd.obj"): os.remove("ywstd.obj")
-  with open("ywstd.ixx", "w") as f:
+  if os.path.exists(fR"{here}\ywstd.ifc"): os.remove(fR"{here}\ywstd.ifc")
+  if os.path.exists(fR"{here}\ywstd.obj"): os.remove(fR"{here}\ywstd.obj")
+  # create ywstd.ixx
+  with open(fR"{here}\ywstd.ixx", "w") as f:
     f.write("export module ywstd;\n#include \"ywstd\"\n")
   subprocess.run(args)
-  if os.path.exists("ywstd.ixx"): os.remove("ywstd.ixx")
-  if os.path.exists("ywstd.ifc") and os.path.exists("ywstd.obj"):
+  if os.path.exists(fR"{here}\ywstd.ixx"): os.remove(fR"{here}\ywstd.ixx")
+  if os.path.exists(fR"{here}\ywstd.ifc") and os.path.exists(fR"{here}\ywstd.obj"):
     print("ywstd compiled successfully.")
     sys.exit(0)
   else:
@@ -173,7 +175,5 @@ import ywstd;
 #include "valarray"
 #include "variant"
 #include "vector"
-
-#include "xyz.hpp"
 
 #endif
