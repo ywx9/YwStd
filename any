@@ -345,7 +345,7 @@ _EXPORT_STD template<class _ValueType> _NODISCARD const _ValueType* any_cast(con
   } else {
     if (!_Any) { return nullptr; }
 
-    return _Any->_Cast<_Remove_cvref_t<_ValueType>>();
+    return _Any->_Cast<remove_cvref_t<_ValueType>>();
   }
 }
 _EXPORT_STD template<class _ValueType> _NODISCARD _ValueType* any_cast(any* const _Any) noexcept {
@@ -357,36 +357,36 @@ _EXPORT_STD template<class _ValueType> _NODISCARD _ValueType* any_cast(any* cons
   } else {
     if (!_Any) { return nullptr; }
 
-    return _Any->_Cast<_Remove_cvref_t<_ValueType>>();
+    return _Any->_Cast<remove_cvref_t<_ValueType>>();
   }
 }
 
 _EXPORT_STD template<class _Ty> _NODISCARD remove_cv_t<_Ty> any_cast(const any& _Any) {
-  static_assert(is_constructible_v<remove_cv_t<_Ty>, const _Remove_cvref_t<_Ty>&>,
+  static_assert(is_constructible_v<remove_cv_t<_Ty>, const remove_cvref_t<_Ty>&>,
                 "any_cast<T>(const any&) requires remove_cv_t<T> to be constructible from "
                 "const remove_cv_t<remove_reference_t<T>>&");
 
-  const auto _Ptr = _STD any_cast<_Remove_cvref_t<_Ty>>(&_Any);
+  const auto _Ptr = _STD any_cast<remove_cvref_t<_Ty>>(&_Any);
   if (!_Ptr) { _Throw_bad_any_cast(); }
 
   return static_cast<remove_cv_t<_Ty>>(*_Ptr);
 }
 _EXPORT_STD template<class _Ty> _NODISCARD remove_cv_t<_Ty> any_cast(any& _Any) {
   static_assert(
-    is_constructible_v<remove_cv_t<_Ty>, _Remove_cvref_t<_Ty>&>,
+    is_constructible_v<remove_cv_t<_Ty>, remove_cvref_t<_Ty>&>,
     "any_cast<T>(any&) requires remove_cv_t<T> to be constructible from remove_cv_t<remove_reference_t<T>>&");
 
-  const auto _Ptr = _STD any_cast<_Remove_cvref_t<_Ty>>(&_Any);
+  const auto _Ptr = _STD any_cast<remove_cvref_t<_Ty>>(&_Any);
   if (!_Ptr) { _Throw_bad_any_cast(); }
 
   return static_cast<remove_cv_t<_Ty>>(*_Ptr);
 }
 _EXPORT_STD template<class _Ty> _NODISCARD remove_cv_t<_Ty> any_cast(any&& _Any) {
   static_assert(
-    is_constructible_v<remove_cv_t<_Ty>, _Remove_cvref_t<_Ty>>,
+    is_constructible_v<remove_cv_t<_Ty>, remove_cvref_t<_Ty>>,
     "any_cast<T>(any&&) requires remove_cv_t<T> to be constructible from remove_cv_t<remove_reference_t<T>>");
 
-  const auto _Ptr = _STD any_cast<_Remove_cvref_t<_Ty>>(&_Any);
+  const auto _Ptr = _STD any_cast<remove_cvref_t<_Ty>>(&_Any);
   if (!_Ptr) { _Throw_bad_any_cast(); }
 
   return static_cast<remove_cv_t<_Ty>>(_STD move(*_Ptr));

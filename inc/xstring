@@ -537,8 +537,8 @@ private:
 
   template<class _Iter>
   // TRANSITION, /clr:pure is incompatible with templated static constexpr data members
-  // static constexpr bool _Is_elem_cptr =_Is_any_of_v<_Iter, const _Elem* const, _Elem* const, const _Elem*, _Elem*>;
-  using _Is_elem_cptr = bool_constant<_Is_any_of_v<_Iter, const _Elem* const, _Elem* const, const _Elem*, _Elem*>>;
+  // static constexpr bool _Is_elem_cptr =_is_included_v<_Iter, const _Elem* const, _Elem* const, const _Elem*, _Elem*>;
+  using _Is_elem_cptr = bool_constant<_is_included_v<_Iter, const _Elem* const, _Elem* const, const _Elem*, _Elem*>>;
 
 #if _HAS_CXX17
   template<class _StringViewIsh> using _Is_string_view_ish =

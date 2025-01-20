@@ -583,19 +583,19 @@ typedef struct __crt_locale_data_public {
   unsigned int _locale_lc_codepage;
 } __crt_locale_data_public;
 
-typedef struct __crt_locale_pointers {
-  struct __crt_locale_data* locinfo;
-  struct __crt_multibyte_data* mbcinfo;
-} __crt_locale_pointers;
+// typedef struct __crt_locale_pointers {
+//   struct __crt_locale_data* locinfo;
+//   struct __crt_multibyte_data* mbcinfo;
+// } __crt_locale_pointers;
 
-typedef __crt_locale_pointers* _locale_t;
+// typedef __crt_locale_pointers* _locale_t;
 
-typedef struct _Mbstatet { // state of a multibyte translation
-  unsigned long _Wchar;
-  unsigned short _Byte, _State;
-} _Mbstatet;
+// typedef struct _Mbstatet { // state of a multibyte translation
+//   unsigned long _Wchar;
+//   unsigned short _Byte, _State;
+// } _Mbstatet;
 
-typedef _Mbstatet mbstate_t;
+// typedef _Mbstatet mbstate_t;
 
 #if defined _USE_32BIT_TIME_T && defined _WIN64
 #error You cannot use 32-bit time_t (_USE_32BIT_TIME_T) with _WIN64

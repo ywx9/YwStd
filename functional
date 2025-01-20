@@ -799,7 +799,7 @@ public:
 
 protected:
   template<class _Fx, class _Function> using _Enable_if_callable_t = enable_if_t<
-    conjunction_v<negation<is_same<_Remove_cvref_t<_Fx>, _Function>>, _Is_invocable_r<_Ret, decay_t<_Fx>&, _Types...>>,
+    conjunction_v<negation<is_same<remove_cvref_t<_Fx>, _Function>>, _Is_invocable_r<_Ret, decay_t<_Fx>&, _Types...>>,
     int>;
 
   bool _Empty() const noexcept { return !_Getimpl(); }
@@ -2161,7 +2161,7 @@ _CONSTEXPR20 pair<_FwdItHaystack, _FwdItHaystack> _Search_pair_unchecked(_FwdItH
 
 #if _USE_STD_VECTOR_ALGORITHMS
     if constexpr (_Vector_alg_in_search_is_safe<_FwdItHaystack, _FwdItPat, _Pred_eq>) {
-      if (!_STD _Is_constant_evaluated()) {
+      if (!_STD is_constant_evaluated()) {
         const auto _Ptr1 = _STD _To_address(_First1);
 
         const auto _Ptr_res1 = _STD _Search_vectorized(_Ptr1, _STD _To_address(_Last1), _STD _To_address(_First2),

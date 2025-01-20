@@ -36,5 +36,7 @@ using uint_fast32_t = unsigned int;
 using uint_fast64_t = unsigned long long;
 using intmax_t = long long;
 using uintmax_t = unsigned long long;
+using intptr_t = long long;
+using uintptr_t = unsigned long long;
 }
 #endif

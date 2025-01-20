@@ -4425,7 +4425,7 @@ template<class _Ty> _NODISCARD tm _Fill_tm(const _Ty& _Val) {
     _Year = static_cast<int>(_Val);
   } else if constexpr (is_same_v<_Ty, weekday>) {
     _Weekday = static_cast<int>(_Val.c_encoding());
-  } else if constexpr (_Is_any_of_v<_Ty, weekday_indexed, weekday_last>) {
+  } else if constexpr (_is_included_v<_Ty, weekday_indexed, weekday_last>) {
     _Weekday = static_cast<int>(_Val.weekday().c_encoding());
   } else if constexpr (is_same_v<_Ty, month_day>) {
     _Day = static_cast<unsigned int>(_Val.day());
@@ -4448,7 +4448,7 @@ template<class _Ty> _NODISCARD tm _Fill_tm(const _Ty& _Val) {
   } else if constexpr (is_same_v<_Ty, year_month>) {
     _Month = static_cast<unsigned int>(_Val.month());
     _Year = static_cast<int>(_Val.year());
-  } else if constexpr (_Is_any_of_v<_Ty, year_month_day, year_month_day_last>) {
+  } else if constexpr (_is_included_v<_Ty, year_month_day, year_month_day_last>) {
     _Day = static_cast<unsigned int>(_Val.day());
     _Month = static_cast<unsigned int>(_Val.month());
     _Year = static_cast<int>(_Val.year());
@@ -4457,7 +4457,7 @@ template<class _Ty> _NODISCARD tm _Fill_tm(const _Ty& _Val) {
       _Weekday = _Ymd._Calculate_weekday();
       _Yearday = (static_cast<sys_days>(_Val) - static_cast<sys_days>(_Val.year() / January / 1)).count();
     }
-  } else if constexpr (_Is_any_of_v<_Ty, year_month_weekday, year_month_weekday_last>) {
+  } else if constexpr (_is_included_v<_Ty, year_month_weekday, year_month_weekday_last>) {
     auto _Tm = _Fill_tm(year_month_day{_Val});
     _Tm.tm_wday = static_cast<int>(_Val.weekday().c_encoding());
     return _Tm;
@@ -4465,7 +4465,7 @@ template<class _Ty> _NODISCARD tm _Fill_tm(const _Ty& _Val) {
     _Hours = _Val.hours().count();
     _Minutes = _Val.minutes().count();
     _Seconds = static_cast<int>(_Val.seconds().count());
-  } else if constexpr (_Is_any_of_v<_Ty, sys_info, local_info>) {
+  } else if constexpr (_is_included_v<_Ty, sys_info, local_info>) {
     return {}; // none of the valid conversion specifiers need tm fields
   } else if constexpr (_Is_specialization_v<_Ty, time_point>) {
     const auto _Dp = _CHRONO floor<days>(_Val);
@@ -4750,15 +4750,15 @@ template<class _CharT> struct _Chrono_formatter {
       return _Type == 'b' || _Type == 'B' || _Type == 'h' || _Type == 'm';
     } else if constexpr (is_same_v<_Ty, year>) {
       return _Type == 'Y' || _Type == 'y' || _Type == 'C';
-    } else if constexpr (_Is_any_of_v<_Ty, weekday, weekday_indexed, weekday_last>) {
+    } else if constexpr (_is_included_v<_Ty, weekday, weekday_indexed, weekday_last>) {
       return _Type == 'a' || _Type == 'A' || _Type == 'u' || _Type == 'w';
-    } else if constexpr (_Is_any_of_v<_Ty, month_day, month_day_last>) {
+    } else if constexpr (_is_included_v<_Ty, month_day, month_day_last>) {
       return _Type == 'j' || _Is_valid_type<month>(_Type) || _Is_valid_type<day>(_Type);
-    } else if constexpr (_Is_any_of_v<_Ty, month_weekday, month_weekday_last>) {
+    } else if constexpr (_is_included_v<_Ty, month_weekday, month_weekday_last>) {
       return _Is_valid_type<month>(_Type) || _Is_valid_type<weekday>(_Type);
     } else if constexpr (is_same_v<_Ty, year_month>) {
       return _Type == 'g' || _Type == 'G' || _Is_valid_type<year>(_Type) || _Is_valid_type<month>(_Type);
-    } else if constexpr (_Is_any_of_v<_Ty, year_month_day, year_month_day_last, year_month_weekday,
+    } else if constexpr (_is_included_v<_Ty, year_month_day, year_month_day_last, year_month_weekday,
                                       year_month_weekday_last>) {
       return _Type == 'D' || _Type == 'F' || _Type == 'g' || _Type == 'G' || _Type == 'j' || _Type == 'U' ||
              _Type == 'V' || _Type == 'W' || _Type == 'x' || _Is_valid_type<year>(_Type) ||
@@ -4766,7 +4766,7 @@ template<class _CharT> struct _Chrono_formatter {
     } else if constexpr (_Is_specialization_v<_Ty, hh_mm_ss>) {
       return _Type == 'H' || _Type == 'I' || _Type == 'M' || _Type == 'S' || _Type == 'r' || _Type == 'R' ||
              _Type == 'T' || _Type == 'p' || _Type == 'X';
-    } else if constexpr (_Is_any_of_v<_Ty, sys_info, local_info>) {
+    } else if constexpr (_is_included_v<_Ty, sys_info, local_info>) {
       return _Type == 'z' || _Type == 'Z';
     } else if constexpr (_Is_specialization_v<_Ty, time_point>) {
       if constexpr (!is_same_v<typename _Ty::clock, local_t>) {
@@ -5019,22 +5019,22 @@ template<class _CharT> struct _Chrono_formatter {
 
     const auto _Validate = [&] {
       constexpr bool _Is_ymd =
-        _Is_any_of_v<_Ty, year_month_day, year_month_day_last, year_month_weekday, year_month_weekday_last>;
+        _is_included_v<_Ty, year_month_day, year_month_day_last, year_month_weekday, year_month_weekday_last>;
 
       switch (_Spec._Type) {
       case 'a':
       case 'A':
       case 'u':
       case 'w':
-        if constexpr (_Is_any_of_v<_Ty, weekday, weekday_last>) {
+        if constexpr (_is_included_v<_Ty, weekday, weekday_last>) {
           return _Val.ok();
-        } else if constexpr (_Is_any_of_v<_Ty, weekday_indexed, year_month_weekday, year_month_weekday_last>) {
+        } else if constexpr (_is_included_v<_Ty, weekday_indexed, year_month_weekday, year_month_weekday_last>) {
           return _Val.weekday().ok();
         } else if constexpr (is_same_v<_Ty, month_weekday>) {
           return _Val.weekday_indexed().weekday().ok();
         } else if constexpr (is_same_v<_Ty, month_weekday_last>) {
           return _Val.weekday_last().ok();
-        } else if constexpr (_Is_any_of_v<_Ty, year_month_day, year_month_day_last>) {
+        } else if constexpr (_is_included_v<_Ty, year_month_day, year_month_day_last>) {
           return _Val.ok();
         }
         break;
@@ -5045,7 +5045,7 @@ template<class _CharT> struct _Chrono_formatter {
       case 'm':
         if constexpr (is_same_v<_Ty, month>) {
           return _Val.ok();
-        } else if constexpr (_Is_any_of_v<_Ty, month_day, month_day_last, month_weekday, month_weekday_last,
+        } else if constexpr (_is_included_v<_Ty, month_day, month_day_last, month_weekday, month_weekday_last,
                                           year_month> ||
                              _Is_ymd) {
           return _Val.month().ok();
@@ -5064,7 +5064,7 @@ template<class _CharT> struct _Chrono_formatter {
 
       case 'd':
       case 'e':
-        if constexpr (_Is_any_of_v<_Ty, day, month_day_last>) {
+        if constexpr (_is_included_v<_Ty, day, month_day_last>) {
           return _Val.ok();
         } else if constexpr (is_same_v<_Ty, month_day>) {
           return _Val.day().ok();

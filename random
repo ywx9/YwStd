@@ -50,12 +50,12 @@ _STD_BEGIN
         "note: char, signed char, unsigned char, char8_t, int8_t, and uint8_t are not allowed")
 
 #define _RNG_REQUIRE_REALTYPE(_RandType, _CheckedType)                    \
-    static_assert(_Is_any_of_v<_CheckedType, float, double, long double>, \
+    static_assert(_is_included_v<_CheckedType, float, double, long double>, \
         "invalid template argument for " #_RandType                       \
         ": N4950 [rand.req.genl]/1.4 requires one of float, double, or long double")
 
 #define _RNG_REQUIRE_INTTYPE(_RandType, _CheckedType)                                                                  \
-    static_assert(_Is_any_of_v<_CheckedType, short, int, long, long long, unsigned short, unsigned int, unsigned long, \
+    static_assert(_is_included_v<_CheckedType, short, int, long, long long, unsigned short, unsigned int, unsigned long, \
                       unsigned long long>,                                                                             \
         "invalid template argument for " #_RandType                                                                    \
         ": N4950 [rand.req.genl]/1.5 requires one of short, int, long, long long, unsigned short, unsigned int, "      \
@@ -63,7 +63,7 @@ _STD_BEGIN
     _RNG_PROHIBIT_CHAR(_CheckedType)
 
 #define _RNG_REQUIRE_UINTTYPE(_RandType, _CheckedType)                                                             \
-    static_assert(_Is_any_of_v<_CheckedType, unsigned short, unsigned int, unsigned long, unsigned long long>,     \
+    static_assert(_is_included_v<_CheckedType, unsigned short, unsigned int, unsigned long, unsigned long long>,     \
         "invalid template argument for " #_RandType ": N4950 [rand.req.genl]/1.6 requires one of unsigned short, " \
         "unsigned int, unsigned long, or unsigned long long");                                                     \
     _RNG_PROHIBIT_CHAR(_CheckedType)
@@ -179,7 +179,7 @@ public:
 
     template <class _RanIt>
     void generate(_RanIt _First, _RanIt _Last) const { // generate randomized interval from seeds
-        static_assert(_Is_any_of_v<remove_cv_t<typename iterator_traits<_RanIt>::value_type>, //
+        static_assert(_is_included_v<remove_cv_t<typename iterator_traits<_RanIt>::value_type>, //
                           unsigned int, unsigned long, unsigned long long>,
             "N4971 [rand.util.seedseq]/7 requires the value type of the iterator to be an unsigned type that is at "
             "least 32-bit.");

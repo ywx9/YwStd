@@ -641,7 +641,7 @@ _NODISCARD constexpr common_type_t<_Mt, _Nt> gcd(const _Mt _Mx, const _Nt _Nx) n
 
   if constexpr (is_signed_v<_Common>) {
 #ifndef _DEBUG
-    if (_STD _Is_constant_evaluated())
+    if (_STD is_constant_evaluated())
 #endif // ^^^ !defined(_DEBUG) ^^^
     {
       constexpr auto _Min_common = _STD _Min_limit<_Common>();
@@ -690,7 +690,7 @@ _NODISCARD constexpr common_type_t<_Mt, _Nt> lcm(const _Mt _Mx, const _Nt _Nx) n
   if (_Mx_magnitude == 0 || _Nx_magnitude == 0) { return 0; }
 
 #ifndef _DEBUG
-  if (!_STD _Is_constant_evaluated()) {
+  if (!_STD is_constant_evaluated()) {
     return static_cast<_Common>((_Mx_magnitude / _STD gcd(_Mx_magnitude, _Nx_magnitude)) * _Nx_magnitude);
   }
 #endif // ^^^ !defined(_DEBUG) ^^^

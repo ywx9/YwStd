@@ -811,7 +811,7 @@ public:
   static _Ty hypot(_Ty _Left, _Ty _Right) noexcept { return _CSTD hypotf(_Left, _Right); }
 };
 
-template<class _Ty> constexpr bool _Is_unqual_fp = _Is_any_of_v<_Ty, float, double, long double>;
+template<class _Ty> constexpr bool _Is_unqual_fp = _is_included_v<_Ty, float, double, long double>;
 
 template<class _Ty> struct _Complex_value {
   enum { _Re = 0, _Im = 1 };
@@ -821,7 +821,7 @@ template<class _Ty> struct _Complex_value {
 template<class _Ty, class _Valbase> class _Complex_base : public _Valbase {
 private:
   static constexpr bool _Is_for_standard_complex =
-    _Is_any_of_v<_Complex_base, _Complex_base<float, _Fcomplex_value>, _Complex_base<double, _Dcomplex_value>,
+    _is_included_v<_Complex_base, _Complex_base<float, _Fcomplex_value>, _Complex_base<double, _Dcomplex_value>,
                  _Complex_base<long double, _Lcomplex_value>>;
 
 public:

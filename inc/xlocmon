@@ -198,7 +198,7 @@ private:
 _EXPORT_STD template<class _Elem, bool _Intl = false> class moneypunct
   : public _Mpunct<_Elem> { // facet for defining monetary punctuation text
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   _PGLOBAL _CRTIMP2_PURE_IMPORT static const bool intl;              // true if international
   __PURE_APPDOMAIN_GLOBAL _CRTIMP2_PURE_IMPORT static locale::id id; // unique facet id
@@ -237,7 +237,7 @@ template<class _Elem, bool _Intl> __PURE_APPDOMAIN_GLOBAL locale::id moneypunct<
 _EXPORT_STD template<class _Elem, bool _Intl = false> class moneypunct_byname
   : public moneypunct<_Elem, _Intl> { // moneypunct for named locale
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   explicit moneypunct_byname(const char* _Locname, size_t _Refs = 0)
     : moneypunct<_Elem, _Intl>(_Locname, _Refs) {} // construct for named locale
@@ -256,7 +256,7 @@ private:
   using _Mypunct1 = moneypunct<_Elem, true>;
 
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   using char_type = _Elem;
   using iter_type = _InIt;
@@ -548,7 +548,7 @@ private:
   using _Mypunct1 = moneypunct<_Elem, true>;
 
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   using char_type = _Elem;
   using iter_type = _OutIt;

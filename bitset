@@ -145,7 +145,7 @@ private:
     constexpr size_t _Bitset_from_string_vector_threshold = 16;
     if constexpr (_Bits >= _Bitset_from_string_vector_threshold && _Is_implementation_handled_char_traits<_Traits> &&
                   sizeof(_Elem) <= 2) {
-      if (!_STD _Is_constant_evaluated()) {
+      if (!_STD is_constant_evaluated()) {
         bool _Result;
 
         if constexpr (sizeof(_Elem) == 1) {
@@ -474,7 +474,7 @@ public:
 #if _USE_STD_VECTOR_ALGORITHMS
     constexpr size_t _Bitset_to_string_vector_threshold = 32;
     if constexpr (_Bits >= _Bitset_to_string_vector_threshold && is_integral_v<_Elem> && sizeof(_Elem) <= 2) {
-      if (!_Is_constant_evaluated()) {
+      if (!is_constant_evaluated()) {
         if constexpr (sizeof(_Elem) == 1) {
           __std_bitset_to_string_1(reinterpret_cast<char*>(_Buf), _Array, _Len, static_cast<char>(_Elem0),
                                    static_cast<char>(_Elem1));

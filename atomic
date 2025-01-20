@@ -1897,18 +1897,12 @@ template<class _Ty> struct _Atomic_nonobject_pointer : _Atomic_storage<_Ty> {
 #define ATOMIC_VAR_INIT(_Value) {_Value}
 
 template<class _TVal, class _Ty = _TVal> using _Choose_atomic_base2_t =
-  typename _Select<is_integral_v<_TVal> && !is_same_v<bool, _TVal>>::template _Apply<
-    _Atomic_integral_facade<_Ty>, typename _Select<is_pointer_v<_TVal>>::template _Apply<
-                                    typename _Select<is_object_v<remove_pointer_t<_TVal>>>::template _Apply<
-                                      _Atomic_pointer<_Ty>, _Atomic_nonobject_pointer<_Ty>>,
-                                    _Atomic_storage<_Ty>>>;
+  conditional_t<_Is_nonbool_integral<_TVal>, _Atomic_integral_facade<_Ty>,
+  conditional_t<!is_pointer_v<_TVal>, _Atomic_storage<_Ty>,
+  conditional_t<is_object_v<remove_pointer_t<_TVal>>, _Atomic_pointer<_Ty>, _Atomic_nonobject_pointer<_Ty>>>>;
 
-#if _HAS_CXX20
 template<class _TVal, class _Ty = _TVal> using _Choose_atomic_base_t =
-  _Select<is_floating_point_v<_TVal>>::template _Apply<_Atomic_floating<_Ty>, _Choose_atomic_base2_t<_TVal, _Ty>>;
-#else  // ^^^ _HAS_CXX20 / !_HAS_CXX20 vvv
-template<class _TVal, class _Ty = _TVal> using _Choose_atomic_base_t = _Choose_atomic_base2_t<_TVal, _Ty>;
-#endif // ^^^ !_HAS_CXX20 ^^^
+  conditional_t<is_floating_point_v<_TVal>, _Atomic_floating<_Ty>, _Choose_atomic_base2_t<_TVal, _Ty>>;
 
 _EXPORT_STD template<class _Ty> struct atomic : _Choose_atomic_base_t<_Ty> { // atomic value
 private:
@@ -2161,24 +2155,24 @@ _EXPORT_STD template<class _Ty> _NODISCARD bool atomic_is_lock_free(const atomic
 }
 
 _EXPORT_STD template<class _Ty>
-void atomic_store(volatile atomic<_Ty>* const _Mem, const _Identity_t<_Ty> _Value) noexcept {
+void atomic_store(volatile atomic<_Ty>* const _Mem, const type_identity_t<_Ty> _Value) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   _Mem->store(_Value);
 }
 
-_EXPORT_STD template<class _Ty> void atomic_store(atomic<_Ty>* const _Mem, const _Identity_t<_Ty> _Value) noexcept {
+_EXPORT_STD template<class _Ty> void atomic_store(atomic<_Ty>* const _Mem, const type_identity_t<_Ty> _Value) noexcept {
   _Mem->store(_Value);
 }
 
 _EXPORT_STD template<class _Ty> void atomic_store_explicit(volatile atomic<_Ty>* const _Mem,
-                                                           const _Identity_t<_Ty> _Value,
+                                                           const type_identity_t<_Ty> _Value,
                                                            const memory_order _Order) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   _Mem->store(_Value, _Order);
 }
 
 _EXPORT_STD template<class _Ty>
-void atomic_store_explicit(atomic<_Ty>* const _Mem, const _Identity_t<_Ty> _Value, const memory_order _Order) noexcept {
+void atomic_store_explicit(atomic<_Ty>* const _Mem, const type_identity_t<_Ty> _Value, const memory_order _Order) noexcept {
   _Mem->store(_Value, _Order);
 }
 
@@ -2214,79 +2208,79 @@ _NODISCARD _Ty atomic_load_explicit(const atomic<_Ty>* const _Mem, const memory_
 }
 
 _EXPORT_STD template<class _Ty>
-_Ty atomic_exchange(volatile atomic<_Ty>* const _Mem, const _Identity_t<_Ty> _Value) noexcept {
+_Ty atomic_exchange(volatile atomic<_Ty>* const _Mem, const type_identity_t<_Ty> _Value) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   return _Mem->exchange(_Value);
 }
 
-_EXPORT_STD template<class _Ty> _Ty atomic_exchange(atomic<_Ty>* const _Mem, const _Identity_t<_Ty> _Value) noexcept {
+_EXPORT_STD template<class _Ty> _Ty atomic_exchange(atomic<_Ty>* const _Mem, const type_identity_t<_Ty> _Value) noexcept {
   return _Mem->exchange(_Value);
 }
 
 _EXPORT_STD template<class _Ty> _Ty atomic_exchange_explicit(volatile atomic<_Ty>* const _Mem,
-                                                             const _Identity_t<_Ty> _Value,
+                                                             const type_identity_t<_Ty> _Value,
                                                              const memory_order _Order) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   return _Mem->exchange(_Value, _Order);
 }
 
-_EXPORT_STD template<class _Ty> _Ty atomic_exchange_explicit(atomic<_Ty>* const _Mem, const _Identity_t<_Ty> _Value,
+_EXPORT_STD template<class _Ty> _Ty atomic_exchange_explicit(atomic<_Ty>* const _Mem, const type_identity_t<_Ty> _Value,
                                                              const memory_order _Order) noexcept {
   return _Mem->exchange(_Value, _Order);
 }
 
 _EXPORT_STD template<class _Ty> bool atomic_compare_exchange_strong(volatile atomic<_Ty>* const _Mem,
-                                                                    _Identity_t<_Ty>* const _Expected,
-                                                                    const _Identity_t<_Ty> _Desired) noexcept {
+                                                                    type_identity_t<_Ty>* const _Expected,
+                                                                    const type_identity_t<_Ty> _Desired) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   return _Mem->compare_exchange_strong(*_Expected, _Desired);
 }
 
 _EXPORT_STD template<class _Ty> bool atomic_compare_exchange_strong(atomic<_Ty>* const _Mem,
-                                                                    _Identity_t<_Ty>* const _Expected,
-                                                                    const _Identity_t<_Ty> _Desired) noexcept {
+                                                                    type_identity_t<_Ty>* const _Expected,
+                                                                    const type_identity_t<_Ty> _Desired) noexcept {
   return _Mem->compare_exchange_strong(*_Expected, _Desired);
 }
 
 _EXPORT_STD template<class _Ty>
-bool atomic_compare_exchange_strong_explicit(volatile atomic<_Ty>* const _Mem, _Identity_t<_Ty>* const _Expected,
-                                             const _Identity_t<_Ty> _Desired, const memory_order _Success,
+bool atomic_compare_exchange_strong_explicit(volatile atomic<_Ty>* const _Mem, type_identity_t<_Ty>* const _Expected,
+                                             const type_identity_t<_Ty> _Desired, const memory_order _Success,
                                              const memory_order _Failure) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   return _Mem->compare_exchange_strong(*_Expected, _Desired, _Combine_cas_memory_orders(_Success, _Failure));
 }
 
 _EXPORT_STD template<class _Ty>
-bool atomic_compare_exchange_strong_explicit(atomic<_Ty>* const _Mem, _Identity_t<_Ty>* const _Expected,
-                                             const _Identity_t<_Ty> _Desired, const memory_order _Success,
+bool atomic_compare_exchange_strong_explicit(atomic<_Ty>* const _Mem, type_identity_t<_Ty>* const _Expected,
+                                             const type_identity_t<_Ty> _Desired, const memory_order _Success,
                                              const memory_order _Failure) noexcept {
   return _Mem->compare_exchange_strong(*_Expected, _Desired, _Combine_cas_memory_orders(_Success, _Failure));
 }
 
 _EXPORT_STD template<class _Ty> bool atomic_compare_exchange_weak(volatile atomic<_Ty>* const _Mem,
-                                                                  _Identity_t<_Ty>* const _Expected,
-                                                                  const _Identity_t<_Ty> _Desired) noexcept {
+                                                                  type_identity_t<_Ty>* const _Expected,
+                                                                  const type_identity_t<_Ty> _Desired) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   return _Mem->compare_exchange_strong(*_Expected, _Desired);
 }
 
 _EXPORT_STD template<class _Ty> bool atomic_compare_exchange_weak(atomic<_Ty>* const _Mem,
-                                                                  _Identity_t<_Ty>* const _Expected,
-                                                                  const _Identity_t<_Ty> _Desired) noexcept {
+                                                                  type_identity_t<_Ty>* const _Expected,
+                                                                  const type_identity_t<_Ty> _Desired) noexcept {
   return _Mem->compare_exchange_strong(*_Expected, _Desired);
 }
 
 _EXPORT_STD template<class _Ty>
-bool atomic_compare_exchange_weak_explicit(volatile atomic<_Ty>* const _Mem, _Identity_t<_Ty>* const _Expected,
-                                           const _Identity_t<_Ty> _Desired, const memory_order _Success,
+bool atomic_compare_exchange_weak_explicit(volatile atomic<_Ty>* const _Mem, type_identity_t<_Ty>* const _Expected,
+                                           const type_identity_t<_Ty> _Desired, const memory_order _Success,
                                            const memory_order _Failure) noexcept {
   static_assert(_Deprecate_non_lock_free_volatile<_Ty>, "Never fails");
   return _Mem->compare_exchange_strong(*_Expected, _Desired, _Combine_cas_memory_orders(_Success, _Failure));
 }
 
 _EXPORT_STD template<class _Ty>
-bool atomic_compare_exchange_weak_explicit(atomic<_Ty>* const _Mem, _Identity_t<_Ty>* const _Expected,
-                                           const _Identity_t<_Ty> _Desired, const memory_order _Success,
+bool atomic_compare_exchange_weak_explicit(atomic<_Ty>* const _Mem, type_identity_t<_Ty>* const _Expected,
+                                           const type_identity_t<_Ty> _Desired, const memory_order _Success,
                                            const memory_order _Failure) noexcept {
   return _Mem->compare_exchange_strong(*_Expected, _Desired, _Combine_cas_memory_orders(_Success, _Failure));
 }

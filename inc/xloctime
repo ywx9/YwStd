@@ -104,7 +104,7 @@ private:
   friend _Tidy_guard<time_get>;
 
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   using char_type = _Elem;
   using iter_type = _InIt;
@@ -566,7 +566,7 @@ template<class _Elem, class _InIt> __PURE_APPDOMAIN_GLOBAL locale::id time_get<_
 _EXPORT_STD template<class _Elem, class _InIt = istreambuf_iterator<_Elem, char_traits<_Elem>>> class time_get_byname
   : public time_get<_Elem, _InIt> { // time_get for named locale
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   explicit time_get_byname(const char* _Locname, size_t _Refs = 0)
     : time_get<_Elem, _InIt>(_Locname, _Refs) {} // construct for named locale
@@ -690,7 +690,7 @@ _NODISCARD constexpr bool _Is_valid_strftime_tm_data(const char _Specifier, cons
 _EXPORT_STD extern "C++" template<class _Elem, class _OutIt = ostreambuf_iterator<_Elem, char_traits<_Elem>>>
 class time_put : public locale::facet { // facet for converting encoded times to text
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   using char_type = _Elem;
   using iter_type = _OutIt;
@@ -1113,7 +1113,7 @@ template<class _OutIt> __PURE_APPDOMAIN_GLOBAL locale::id time_put<unsigned shor
 _EXPORT_STD template<class _Elem, class _OutIt = ostreambuf_iterator<_Elem, char_traits<_Elem>>> class time_put_byname
   : public time_put<_Elem, _OutIt> { // time_put for named locale
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   explicit time_put_byname(const char* _Locname, size_t _Refs = 0)
     : time_put<_Elem, _OutIt>(_Locname, _Refs) {} // construct for named locale

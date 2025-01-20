@@ -20,7 +20,6 @@ unsigned __int64 __lzcnt64(unsigned __int64);
 #if _STL_COMPILER_PREPROCESSOR
 
 #include "../climits"
-#include "xtr1common"
 
 // #include _STL_INTRIN_HEADER
 
@@ -295,7 +294,7 @@ template<class _Ty> _NODISCARD int _Checked_popcount(const _Ty _Val) noexcept {
 #endif // ^^^ _HAS_POPCNT_INTRINSICS ^^^
 
 template<class _Ty> constexpr bool _Is_standard_unsigned_integer =
-  _Is_any_of_v<remove_cv_t<_Ty>, unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long>;
+  _is_included_v<remove_cv_t<_Ty>, unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long>;
 
 template<class _Ty, enable_if_t<_Is_standard_unsigned_integer<_Ty>, int> = 0>
 _NODISCARD _CONSTEXPR20 int _Countr_zero(const _Ty _Val) noexcept {

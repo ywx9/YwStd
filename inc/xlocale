@@ -612,7 +612,7 @@ protected:
   }
 };
 
-template<class _Ty> constexpr bool _Is_one_byte_char_like_v = _Is_any_of_v<remove_cv_t<_Ty>, signed char, unsigned char,
+template<class _Ty> constexpr bool _Is_one_byte_char_like_v = _is_included_v<remove_cv_t<_Ty>, signed char, unsigned char,
 #ifdef __cpp_lib_byte
                                                                            byte,
 #endif // defined(__cpp_lib_byte)
@@ -2243,7 +2243,7 @@ _EXPORT_STD template<class _Elem, class _Byte, class _Statype> class codecvt_byn
 public:
   static_assert(
     !_ENFORCE_FACET_SPECIALIZATIONS ||
-      _Is_any_of_v<codecvt_byname, codecvt_byname<char, char, mbstate_t>, codecvt_byname<wchar_t, char, mbstate_t>>,
+      _is_included_v<codecvt_byname, codecvt_byname<char, char, mbstate_t>, codecvt_byname<wchar_t, char, mbstate_t>>,
     _FACET_SPECIALIZATION_MESSAGE);
 
   explicit __CLR_OR_THIS_CALL codecvt_byname(const char* _Locname, size_t _Refs = 0)
@@ -3146,7 +3146,7 @@ private:
 
 _EXPORT_STD template<class _Elem> class ctype_byname : public ctype<_Elem> { // ctype for named locale
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   explicit __CLR_OR_THIS_CALL ctype_byname(const char* _Locname, size_t _Refs = 0)
     : ctype<_Elem>(_Locinfo(_Locname), _Refs) {} // construct for named locale

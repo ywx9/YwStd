@@ -210,7 +210,7 @@ private:
 
 public:
   static_assert(
-    !_Is_any_of_v<remove_cv_t<_Ty>, nullopt_t, in_place_t>,
+    !_is_included_v<remove_cv_t<_Ty>, nullopt_t, in_place_t>,
     "T in optional<T> must be a type other than nullopt_t or in_place_t (N4950 [optional.optional.general]/3).");
   static_assert(is_object_v<_Ty> && is_destructible_v<_Ty> && !is_array_v<_Ty>,
                 "T in optional<T> must meet the Cpp17Destructible requirements (N4950 [optional.optional.general]/3).");
@@ -232,8 +232,8 @@ public:
     : _Mybase(in_place, _Ilist, _STD forward<_Types>(_Args)...) {}
 
   template<class _Ty2> using _AllowDirectConversion = bool_constant<conjunction_v<
-    negation<is_same<_Remove_cvref_t<_Ty2>, optional>>, negation<is_same<_Remove_cvref_t<_Ty2>, in_place_t>>,
-    negation<conjunction<is_same<remove_cv_t<_Ty>, bool>, _Is_specialization<_Remove_cvref_t<_Ty2>, optional>>>,
+    negation<is_same<remove_cvref_t<_Ty2>, optional>>, negation<is_same<remove_cvref_t<_Ty2>, in_place_t>>,
+    negation<conjunction<is_same<remove_cv_t<_Ty>, bool>, _Is_specialization<remove_cvref_t<_Ty2>, optional>>>,
     is_constructible<_Ty, _Ty2>>>;
 
   template<class _Ty2 = _Ty, enable_if_t<_AllowDirectConversion<_Ty2>::value, int> = 0>
@@ -268,7 +268,7 @@ public:
   }
 
   template<class _Ty2 = _Ty,
-           enable_if_t<conjunction_v<negation<is_same<optional, _Remove_cvref_t<_Ty2>>>,
+           enable_if_t<conjunction_v<negation<is_same<optional, remove_cvref_t<_Ty2>>>,
                                      negation<conjunction<is_scalar<_Ty>, is_same<_Ty, decay_t<_Ty2>>>>,
                                      is_constructible<_Ty, _Ty2>, is_assignable<_Ty&, _Ty2>>,
                        int> = 0>
@@ -477,7 +477,7 @@ public:
     using _Uty = remove_cv_t<invoke_result_t<_Fn, _Ty&>>;
 
     static_assert(
-      !_Is_any_of_v<_Uty, nullopt_t, in_place_t>,
+      !_is_included_v<_Uty, nullopt_t, in_place_t>,
       "optional<T>::transform(F) requires the return type of F to be a type other than nullopt_t or in_place_t "
       "(N4950 [optional.monadic]/8).");
     static_assert(is_object_v<_Uty> && !is_array_v<_Uty>,
@@ -496,7 +496,7 @@ public:
     using _Uty = remove_cv_t<invoke_result_t<_Fn, const _Ty&>>;
 
     static_assert(
-      !_Is_any_of_v<_Uty, nullopt_t, in_place_t>,
+      !_is_included_v<_Uty, nullopt_t, in_place_t>,
       "optional<T>::transform(F) requires the return type of F to be a type other than nullopt_t or in_place_t "
       "(N4950 [optional.monadic]/8).");
     static_assert(is_object_v<_Uty> && !is_array_v<_Uty>,
@@ -515,7 +515,7 @@ public:
     using _Uty = remove_cv_t<invoke_result_t<_Fn, _Ty>>;
 
     static_assert(
-      !_Is_any_of_v<_Uty, nullopt_t, in_place_t>,
+      !_is_included_v<_Uty, nullopt_t, in_place_t>,
       "optional<T>::transform(F) requires the return type of F to be a type other than nullopt_t or in_place_t "
       "(N4950 [optional.monadic]/11).");
     static_assert(is_object_v<_Uty> && !is_array_v<_Uty>,
@@ -534,7 +534,7 @@ public:
     using _Uty = remove_cv_t<invoke_result_t<_Fn, const _Ty>>;
 
     static_assert(
-      !_Is_any_of_v<_Uty, nullopt_t, in_place_t>,
+      !_is_included_v<_Uty, nullopt_t, in_place_t>,
       "optional<T>::transform(F) requires the return type of F to be a type other than nullopt_t or in_place_t "
       "(N4950 [optional.monadic]/11).");
     static_assert(is_object_v<_Uty> && !is_array_v<_Uty>,

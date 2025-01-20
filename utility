@@ -105,7 +105,7 @@ _CONSTEXPR20 void swap(_Ty (&_Left)[_Size], _Ty (&_Right)[_Size]) noexcept(_Is_n
   }
 
   if constexpr (_Is_trivially_swappable_v<_Ty>) {
-    if (!_STD _Is_constant_evaluated()) {
+    if (!_STD is_constant_evaluated()) {
       _STD _Swap_trivial_arrays(_Left, _Right);
       return;
     }
@@ -307,7 +307,7 @@ _EXPORT_STD template<class _Ty1, class _Ty2> struct pair { // store a pair of va
            enable_if_t<conjunction_v<_Is_copy_assignable_no_precondition_check<typename _Myself::first_type>,
                                      _Is_copy_assignable_no_precondition_check<typename _Myself::second_type>>,
                        int> = 0>
-  _CONSTEXPR20 pair& operator=(_Identity_t<const _Myself&> _Right) noexcept(
+  _CONSTEXPR20 pair& operator=(type_identity_t<const _Myself&> _Right) noexcept(
     conjunction_v<is_nothrow_copy_assignable<_Ty1>, is_nothrow_copy_assignable<_Ty2>>) /* strengthened */ {
     first = _Right.first;
     second = _Right.second;
@@ -317,7 +317,7 @@ _EXPORT_STD template<class _Ty1, class _Ty2> struct pair { // store a pair of va
 #if _HAS_CXX23
   template<class _Myself = pair> requires _Is_copy_assignable_unchecked_v<const typename _Myself::first_type> &&
                                           _Is_copy_assignable_unchecked_v<const typename _Myself::second_type>
-  constexpr const pair& operator=(_Identity_t<const _Myself&> _Right) const noexcept(
+  constexpr const pair& operator=(type_identity_t<const _Myself&> _Right) const noexcept(
     conjunction_v<is_nothrow_copy_assignable<const _Ty1>, is_nothrow_copy_assignable<const _Ty2>>) /* strengthened */ {
     first = _Right.first;
     second = _Right.second;
@@ -329,7 +329,7 @@ _EXPORT_STD template<class _Ty1, class _Ty2> struct pair { // store a pair of va
            enable_if_t<conjunction_v<_Is_move_assignable_no_precondition_check<typename _Myself::first_type>,
                                      _Is_move_assignable_no_precondition_check<typename _Myself::second_type>>,
                        int> = 0>
-  _CONSTEXPR20 pair& operator=(_Identity_t<_Myself&&> _Right) noexcept(
+  _CONSTEXPR20 pair& operator=(type_identity_t<_Myself&&> _Right) noexcept(
     conjunction_v<is_nothrow_move_assignable<_Ty1>, is_nothrow_move_assignable<_Ty2>>) /* strengthened */ {
     first = _STD forward<_Ty1>(_Right.first);
     second = _STD forward<_Ty2>(_Right.second);
@@ -340,7 +340,7 @@ _EXPORT_STD template<class _Ty1, class _Ty2> struct pair { // store a pair of va
   template<class _Myself = pair>
   requires _Is_assignable_no_precondition_check<const typename _Myself::first_type&, _Ty1>::value &&
            _Is_assignable_no_precondition_check<const typename _Myself::second_type&, _Ty2>::value
-  constexpr const pair& operator=(_Identity_t<_Myself&&> _Right) const
+  constexpr const pair& operator=(type_identity_t<_Myself&&> _Right) const
     noexcept(conjunction_v<is_nothrow_assignable<const _Ty1&, _Ty1>,
                            is_nothrow_assignable<const _Ty2&, _Ty2>>) /* strengthened */ {
     first = _STD forward<_Ty1>(_Right.first);
@@ -834,7 +834,7 @@ template<class _Rx, class _Ty> _NODISCARD constexpr bool _In_range(const _Ty _Va
 
 #if _HAS_CXX20
 template<class _Ty> constexpr bool _Is_standard_integer =
-  _Is_any_of_v<remove_cv_t<_Ty>, signed char, short, int, long, long long, unsigned char, unsigned short, unsigned int,
+  _is_included_v<remove_cv_t<_Ty>, signed char, short, int, long, long long, unsigned char, unsigned short, unsigned int,
                unsigned long, unsigned long long>;
 
 _EXPORT_STD template<class _Ty1, class _Ty2>

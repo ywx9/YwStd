@@ -97,7 +97,7 @@ public:
   }
 
 #if _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
-  template<class _Path_ish = experimental::filesystem::path> void open(const _Identity_t<_Path_ish>& _Path,
+  template<class _Path_ish = experimental::filesystem::path> void open(const type_identity_t<_Path_ish>& _Path,
                                                                        ios_base::openmode _Mode = ios_base::in,
                                                                        int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
@@ -106,7 +106,7 @@ public:
 #endif // _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
 
 #if _HAS_CXX17
-  template<int = 0, class _Path_ish = filesystem::path> void open(const _Identity_t<_Path_ish>& _Path,
+  template<int = 0, class _Path_ish = filesystem::path> void open(const type_identity_t<_Path_ish>& _Path,
                                                                   ios_base::openmode _Mode = ios_base::in,
                                                                   int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
@@ -239,7 +239,7 @@ public:
   }
 
 #if _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
-  template<class _Path_ish = experimental::filesystem::path> void open(const _Identity_t<_Path_ish>& _Path,
+  template<class _Path_ish = experimental::filesystem::path> void open(const type_identity_t<_Path_ish>& _Path,
                                                                        ios_base::openmode _Mode = ios_base::out,
                                                                        int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
@@ -248,7 +248,7 @@ public:
 #endif // _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
 
 #if _HAS_CXX17
-  template<int = 0, class _Path_ish = filesystem::path> void open(const _Identity_t<_Path_ish>& _Path,
+  template<int = 0, class _Path_ish = filesystem::path> void open(const type_identity_t<_Path_ish>& _Path,
                                                                   ios_base::openmode _Mode = ios_base::out,
                                                                   int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
@@ -388,7 +388,7 @@ public:
 
 #if _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
   template<class _Path_ish = experimental::filesystem::path>
-  void open(const _Identity_t<_Path_ish>& _Path, ios_base::openmode _Mode = ios_base::in | ios_base::out,
+  void open(const type_identity_t<_Path_ish>& _Path, ios_base::openmode _Mode = ios_base::in | ios_base::out,
             int _Prot = ios_base::_Default_open_prot) {
     // extension
     open(_Path.c_str(), _Mode, _Prot);
@@ -397,7 +397,7 @@ public:
 
 #if _HAS_CXX17
   template<int = 0, class _Path_ish = filesystem::path>
-  void open(const _Identity_t<_Path_ish>& _Path, ios_base::openmode _Mode = ios_base::in | ios_base::out,
+  void open(const type_identity_t<_Path_ish>& _Path, ios_base::openmode _Mode = ios_base::in | ios_base::out,
             int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
     open(_Path.c_str(), _Mode, _Prot);

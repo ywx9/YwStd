@@ -705,8 +705,8 @@ template<class _Alloc, class _Value_type> using _Rebind_alloc_t =
 
 // If _Alloc is already rebound appropriately, binds an lvalue reference to it, avoiding a copy. Otherwise, creates a
 // rebound copy.
-template<class _Alloc, class _Value_type> using _Maybe_rebind_alloc_t = typename _Select<
-  is_same_v<typename _Alloc::value_type, _Value_type>>::template _Apply<_Alloc&, _Rebind_alloc_t<_Alloc, _Value_type>>;
+template<class _Alloc, class _Value_type> using _Maybe_rebind_alloc_t =
+  conditional_t<is_same_v<typename _Alloc::value_type, _Value_type>, _Alloc&, _Rebind_alloc_t<_Alloc, _Value_type>>;
 
 template<class _Alloc> // tests if allocator has simple addressing
 constexpr bool _Is_simple_alloc_v =
@@ -2176,9 +2176,9 @@ template<class _Ty> constexpr bool _Is_deducible_as_pair<_Ty, decltype(_STD _Ded
 
 template<class _Ty> constexpr bool _Is_cv_pair = _Is_specialization_v<remove_cv_t<_Ty>, pair>;
 
-template<class _Ty> const _Ty& _Normally_bind(_Identity_t<const _Ty&>); // not defined
+template<class _Ty> const _Ty& _Normally_bind(type_identity_t<const _Ty&>); // not defined
 
-template<class _Ty> _Ty&& _Normally_bind(_Identity_t<_Ty&&>); // not defined
+template<class _Ty> _Ty&& _Normally_bind(type_identity_t<_Ty&&>); // not defined
 
 template<class _Ty, class _Uty> using _Normally_bound_ref = decltype(_STD _Normally_bind<_Ty>(_STD declval<_Uty>()));
 
@@ -2413,7 +2413,7 @@ private:
   using _Mybase = _Ty; // for visualization
 
 protected:
-  template<class _Other, enable_if_t<!is_same_v<_Remove_cvref_t<_Other>, _Ebco_base>, int> = 0>
+  template<class _Other, enable_if_t<!is_same_v<remove_cvref_t<_Other>, _Ebco_base>, int> = 0>
   constexpr explicit _Ebco_base(_Other&& _Val) noexcept(is_nothrow_constructible_v<_Ty, _Other>)
     : _Ty(_STD forward<_Other>(_Val)) {}
 
@@ -2427,7 +2427,7 @@ private:
   _Ty _Myval;
 
 protected:
-  template<class _Other, enable_if_t<!is_same_v<_Remove_cvref_t<_Other>, _Ebco_base>, int> = 0>
+  template<class _Other, enable_if_t<!is_same_v<remove_cvref_t<_Other>, _Ebco_base>, int> = 0>
   constexpr explicit _Ebco_base(_Other&& _Val) noexcept(is_nothrow_constructible_v<_Ty, _Other>)
     : _Myval(_STD forward<_Other>(_Val)) {}
 

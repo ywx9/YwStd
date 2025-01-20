@@ -94,7 +94,7 @@ struct _Char_traits { // properties of a string or stream element
     using int_type   = _Int_type;
     using pos_type   = streampos;
     using off_type   = streamoff;
-    using state_type = _Mbstatet;
+    using state_type = mbstate_t;
 #if _HAS_CXX20
     using comparison_category = strong_ordering;
 #endif // _HAS_CXX20
@@ -282,7 +282,7 @@ public:
         _In_reads_(_Count) const _Elem* const _First2, const size_t _Count) noexcept /* strengthened */ {
         // compare [_First1, _First1 + _Count) with [_First2, ...)
 #if _HAS_CXX17
-        if (_STD _Is_constant_evaluated()) {
+        if (_STD is_constant_evaluated()) {
             if constexpr (is_same_v<_Elem, wchar_t>) {
                 return __builtin_wmemcmp(_First1, _First2, _Count);
             } else {
@@ -298,7 +298,7 @@ public:
     _NODISCARD static _CONSTEXPR17 size_t length(_In_z_ const _Elem* _First) noexcept /* strengthened */ {
         // find length of null-terminated sequence
 #if _HAS_CXX17
-        if (_STD _Is_constant_evaluated()) {
+        if (_STD is_constant_evaluated()) {
             if constexpr (is_same_v<_Elem, wchar_t>) {
                 return __builtin_wcslen(_First);
             } else {
@@ -314,7 +314,7 @@ public:
         _In_reads_(_Count) const _Elem* _First, const size_t _Count, const _Elem& _Ch) noexcept /* strengthened */ {
         // look for _Ch in [_First, _First + _Count)
 #if _HAS_CXX17
-        if (_STD _Is_constant_evaluated()) {
+        if (_STD is_constant_evaluated()) {
             if constexpr (is_same_v<_Elem, wchar_t>) {
                 return __builtin_wmemchr(_First, _Ch, _Count);
             } else {
@@ -656,7 +656,7 @@ constexpr size_t _Traits_find(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits>
 
 #if _USE_STD_VECTOR_ALGORITHMS
     if constexpr (_Is_implementation_handled_char_traits<_Traits> && sizeof(typename _Traits::char_type) <= 2) {
-        if (!_STD _Is_constant_evaluated()) {
+        if (!_STD is_constant_evaluated()) {
             const auto _End = _Haystack + _Hay_size;
             const auto _Ptr = _STD _Search_vectorized(_Haystack + _Start_at, _End, _Needle, _Needle_size);
 
@@ -692,7 +692,7 @@ constexpr size_t _Traits_find_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<_Trai
 
 #if _USE_STD_VECTOR_ALGORITHMS
     if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
-        if (!_STD _Is_constant_evaluated()) {
+        if (!_STD is_constant_evaluated()) {
             const auto _End = _Haystack + _Hay_size;
             const auto _Ptr = _STD _Find_vectorized(_Haystack + _Start_at, _End, _Ch);
 
@@ -730,7 +730,7 @@ constexpr size_t _Traits_rfind(_In_reads_(_Hay_size) const _Traits_ptr_t<_Traits
 
 #if _USE_STD_VECTOR_ALGORITHMS
     if constexpr (_Is_implementation_handled_char_traits<_Traits> && sizeof(typename _Traits::char_type) <= 2) {
-        if (!_STD _Is_constant_evaluated()) {
+        if (!_STD is_constant_evaluated()) {
             // _Find_end_vectorized takes into account the needle length when locating the search start.
             // As a potentially earlier start position can be specified, we need to take it into account,
             // and pick between the maximum possible start position and the specified one,
@@ -771,7 +771,7 @@ constexpr size_t _Traits_rfind_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<_Tra
 
 #if _USE_STD_VECTOR_ALGORITHMS
     if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
-        if (!_STD _Is_constant_evaluated()) {
+        if (!_STD is_constant_evaluated()) {
             const auto _End = _Haystack + _Actual_start_at + 1;
             const auto _Ptr = _STD _Find_last_vectorized(_Haystack, _End, _Ch);
 
@@ -861,7 +861,7 @@ constexpr size_t _Traits_find_first_of(_In_reads_(_Hay_size) const _Traits_ptr_t
 
     if constexpr (_Is_implementation_handled_char_traits<_Traits>) {
 #if _USE_STD_VECTOR_ALGORITHMS
-        if (!_STD _Is_constant_evaluated()) {
+        if (!_STD is_constant_evaluated()) {
             const size_t _Remaining_size = _Hay_size - _Start_at;
             if (_Remaining_size + _Needle_size >= _Threshold_find_first_of) {
                 size_t _Pos = _Find_first_of_pos_vectorized(_Hay_start, _Remaining_size, _Needle, _Needle_size);
@@ -911,7 +911,7 @@ constexpr size_t _Traits_find_last_of(_In_reads_(_Hay_size) const _Traits_ptr_t<
         using _Elem = typename _Traits::char_type;
 #if _USE_STD_VECTOR_ALGORITHMS
         if constexpr (sizeof(_Elem) <= 2) {
-            if (!_STD _Is_constant_evaluated()) {
+            if (!_STD is_constant_evaluated()) {
                 const size_t _Remaining_size = _Hay_start + 1;
                 if (_Remaining_size + _Needle_size >= _Threshold_find_first_of) { // same threshold for first/last
                     return _Find_last_of_pos_vectorized(_Haystack, _Remaining_size, _Needle, _Needle_size);
@@ -1059,7 +1059,7 @@ constexpr size_t _Traits_rfind_not_ch(_In_reads_(_Hay_size) const _Traits_ptr_t<
 }
 
 template <class _Ty>
-constexpr bool _Is_EcharT = _Is_any_of_v<_Ty, char, wchar_t,
+constexpr bool _Is_EcharT = _is_included_v<_Ty, char, wchar_t,
 #ifdef __cpp_char8_t
     char8_t,
 #endif // defined(__cpp_char8_t)
@@ -1830,7 +1830,7 @@ template <class _Traits>
 struct _Get_comparison_category<_Traits> {
     using type = _Traits::comparison_category;
 
-    static_assert(_Is_any_of_v<type, partial_ordering, weak_ordering, strong_ordering>,
+    static_assert(_is_included_v<type, partial_ordering, weak_ordering, strong_ordering>,
         "N4971 [string.view.comparison]/4: Mandates: R denotes a comparison category type.");
 };
 
@@ -1851,13 +1851,13 @@ _NODISCARD constexpr bool operator==(
 
 template <class _Elem, class _Traits, int = 1> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator==(
-    const _Identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
+    const type_identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
     return _Lhs._Equal(_Rhs);
 }
 
 template <class _Elem, class _Traits, int = 2> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator==(
-    const basic_string_view<_Elem, _Traits> _Lhs, const _Identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
+    const basic_string_view<_Elem, _Traits> _Lhs, const type_identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
     return _Lhs._Equal(_Rhs);
 }
 
@@ -1869,13 +1869,13 @@ _NODISCARD constexpr bool operator!=(
 
 template <class _Elem, class _Traits, int = 1> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator!=(
-    const _Identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
+    const type_identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
     return !_Lhs._Equal(_Rhs);
 }
 
 template <class _Elem, class _Traits, int = 2> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator!=(
-    const basic_string_view<_Elem, _Traits> _Lhs, const _Identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
+    const basic_string_view<_Elem, _Traits> _Lhs, const type_identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
     return !_Lhs._Equal(_Rhs);
 }
 
@@ -1887,13 +1887,13 @@ _NODISCARD constexpr bool operator<(
 
 template <class _Elem, class _Traits, int = 1> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator<(
-    const _Identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
+    const type_identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) < 0;
 }
 
 template <class _Elem, class _Traits, int = 2> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator<(
-    const basic_string_view<_Elem, _Traits> _Lhs, const _Identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
+    const basic_string_view<_Elem, _Traits> _Lhs, const type_identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) < 0;
 }
 
@@ -1905,13 +1905,13 @@ _NODISCARD constexpr bool operator>(
 
 template <class _Elem, class _Traits, int = 1> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator>(
-    const _Identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
+    const type_identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) > 0;
 }
 
 template <class _Elem, class _Traits, int = 2> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator>(
-    const basic_string_view<_Elem, _Traits> _Lhs, const _Identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
+    const basic_string_view<_Elem, _Traits> _Lhs, const type_identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) > 0;
 }
 
@@ -1923,13 +1923,13 @@ _NODISCARD constexpr bool operator<=(
 
 template <class _Elem, class _Traits, int = 1> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator<=(
-    const _Identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
+    const type_identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) <= 0;
 }
 
 template <class _Elem, class _Traits, int = 2> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator<=(
-    const basic_string_view<_Elem, _Traits> _Lhs, const _Identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
+    const basic_string_view<_Elem, _Traits> _Lhs, const type_identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) <= 0;
 }
 
@@ -1941,13 +1941,13 @@ _NODISCARD constexpr bool operator>=(
 
 template <class _Elem, class _Traits, int = 1> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator>=(
-    const _Identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
+    const type_identity_t<basic_string_view<_Elem, _Traits>> _Lhs, const basic_string_view<_Elem, _Traits> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) >= 0;
 }
 
 template <class _Elem, class _Traits, int = 2> // TRANSITION, VSO-409326
 _NODISCARD constexpr bool operator>=(
-    const basic_string_view<_Elem, _Traits> _Lhs, const _Identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
+    const basic_string_view<_Elem, _Traits> _Lhs, const type_identity_t<basic_string_view<_Elem, _Traits>> _Rhs) noexcept {
     return _Lhs.compare(_Rhs) >= 0;
 }
 #endif // ^^^ !_HAS_CXX20 ^^^

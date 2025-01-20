@@ -128,7 +128,7 @@ template<class... _VoidPtrs> struct _Meta_at_impl {
   template<class _Ty, class... _Types> static _Ty _Eval(_VoidPtrs..., _Ty*, _Types*...); // undefined
 };
 
-template<class _Ty> constexpr _Identity<_Ty>* _Type_as_pointer() { return nullptr; }
+template<class _Ty> constexpr type_identity<_Ty>* _Type_as_pointer() { return nullptr; }
 
 template<template<class...> class _List, class... _Types, size_t _Idx>
 struct _Meta_at_<_List<_Types...>, _Idx, enable_if_t<(_Idx < sizeof...(_Types))>> {
@@ -592,8 +592,8 @@ struct _Variant_assign_visitor { // visitor that implements assignment for varia
 
   template<class _Ty, size_t _Idx> _CONSTEXPR20 void operator()(_Tagged<_Ty, _Idx> _Source) const
     noexcept(disjunction_v<bool_constant<_Idx == variant_npos>,
-                           conjunction<is_nothrow_assignable<_Remove_cvref_t<_Ty>&, _Ty>,
-                                       is_nothrow_constructible<_Remove_cvref_t<_Ty>, _Ty>>>) {
+                           conjunction<is_nothrow_assignable<remove_cvref_t<_Ty>&, _Ty>,
+                                       is_nothrow_constructible<remove_cvref_t<_Ty>, _Ty>>>) {
     // assign the _Idx-th alternative of _Self from _Source
     if constexpr (_Idx == variant_npos) { // assign from valueless _Source
       _Self._Reset();
@@ -603,7 +603,7 @@ struct _Variant_assign_visitor { // visitor that implements assignment for varia
         _Target = static_cast<_Ty&&>(_Source._Val);
       } else {                                      // different alternative
         if constexpr (is_lvalue_reference_v<_Ty>) { // RHS is an lvalue: copy
-          if constexpr (_Variant_should_directly_construct_v<_Remove_cvref_t<_Ty>, _Ty>) {
+          if constexpr (_Variant_should_directly_construct_v<remove_cvref_t<_Ty>, _Ty>) {
             // copy is nothrow or move throws; construct in place
             _Self._Reset();
             _STD _Construct_in_place(_Self._Storage(), integral_constant<size_t, _Idx>{}, _Source._Val);
@@ -682,7 +682,7 @@ public:
     if constexpr (!conjunction_v<is_trivially_destructible<_Types>...>) {
       _STD _Variant_raw_visit(index(), _Storage(), [](auto _Ref) noexcept {
         if constexpr (decltype(_Ref)::_Idx != variant_npos) {
-          using _Indexed_value_type = _Remove_cvref_t<decltype(_Ref._Val)>;
+          using _Indexed_value_type = remove_cvref_t<decltype(_Ref._Val)>;
           _Ref._Val.~_Indexed_value_type();
         }
       });
@@ -821,9 +821,9 @@ public:
     : _Mybase(in_place_index<0>) {} // value-initialize alternative 0
 
   template<class _Ty,
-           enable_if_t<sizeof...(_Types) != 0 && !is_same_v<_Remove_cvref_t<_Ty>, variant> &&
-                         !_Is_specialization_v<_Remove_cvref_t<_Ty>, in_place_type_t> &&
-                         !_Is_in_place_index_specialization<_Remove_cvref_t<_Ty>>,
+           enable_if_t<sizeof...(_Types) != 0 && !is_same_v<remove_cvref_t<_Ty>, variant> &&
+                         !_Is_specialization_v<remove_cvref_t<_Ty>, in_place_type_t> &&
+                         !_Is_in_place_index_specialization<remove_cvref_t<_Ty>>,
                        int> = 0,
            // These enable_if_t constraints are distinct to enable short-circuiting and avoid
            // substitution into _Variant_init_type when the first constraint is not satisfied.
@@ -864,7 +864,7 @@ public:
     // initialize alternative _Idx from _Ilist and _Args...
   }
 
-  template<class _Ty, enable_if_t<!is_same_v<_Remove_cvref_t<_Ty>, variant>, int> = 0,
+  template<class _Ty, enable_if_t<!is_same_v<remove_cvref_t<_Ty>, variant>, int> = 0,
            // These enable_if_t constraints are distinct to enable short-circuiting and avoid
            // substitution into _Variant_init_type when the first constraint is not satisfied.
            enable_if_t<is_constructible_v<_Variant_init_type<_Ty, _Types...>, _Ty> &&
@@ -1308,7 +1308,7 @@ template<> struct _Visit_strategy<-1> {
   // Fallback strategy for visitations with too many total states for the following "switch" strategies.
   template<class _Ret, class _ListOfIndexVectors, class _Callable, class... _Variants> static constexpr _Ret
   _Visit2(size_t _Idx, _Callable&& _Obj, _Variants&&... _Args) { // dispatch a visitation with many potential states
-    constexpr size_t _Size = _Variant_total_states<_Remove_cvref_t<_Variants>...>;
+    constexpr size_t _Size = _Variant_total_states<remove_cvref_t<_Variants>...>;
     static_assert(_Size > 256);
     constexpr auto& _Array =
       _Variant_dispatch_table<_Ret, _ListOfIndexVectors, _Callable, _Meta_list<_Variants...>>::_Array;
@@ -1338,7 +1338,7 @@ template<> struct _Visit_strategy<0> {
     [[fallthrough]]
 
 #define _STL_VISIT_STAMP(stamper, n)                                             \
-  constexpr size_t _Size = _Variant_total_states<_Remove_cvref_t<_Variants>...>; \
+  constexpr size_t _Size = _Variant_total_states<remove_cvref_t<_Variants>...>; \
   static_assert(_Size > (n) / 4 && _Size <= (n));                                \
   switch (_Idx) {                                                                \
     stamper(0, _STL_CASE);                                                       \
@@ -1421,9 +1421,9 @@ template<class _Expected, class _Callable, class... _Args, class... _Types, clas
 _EXPORT_STD template<class _Callable, class... _Variants, class = void_t<_As_variant<_Variants>...>>
 constexpr _Variant_visit_result_t<_Callable, _As_variant<_Variants>...> visit(_Callable&& _Obj, _Variants&&... _Args) {
   // Invoke _Obj with the contained values of _Args...
-  constexpr auto _Size = _Variant_total_states<_Remove_cvref_t<_As_variant<_Variants>>...>;
+  constexpr auto _Size = _Variant_total_states<remove_cvref_t<_As_variant<_Variants>>...>;
   using _ListOfIndexLists =
-    _Meta_list<_Meta_as_list<make_index_sequence<1 + variant_size_v<_Remove_cvref_t<_As_variant<_Variants>>>>>...>;
+    _Meta_list<_Meta_as_list<make_index_sequence<1 + variant_size_v<remove_cvref_t<_As_variant<_Variants>>>>>...>;
   using _ListOfIndexVectors =
     _Meta_transform<_Meta_quote<_Meta_as_integer_sequence>, _Meta_cartesian_product<_ListOfIndexLists>>;
   using _Ret = _Variant_visit_result_t<_Callable, _As_variant<_Variants>...>;
@@ -1463,9 +1463,9 @@ constexpr bool _Variant_all_visit_results_convertible<_Expected, _Callable, _Met
 
 _EXPORT_STD template<class _Ret, class _Callable, class... _Variants, class = void_t<_As_variant<_Variants>...>>
 constexpr _Ret visit(_Callable&& _Obj, _Variants&&... _Args) {
-  constexpr auto _Size = _Variant_total_states<_Remove_cvref_t<_As_variant<_Variants>>...>;
+  constexpr auto _Size = _Variant_total_states<remove_cvref_t<_As_variant<_Variants>>...>;
   using _ListOfIndexLists =
-    _Meta_list<_Meta_as_list<make_index_sequence<1 + variant_size_v<_Remove_cvref_t<_As_variant<_Variants>>>>>...>;
+    _Meta_list<_Meta_as_list<make_index_sequence<1 + variant_size_v<remove_cvref_t<_As_variant<_Variants>>>>>...>;
   using _ListOfIndexVectors =
     _Meta_transform<_Meta_quote<_Meta_as_integer_sequence>, _Meta_cartesian_product<_ListOfIndexLists>>;
   if constexpr (!is_void_v<_Ret>) {

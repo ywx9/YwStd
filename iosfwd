@@ -11,7 +11,7 @@
 #include "cstdio"
 #include "cstring"
 #include "cwchar"
-#include "inc/xtr1common"
+
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)
@@ -124,7 +124,7 @@ private:
   _Statetype _Mystate; // current conversion state
 };
 
-_EXPORT_STD using streampos = fpos<_Mbstatet>;
+_EXPORT_STD using streampos = fpos<mbstate_t>;
 _EXPORT_STD using wstreampos = streampos;
 #ifdef __cpp_lib_char8_t
 _EXPORT_STD using u8streampos = streampos;

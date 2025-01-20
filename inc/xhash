@@ -236,7 +236,7 @@ template<class _Aliter> struct _Hash_vec {
     _Mypair._Myval2._Alloc_proxy(_GET_PROXY_ALLOCATOR(_Aliter, _Mypair._Get_first()));
   }
 
-  template<class _Any_alloc, enable_if_t<!is_same_v<_Remove_cvref_t<_Any_alloc>, _Hash_vec>, int> = 0>
+  template<class _Any_alloc, enable_if_t<!is_same_v<remove_cvref_t<_Any_alloc>, _Hash_vec>, int> = 0>
   explicit _Hash_vec(_Any_alloc&& _Al) noexcept
     : _Mypair(_One_then_variadic_args_t{}, _STD forward<_Any_alloc>(_Al)) { // construct empty vector, allocator
     _Mypair._Myval2._Alloc_proxy(_GET_PROXY_ALLOCATOR(_Aliter, _Mypair._Get_first()));

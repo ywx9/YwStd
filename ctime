@@ -23,22 +23,22 @@ inline size_t __cdecl strftime(char* s, size_t n, const char* f, const tm* t) {
 }
 
 inline char* __cdecl ctime(const time_t* t) {
-  return ::_ctime64(reinterpret_cast<const __time64_t*>(t));
+  return ::_ctime64(reinterpret_cast<const long long*>(t));
 }
 inline double __cdecl difftime(time_t t1, time_t t2) {
-  return ::_difftime64(static_cast<__time64_t>(t1), static_cast<__time64_t>(t2));
+  return ::_difftime64(static_cast<long long>(t1), static_cast<long long>(t2));
 }
 inline tm* __cdecl gmtime(const time_t* t) {
-  return ::_gmtime64(reinterpret_cast<const __time64_t*>(t));
+  return ::_gmtime64(reinterpret_cast<const long long*>(t));
 }
 inline tm* __cdecl localtime(const time_t* t) {
-  return ::_localtime64(reinterpret_cast<const __time64_t*>(t));
+  return ::_localtime64(reinterpret_cast<const long long*>(t));
 }
 inline time_t __cdecl mktime(tm* t) {
   return ::_mktime64(t);
 }
 inline time_t __cdecl time(time_t* t) {
-  return ::_time64(reinterpret_cast<__time64_t*>(t));
+  return ::_time64(reinterpret_cast<long long*>(t));
 }
 inline int __cdecl timespec_get(timespec* ts, int base) {
   return ::_timespec64_get(reinterpret_cast<::_timespec64*>(ts), base);

@@ -866,12 +866,12 @@ public:
   }
 
   raw_storage_iterator& operator=(const _Ty& _Val) { // construct value designated by stored iterator
-    _STD _Construct_in_place(const_cast<_Remove_cvref_t<decltype(*_Next)>&>(*_Next), _Val);
+    _STD _Construct_in_place(const_cast<remove_cvref_t<decltype(*_Next)>&>(*_Next), _Val);
     return *this;
   }
 
   raw_storage_iterator& operator=(_Ty&& _Val) { // construct value designated by stored iterator
-    _STD _Construct_in_place(const_cast<_Remove_cvref_t<decltype(*_Next)>&>(*_Next), _STD move(_Val));
+    _STD _Construct_in_place(const_cast<remove_cvref_t<decltype(*_Next)>&>(*_Next), _STD move(_Val));
     return *this;
   }
 

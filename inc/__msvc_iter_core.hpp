@@ -90,7 +90,7 @@ struct incrementable_traits<_Ty> {
   using difference_type = make_signed_t<decltype(_STD declval<_Ty>() - _STD declval<_Ty>())>;
 };
 
-template<class _Ty> concept _Is_from_primary = _Same_impl<typename _Ty::_From_primary, _Ty>;
+template<class _Ty> concept _Is_from_primary = _half_same_as<typename _Ty::_From_primary, _Ty>;
 
 _EXPORT_STD template<class> struct iterator_traits;
 
@@ -302,6 +302,7 @@ template<class _Ty> constexpr bool _Integer_class = requires {
   typename _Ty::_Unsigned_type;
 };
 
+template<typename T> concept _Is_nonbool_integral = integral<T> && !same_as<remove_cv_t<T>, bool>;
 template<class _Ty> concept _Integer_like = _Is_nonbool_integral<_Ty> || _Integer_class<_Ty>;
 
 template<class _Ty> concept _Signed_integer_like = _Integer_like<_Ty> && static_cast<_Ty>(-1) < static_cast<_Ty>(0);

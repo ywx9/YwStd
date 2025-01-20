@@ -24,6 +24,7 @@ __pragma(optimize("", off)) inline int __cdecl feraiseexcept(int except) {
       #endif
     }
   }
+  return 0;
 }
 __pragma(optimize("", on))
 inline int __cdecl feupdateenv(const fenv_t* fe) {

@@ -101,7 +101,7 @@ private:
 #pragma warning(pop)
 
 public:
-  template<class _Fn, class... _Args, enable_if_t<!is_same_v<_Remove_cvref_t<_Fn>, thread>, int> = 0>
+  template<class _Fn, class... _Args, enable_if_t<!is_same_v<remove_cvref_t<_Fn>, thread>, int> = 0>
   _NODISCARD_CTOR_THREAD explicit thread(_Fn&& _Fx, _Args&&... _Ax) {
     _Start(_STD forward<_Fn>(_Fx), _STD forward<_Args>(_Ax)...);
   }

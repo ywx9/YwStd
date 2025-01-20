@@ -66,9 +66,9 @@ template<class _Ty> _NODISCARD constexpr int _Countl_zero_internal(const _Ty _Va
   _STL_INTERNAL_STATIC_ASSERT(_Is_standard_unsigned_integer<_Ty>);
 #if _HAS_COUNTL_ZERO_INTRINSICS
 #if (defined(_M_IX86) && !defined(_M_HYBRID_X86_ARM64)) || (defined(_M_X64) && !defined(_M_ARM64EC))
-  if (!_Is_constant_evaluated()) { return _Checked_x86_x64_countl_zero(_Val); }
+  if (!is_constant_evaluated()) { return _Checked_x86_x64_countl_zero(_Val); }
 #elif defined(_M_ARM) || defined(_M_ARM64) || defined(_M_ARM64EC) || defined(_M_HYBRID_X86_ARM64)
-  if (!_Is_constant_evaluated()) { return _Checked_arm_arm64_countl_zero(_Val); }
+  if (!is_constant_evaluated()) { return _Checked_arm_arm64_countl_zero(_Val); }
 #endif // defined(_M_ARM) || defined(_M_ARM64) || defined(_M_ARM64EC) || defined(_M_HYBRID_X86_ARM64)
 #endif // _HAS_COUNTL_ZERO_INTRINSICS
 
@@ -93,7 +93,7 @@ struct
     }
 
 #if _STL_128_INTRINSICS
-    if (!_Is_constant_evaluated()) {
+    if (!is_constant_evaluated()) {
       _Word[1] = __shiftleft128(_Word[0], _Word[1], _Count);
     } else
 #endif // _STL_128_INTRINSICS
@@ -115,7 +115,7 @@ struct
     }
 
 #if _STL_128_INTRINSICS
-    if (!_Is_constant_evaluated()) {
+    if (!is_constant_evaluated()) {
       _Word[0] = __shiftright128(_Word[0], _Word[1], _Count);
     } else
 #endif // _STL_128_INTRINSICS
@@ -130,7 +130,7 @@ struct
                                              uint64_t& _Result) noexcept {
     // _STL_INTERNAL_CHECK(_Carry < 2);
 #if _STL_128_INTRINSICS
-    if (!_Is_constant_evaluated()) { return _addcarry_u64(_Carry, _Left, _Right, &_Result); }
+    if (!is_constant_evaluated()) { return _addcarry_u64(_Carry, _Left, _Right, &_Result); }
 #endif // _STL_128_INTRINSICS
 
     const uint64_t _Sum = _Left + _Right + _Carry;
@@ -142,7 +142,7 @@ struct
                                               uint64_t& _Result) noexcept {
     // _STL_INTERNAL_CHECK(_Carry < 2);
 #if _STL_128_INTRINSICS
-    if (!_Is_constant_evaluated()) { return _subborrow_u64(_Carry, _Left, _Right, &_Result); }
+    if (!is_constant_evaluated()) { return _subborrow_u64(_Carry, _Left, _Right, &_Result); }
 #endif // _STL_128_INTRINSICS
 
     const auto _Difference = _Left - _Right - _Carry;
@@ -175,7 +175,7 @@ struct
   _NODISCARD static constexpr uint64_t _UMul128(const uint64_t _Left, const uint64_t _Right,
                                                 uint64_t& _High_result) noexcept {
 #if _STL_128_INTRINSICS
-    if (!_Is_constant_evaluated()) { return _umul128(_Left, _Right, &_High_result); }
+    if (!is_constant_evaluated()) { return _umul128(_Left, _Right, &_High_result); }
 #endif // _STL_128_INTRINSICS
 
     const uint32_t __u[2] = {
@@ -250,7 +250,7 @@ struct
     // _STL_INTERNAL_CHECK(_High < _Div);
 
 #if _STL_128_DIV_INTRINSICS
-    if (!_Is_constant_evaluated()) { return _udiv128(_High, _Low, _Div, &_Remainder); }
+    if (!is_constant_evaluated()) { return _udiv128(_High, _Low, _Div, &_Remainder); }
 #endif // _STL_128_DIV_INTRINSICS
 
     const auto __d = _Countl_zero_internal(static_cast<uint32_t>(_Div >> 32));
@@ -1014,7 +1014,7 @@ struct _Signed128 : _Base128 {
     }
 
 #if _STL_128_INTRINSICS
-    if (!_Is_constant_evaluated()) {
+    if (!is_constant_evaluated()) {
       _Word[0] = __shiftright128(_Word[0], _Word[1], _Count);
     } else
 #endif // _STL_128_INTRINSICS

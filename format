@@ -1066,7 +1066,7 @@ _NODISCARD constexpr basic_format_arg<_Context> _Get_arg(const _Context& _Ctx, c
 }
 
 template<class _Ty> constexpr bool _Is_signed_or_unsigned_large_integer_t =
-  _Is_any_of_v<remove_cv_t<_Ty>, int, unsigned int, long, unsigned long, long long, unsigned long long>;
+  _is_included_v<remove_cv_t<_Ty>, int, unsigned int, long, unsigned long, long long, unsigned long long>;
 
 // Checks that the type and value of an argument associated with a dynamic
 // width specifier are valid.
@@ -1106,7 +1106,7 @@ public:
 // width or precision specifier. This will be called with either
 // _Width_checker or _Precision_checker as "_Handler".
 template<class _Handler, class _FormatArg> _NODISCARD constexpr int _Get_dynamic_specs(const _FormatArg _Arg) {
-  _STL_INTERNAL_STATIC_ASSERT(_Is_any_of_v<_Handler, _Width_checker, _Precision_checker>);
+  _STL_INTERNAL_STATIC_ASSERT(_is_included_v<_Handler, _Width_checker, _Precision_checker>);
   const unsigned long long _Val = _STD visit_format_arg(_Handler{}, _Arg);
   if (!_STD in_range<int>(_Val)) { _Throw_format_error("Number is too big."); }
 

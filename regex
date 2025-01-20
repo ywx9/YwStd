@@ -1538,7 +1538,7 @@ private:
   _Prs_ret _ClassAtom();
   void _ClassRanges();
   void _CharacterClass();
-  bool _IdentityEscape();
+  bool type_identityEscape();
   bool _IsIdentityEscape() const;
   bool _Do_ffn(_Elem);
   bool _Do_ffnx(_Elem);
@@ -3874,7 +3874,7 @@ bool _Parser<_FwdIt, _Elem, _RxTraits>::_IsIdentityEscape() const { // check for
 }
 
 template<class _FwdIt, class _Elem, class _RxTraits>
-bool _Parser<_FwdIt, _Elem, _RxTraits>::_IdentityEscape() { // check whether an escape is valid, and process it if so
+bool _Parser<_FwdIt, _Elem, _RxTraits>::type_identityEscape() { // check whether an escape is valid, and process it if so
   if (_IsIdentityEscape()) {
     _Val = _Char;
     _Next();
@@ -3937,7 +3937,7 @@ bool _Parser<_FwdIt, _Elem, _RxTraits>::_CharacterEscape() { // check for valid 
   } else if ((_L_flags & _L_esc_oct) && _OctalDigits()) { // handle octal escape sequence
     if (_Val == 0) { _Error(regex_constants::error_escape); }
   } else {
-    return _IdentityEscape();
+    return type_identityEscape();
   }
 
   if (_STD _Max_limit<typename _RxTraits::_Uelem>() < static_cast<unsigned int>(_Val)) {

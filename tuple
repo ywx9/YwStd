@@ -93,16 +93,16 @@ template<class _This, class _OtherTuple, class _Uty> struct _Tuple_convert_val<t
 template<class _Myself, class _This2, class... _Rest2> struct _Tuple_perfect_val : true_type {};
 
 template<class _Myself, class _This2> struct _Tuple_perfect_val<_Myself, _This2>
-  : bool_constant<!is_same_v<_Myself, _Remove_cvref_t<_This2>>> {};
+  : bool_constant<!is_same_v<_Myself, remove_cvref_t<_This2>>> {};
 
 template<class _Ty0, class _Ty1, class _Uty0, class _Uty1> struct _Tuple_perfect_val<tuple<_Ty0, _Ty1>, _Uty0, _Uty1>
-  : bool_constant<disjunction_v<negation<is_same<_Remove_cvref_t<_Uty0>, allocator_arg_t>>,
-                                is_same<_Remove_cvref_t<_Ty0>, allocator_arg_t>>> {};
+  : bool_constant<disjunction_v<negation<is_same<remove_cvref_t<_Uty0>, allocator_arg_t>>,
+                                is_same<remove_cvref_t<_Ty0>, allocator_arg_t>>> {};
 
 template<class _Ty0, class _Ty1, class _Ty2, class _Uty0, class _Uty1, class _Uty2>
 struct _Tuple_perfect_val<tuple<_Ty0, _Ty1, _Ty2>, _Uty0, _Uty1, _Uty2>
-  : bool_constant<disjunction_v<negation<is_same<_Remove_cvref_t<_Uty0>, allocator_arg_t>>,
-                                is_same<_Remove_cvref_t<_Ty0>, allocator_arg_t>>> {};
+  : bool_constant<disjunction_v<negation<is_same<remove_cvref_t<_Uty0>, allocator_arg_t>>,
+                                is_same<remove_cvref_t<_Ty0>, allocator_arg_t>>> {};
 
 // Note: To improve throughput, this file uses extra _STD qualification for names that appear in the
 // arguments of enable_if_t. Specifically, we qualify names which appear anywhere in the STL as members of
@@ -510,7 +510,7 @@ public:
            enable_if_t<conjunction_v<_STD _Is_copy_assignable_no_precondition_check<_This2>,
                                      _STD _Is_copy_assignable_no_precondition_check<_Rest>...>,
                        int> = 0>
-  _CONSTEXPR20 tuple& operator=(_Identity_t<const _Myself&> _Right) noexcept(
+  _CONSTEXPR20 tuple& operator=(type_identity_t<const _Myself&> _Right) noexcept(
     conjunction_v<is_nothrow_copy_assignable<_This2>, is_nothrow_copy_assignable<_Rest>...>) /* strengthened */ {
     _Myfirst._Val = _Right._Myfirst._Val;
     _Get_rest() = _Right._Get_rest();
@@ -520,7 +520,7 @@ public:
 #if _HAS_CXX23
   template<class _Myself = tuple> requires conjunction_v<_STD _Is_copy_assignable_no_precondition_check<const _This>,
                                                          _STD _Is_copy_assignable_no_precondition_check<const _Rest>...>
-  constexpr const tuple& operator=(_Identity_t<const _Myself&> _Right) const
+  constexpr const tuple& operator=(type_identity_t<const _Myself&> _Right) const
     noexcept(conjunction_v<is_nothrow_copy_assignable<const _This>,
                            is_nothrow_copy_assignable<const _Rest>...>) /* strengthened */ {
     _Myfirst._Val = _Right._Myfirst._Val;
@@ -533,7 +533,7 @@ public:
            enable_if_t<conjunction_v<_STD _Is_move_assignable_no_precondition_check<_This2>,
                                      _STD _Is_move_assignable_no_precondition_check<_Rest>...>,
                        int> = 0>
-  _CONSTEXPR20 tuple& operator=(_Identity_t<_Myself&&> _Right) noexcept(
+  _CONSTEXPR20 tuple& operator=(type_identity_t<_Myself&&> _Right) noexcept(
     conjunction_v<is_nothrow_move_assignable<_This2>, is_nothrow_move_assignable<_Rest>...>) {
     _Myfirst._Val = _STD forward<_This>(_Right._Myfirst._Val);
     _Get_rest() = _STD forward<_Mybase>(_Right._Get_rest());
@@ -544,7 +544,7 @@ public:
   template<class _Myself = tuple>
   requires conjunction_v<_STD _Is_assignable_no_precondition_check<const _This&, _This>,
                          _STD _Is_assignable_no_precondition_check<const _Rest&, _Rest>...>
-  constexpr const tuple& operator=(_Identity_t<_Myself&&> _Right) const
+  constexpr const tuple& operator=(type_identity_t<_Myself&&> _Right) const
     noexcept(conjunction_v<is_nothrow_assignable<const _This&, _This>,
                            is_nothrow_assignable<const _Rest&, _Rest>...>) /* strengthened */ {
     _Myfirst._Val = _STD forward<_This>(_Right._Myfirst._Val);
@@ -955,7 +955,7 @@ template<class _Ty, class _Kx_arg, class _Ix_arg, size_t _Ix_next, class... _Seq
 
 template<class _Ty, size_t... _Kx, size_t... _Ix, size_t _Ix_next>
 struct _Tuple_cat2<_Ty, index_sequence<_Kx...>, index_sequence<_Ix...>, _Ix_next> {
-  using _Ret = tuple<tuple_element_t<_Kx, _Remove_cvref_t<tuple_element_t<_Ix, _Ty>>>...>;
+  using _Ret = tuple<tuple_element_t<_Kx, remove_cvref_t<tuple_element_t<_Ix, _Ty>>>...>;
   using _Kx_seq = index_sequence<_Kx...>;
   using _Ix_seq = index_sequence<_Ix...>;
 };
@@ -973,7 +973,7 @@ template<_Tuple_like... _Tuples>
 template<class... _Tuples>
 #endif // ^^^ !_HAS_CXX23 ^^^
 using _Tuple_cat1 = _Tuple_cat2<tuple<_Tuples&&...>, index_sequence<>, index_sequence<>, 0,
-                                make_index_sequence<tuple_size_v<_Remove_cvref_t<_Tuples>>>...>;
+                                make_index_sequence<tuple_size_v<remove_cvref_t<_Tuples>>>...>;
 
 template<class _Ret, size_t... _Kx, size_t... _Ix, class _Ty>
 constexpr _Ret _Tuple_cat(index_sequence<_Kx...>, index_sequence<_Ix...>, _Ty _Arg) {

@@ -24,18 +24,6 @@ _STL_DISABLE_CLANG_WARNINGS
 #undef new
 
 _STD_BEGIN
-template<class _Ty1,
-         class _Ty2> concept _Same_impl = // Must be a distinct concept to provide symmetric subsumption for same_as
-#ifdef __clang__
-  __is_same(_Ty1, _Ty2);
-#else  // ^^^ use intrinsic / no intrinsic vvv
-  is_same_v<_Ty1, _Ty2>;
-#endif // ^^^ no intrinsic ^^^
-
-_EXPORT_STD template<class _Ty1, class _Ty2> concept same_as = _Same_impl<_Ty1, _Ty2> && _Same_impl<_Ty2, _Ty1>;
-
-_EXPORT_STD template<class _Derived, class _Base> concept derived_from =
-  __is_base_of(_Base, _Derived) && __is_convertible_to(const volatile _Derived*, const volatile _Base*);
 
 template<class _From, class _To> concept _Implicitly_convertible_to = is_convertible_v<_From, _To>;
 
@@ -63,15 +51,6 @@ concept common_with =
         common_reference_t<add_lvalue_reference_t<const _Ty1>, add_lvalue_reference_t<const _Ty2>>>;
 // clang-format on
 
-_EXPORT_STD template<class _Ty> concept integral = is_integral_v<_Ty>;
-
-_EXPORT_STD template<class _Ty> concept signed_integral = integral<_Ty> && static_cast<_Ty>(-1) < static_cast<_Ty>(0);
-
-_EXPORT_STD template<class _Ty> concept unsigned_integral = integral<_Ty> && !signed_integral<_Ty>;
-
-_EXPORT_STD template<class _Ty> concept floating_point = is_floating_point_v<_Ty>;
-
-ywstd_export template<typename T> concept _arithmetic = integral<T> || floating_point<T>;
 
 _EXPORT_STD template<class _LTy, class _RTy> concept assignable_from =
   is_lvalue_reference_v<_LTy> &&

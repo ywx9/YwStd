@@ -362,7 +362,7 @@ template<class _Context> template<class _Ty> auto _Format_arg_traits<_Context>::
     return static_cast<long double>(42);
   } else if constexpr (_Is_basic_string_like_for<_Td, _Char_type>) {
     return basic_string_view<_Char_type>{};
-  } else if constexpr (_Is_any_of_v<decay_t<_Td>, _Char_type*, const _Char_type*>) {
+  } else if constexpr (_is_included_v<decay_t<_Td>, _Char_type*, const _Char_type*>) {
     return static_cast<const _Char_type*>(nullptr);
   } else if constexpr (is_void_v<remove_pointer_t<_Td>> || is_same_v<_Td, nullptr_t>) {
     return static_cast<const void*>(nullptr);

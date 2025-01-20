@@ -51,7 +51,7 @@ class path;
 
 // clang-format off
 template <class _Ty>
-constexpr bool _Is_any_path = _Is_any_of_v<_Ty
+constexpr bool _Is_any_path = _is_included_v<_Ty
 #if _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
     , experimental::filesystem::path
 #endif // _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
@@ -305,7 +305,7 @@ public:
 
 #if _FSTREAM_SUPPORTS_EXPERIMENTAL_FILESYSTEM
   template<class _Path_ish = experimental::filesystem::path> basic_filebuf*
-  open(const _Identity_t<_Path_ish>& _Path, ios_base::openmode _Mode, int _Prot = ios_base::_Default_open_prot) {
+  open(const type_identity_t<_Path_ish>& _Path, ios_base::openmode _Mode, int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
     return open(_Path.c_str(), _Mode, _Prot);
   }
@@ -313,7 +313,7 @@ public:
 
 #if _HAS_CXX17
   template<int = 0, class _Path_ish = filesystem::path> basic_filebuf*
-  open(const _Identity_t<_Path_ish>& _Path, ios_base::openmode _Mode, int _Prot = ios_base::_Default_open_prot) {
+  open(const type_identity_t<_Path_ish>& _Path, ios_base::openmode _Mode, int _Prot = ios_base::_Default_open_prot) {
     // _Prot is an extension
     return open(_Path.c_str(), _Mode, _Prot);
   }

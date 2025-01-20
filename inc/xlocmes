@@ -29,7 +29,7 @@ _EXPORT_STD struct messages_base // base class for messages
 
 _EXPORT_STD template<class _Elem> class messages : public messages_base { // facet for obtaining messages from a catalog
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   using char_type = _Elem;
   using string_type = basic_string<_Elem, char_traits<_Elem>, allocator<_Elem>>;
@@ -101,7 +101,7 @@ template<class _Elem> __PURE_APPDOMAIN_GLOBAL locale::id messages<_Elem>::id;
 
 _EXPORT_STD template<class _Elem> class messages_byname : public messages<_Elem> { // messages for named locale
 public:
-  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _Is_any_of_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
+  static_assert(!_ENFORCE_FACET_SPECIALIZATIONS || _is_included_v<_Elem, char, wchar_t>, _FACET_SPECIALIZATION_MESSAGE);
 
   explicit messages_byname(const char* _Locname, size_t _Refs = 0)
     : messages<_Elem>(_Locname, _Refs) {} // construct for named locale

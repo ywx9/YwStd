@@ -3,6 +3,8 @@
 // Copyright (c) Microsoft Corporation.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+#include "../abc.hpp"
+
 #ifndef _XUTILITY_
 #define _XUTILITY_
 #include "yvals.h"
@@ -13,6 +15,7 @@
 #include "../cstdlib"
 #include "../cstring"
 #include "../cwchar"
+#include "../cstdint"
 
 #pragma pack(push, _CRT_PACKING)
 #pragma warning(push, _STL_WARNING_LEVEL)
@@ -269,7 +272,7 @@ template<class _Ty> _Ty* _Min_element_vectorized(_Ty* const _First, _Ty* const _
 
   if constexpr (is_same_v<remove_const_t<_Ty>, float>) {
     return const_cast<_Ty*>(static_cast<const _Ty*>(::__std_min_element_f(_First, _Last, false)));
-  } else if constexpr (_Is_any_of_v<remove_const_t<_Ty>, double, long double>) {
+  } else if constexpr (_is_included_v<remove_const_t<_Ty>, double, long double>) {
     return const_cast<_Ty*>(static_cast<const _Ty*>(::__std_min_element_d(_First, _Last, false)));
   } else if constexpr (sizeof(_Ty) == 1) {
     return const_cast<_Ty*>(static_cast<const _Ty*>(::__std_min_element_1(_First, _Last, _Signed)));
@@ -289,7 +292,7 @@ template<class _Ty> _Ty* _Max_element_vectorized(_Ty* const _First, _Ty* const _
 
   if constexpr (is_same_v<remove_const_t<_Ty>, float>) {
     return const_cast<_Ty*>(static_cast<const _Ty*>(::__std_max_element_f(_First, _Last, false)));
-  } else if constexpr (_Is_any_of_v<remove_const_t<_Ty>, double, long double>) {
+  } else if constexpr (_is_included_v<remove_const_t<_Ty>, double, long double>) {
     return const_cast<_Ty*>(static_cast<const _Ty*>(::__std_max_element_d(_First, _Last, false)));
   } else if constexpr (sizeof(_Ty) == 1) {
     return const_cast<_Ty*>(static_cast<const _Ty*>(::__std_max_element_1(_First, _Last, _Signed)));
@@ -315,7 +318,7 @@ template<class _Ty> auto _Min_vectorized(_Ty* const _First, _Ty* const _Last) no
 #endif
   } else if constexpr (is_same_v<remove_const_t<_Ty>, float>) {
     return ::__std_min_f(_First, _Last);
-  } else if constexpr (_Is_any_of_v<remove_const_t<_Ty>, double, long double>) {
+  } else if constexpr (_is_included_v<remove_const_t<_Ty>, double, long double>) {
     return ::__std_min_d(_First, _Last);
   } else if constexpr (sizeof(_Ty) == 1) {
     if constexpr (_Signed) {
@@ -357,7 +360,7 @@ template<class _Ty> auto _Max_vectorized(_Ty* const _First, _Ty* const _Last) no
 #endif
   } else if constexpr (is_same_v<remove_const_t<_Ty>, float>) {
     return ::__std_max_f(_First, _Last);
-  } else if constexpr (_Is_any_of_v<remove_const_t<_Ty>, double, long double>) {
+  } else if constexpr (_is_included_v<remove_const_t<_Ty>, double, long double>) {
     return ::__std_max_d(_First, _Last);
   } else if constexpr (sizeof(_Ty) == 1) {
     if constexpr (_Signed) {
@@ -1215,8 +1218,8 @@ template<class _Iter, class _Sentinel> constexpr void _Adl_verify_range(const _I
 template<class _Iter, class = void> constexpr bool _Unwrappable_v = false;
 
 template<class _Iter> constexpr bool _Unwrappable_v<
-  _Iter, void_t<decltype(_STD declval<_Remove_cvref_t<_Iter>&>()._Seek_to(_STD declval<_Iter>()._Unwrapped()))>> =
-  _Allow_inheriting_unwrap_v<_Remove_cvref_t<_Iter>>;
+  _Iter, void_t<decltype(std::declval<remove_cvref_t<_Iter>&>()._Seek_to(_STD declval<_Iter>()._Unwrapped()))>> =
+  _Allow_inheriting_unwrap_v<remove_cvref_t<_Iter>>;
 
 template<class _Iter, class = void> constexpr bool _Has_nothrow_unwrapped = false;
 template<class _Iter>
@@ -1235,7 +1238,7 @@ _Get_unwrapped(_Iter&& _It) noexcept(!_Unwrappable_v<_Iter> || _Has_nothrow_unwr
   }
 }
 
-template<class _Iter> using _Unwrapped_t = _Remove_cvref_t<decltype(_STD _Get_unwrapped(_STD declval<_Iter>()))>;
+template<class _Iter> using _Unwrapped_t = remove_cvref_t<decltype(_STD _Get_unwrapped(_STD declval<_Iter>()))>;
 
 template<class _Iter, class = bool> constexpr bool _Do_unwrap_when_unverified_v = false;
 
@@ -1244,7 +1247,7 @@ constexpr bool _Do_unwrap_when_unverified_v<_Iter, decltype(static_cast<bool>(_I
   static_cast<bool>(_Iter::_Unwrap_when_unverified);
 
 template<class _Iter> constexpr bool _Unwrappable_for_unverified_v =
-  _Unwrappable_v<_Iter> && _Do_unwrap_when_unverified_v<_Remove_cvref_t<_Iter>>;
+  _Unwrappable_v<_Iter> && _Do_unwrap_when_unverified_v<remove_cvref_t<_Iter>>;
 
 template<class _Iter> _NODISCARD constexpr decltype(auto) _Get_unwrapped_unverified(_Iter&& _It) {
   // unwrap an iterator not previously subjected to _Adl_verify_range
@@ -1258,7 +1261,7 @@ template<class _Iter> _NODISCARD constexpr decltype(auto) _Get_unwrapped_unverif
 }
 
 template<class _Iter> using _Unwrapped_unverified_t =
-  _Remove_cvref_t<decltype(_Get_unwrapped_unverified(_STD declval<_Iter>()))>;
+  remove_cvref_t<decltype(_Get_unwrapped_unverified(_STD declval<_Iter>()))>;
 
 struct _Distance_unknown {
   constexpr _Distance_unknown operator-() const noexcept { return {}; }
@@ -1275,14 +1278,14 @@ template<class _Iter> constexpr bool
     true;
 
 template<class _Iter> constexpr bool _Unwrappable_for_offset_v =
-  _Unwrappable_v<_Iter> && _Offset_verifiable_v<_Remove_cvref_t<_Iter>>;
+  _Unwrappable_v<_Iter> && _Offset_verifiable_v<remove_cvref_t<_Iter>>;
 
 template<class _Iter, class _Diff> _NODISCARD constexpr decltype(auto) _Get_unwrapped_n(_Iter&& _It, const _Diff _Off) {
   if constexpr (is_pointer_v<decay_t<_Iter>>) {
     return _It + 0;
   } else if constexpr (_Unwrappable_for_offset_v<_Iter> && _Integer_like<_Diff>) {
     // ask an iterator to assert that the iterator moved _Off positions is valid, and unwrap
-    using _IDiff = _Iter_diff_t<_Remove_cvref_t<_Iter>>;
+    using _IDiff = _Iter_diff_t<remove_cvref_t<_Iter>>;
     using _CDiff = common_type_t<_Diff, _IDiff>;
     const auto _COff = static_cast<_CDiff>(_Off);
 
@@ -1406,7 +1409,7 @@ template<class _Elem> using _Unwrap_enum_t = typename _Unwrap_enum<_Elem>::type;
   _STD _Debug_order_set_unchecked<otherIter>(first, last, pred)
 
 template<class _Pr, class _Ty1, class _Ty2> constexpr bool _Enable_debug_lt_pred_order_check =
-  is_same_v<_Remove_cvref_t<_Ty1>, _Remove_cvref_t<_Ty2>>;
+  is_same_v<remove_cvref_t<_Ty1>, remove_cvref_t<_Ty2>>;
 
 template<class _Pr, class _Ty1, class _Ty2, bool _Order_check = _Enable_debug_lt_pred_order_check<_Pr, _Ty1, _Ty2>>
 constexpr bool _Debug_lt_pred_order_check_noexcept =
@@ -1512,7 +1515,7 @@ _NODISCARD _CONSTEXPR17 _BidIt prev(_BidIt _First,
   return _First;
 }
 
-template<class _Iter, class _Pointer, bool = is_pointer_v<_Remove_cvref_t<_Iter>>>
+template<class _Iter, class _Pointer, bool = is_pointer_v<remove_cvref_t<_Iter>>>
 constexpr bool _Has_nothrow_operator_arrow = _Is_nothrow_convertible_v<_Iter, _Pointer>;
 
 template<class _Iter, class _Pointer> constexpr bool _Has_nothrow_operator_arrow<_Iter, _Pointer, false> =
@@ -6305,7 +6308,7 @@ template<class _FwdIt, class _Pr>
 constexpr _FwdIt _Max_element_unchecked(_FwdIt _First, _FwdIt _Last, _Pr _Pred) { // find largest element
 #if _USE_STD_VECTOR_ALGORITHMS
   if constexpr (_Is_min_max_optimization_safe<_FwdIt, _Pr>) {
-    if (!_Is_constant_evaluated()) {
+    if (!is_constant_evaluated()) {
       const auto _First_ptr = _STD _To_address(_First);
       const auto _Result = _STD _Max_element_vectorized(_First_ptr, _STD _To_address(_Last));
       if constexpr (is_pointer_v<_FwdIt>) {
@@ -6423,7 +6426,7 @@ _EXPORT_STD template<class _Ty, class _Pr> _NODISCARD constexpr _Ty(max)(initial
   _STL_ASSERT(_Ilist.size() != 0, "An initializer_list passed to std::max must not be empty. (N4971 [alg.min.max]/13)");
 #if _USE_STD_VECTOR_ALGORITHMS
   if constexpr (_Is_min_max_value_optimization_safe<const _Ty*, _Pr>) {
-    if (!_Is_constant_evaluated()) { return static_cast<_Ty>(_STD _Max_vectorized(_Ilist.begin(), _Ilist.end())); }
+    if (!is_constant_evaluated()) { return static_cast<_Ty>(_STD _Max_vectorized(_Ilist.begin(), _Ilist.end())); }
   }
 #endif // _USE_STD_VECTOR_ALGORITHMS
   const _Ty* _Res = _STD _Max_element_unchecked(_Ilist.begin(), _Ilist.end(), _STD _Pass_fn(_Pred));
@@ -6511,7 +6514,7 @@ template<class _FwdIt, class _Pr>
 constexpr _FwdIt _Min_element_unchecked(_FwdIt _First, _FwdIt _Last, _Pr _Pred) { // find smallest element
 #if _USE_STD_VECTOR_ALGORITHMS
   if constexpr (_Is_min_max_optimization_safe<_FwdIt, _Pr>) {
-    if (!_Is_constant_evaluated()) {
+    if (!is_constant_evaluated()) {
       const auto _First_ptr = _STD _To_address(_First);
       const auto _Result = _STD _Min_element_vectorized(_First_ptr, _STD _To_address(_Last));
       if constexpr (is_pointer_v<_FwdIt>) {
@@ -6629,7 +6632,7 @@ _EXPORT_STD template<class _Ty, class _Pr> _NODISCARD constexpr _Ty(min)(initial
   _STL_ASSERT(_Ilist.size() != 0, "An initializer_list passed to std::min must not be empty. (N4971 [alg.min.max]/5)");
 #if _USE_STD_VECTOR_ALGORITHMS
   if constexpr (_Is_min_max_value_optimization_safe<const _Ty*, _Pr>) {
-    if (!_Is_constant_evaluated()) { return static_cast<_Ty>(_STD _Min_vectorized(_Ilist.begin(), _Ilist.end())); }
+    if (!is_constant_evaluated()) { return static_cast<_Ty>(_STD _Min_vectorized(_Ilist.begin(), _Ilist.end())); }
   }
 #endif // _USE_STD_VECTOR_ALGORITHMS
   const _Ty* _Res = _STD _Min_element_unchecked(_Ilist.begin(), _Ilist.end(), _STD _Pass_fn(_Pred));

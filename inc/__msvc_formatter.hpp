@@ -129,7 +129,7 @@ _EXPORT_STD template <class _CharT>
 class basic_format_parse_context;
 
 template <class _CharT>
-concept _Format_supported_charT = _Is_any_of_v<_CharT, char, wchar_t>;
+concept _Format_supported_charT = _is_included_v<_CharT, char, wchar_t>;
 
 _EXPORT_STD template <class _Ty, class _CharT = char>
 struct formatter {

@@ -3,170 +3,14 @@
 
 #pragma once
 
-#include "inc/corecrt.h"
+#include "abc.hpp"
 
-#include "concepts"
+// #include "inc/corecrt.h"
+
+// #include "concepts"
 
 #if ywstd_is_exported
 extern "C" {
-#define INFINITY ((float)(1e+300 * 1e+300))
-#ifndef _UCRT_NEGATIVE_NAN
-#define NAN (-(float)(INFINITY * 0.0F))
-#else
-#define NAN ((float)(INFINITY * 0.0F))
-#endif
-#define HUGE_VALF ((float)INFINITY)
-#define HUGE_VAL ((double)INFINITY)
-#define HUGE_VALL ((long double)INFINITY)
-#define MATH_ERRNO 1
-#define MATH_ERREXCEPT 2
-#define math_errhandling (MATH_ERRNO | MATH_ERREXCEPT)
-#define FP_INFINITE 1
-#define FP_NAN 2
-#define FP_NORMAL (-1)
-#define FP_SUBNORMAL (-2)
-#define FP_ZERO 0
-
-#define ywstd_math_func1(name)  \
-  float __cdecl name##f(float); \
-  double __cdecl name(double)
-
-#define ywstd_math_func2(name)         \
-  float __cdecl name##f(float, float); \
-  double __cdecl name(double, double)
-
-#define ywstd_math_func3(name)                \
-  float __cdecl name##f(float, float, float); \
-  double __cdecl name(double, double, double)
-
-ywstd_math_func1(ceil);
-ywstd_math_func1(floor);
-ywstd_math_func1(trunc);
-ywstd_math_func1(round);
-ywstd_math_func3(fma);
-ywstd_math_func2(fmax);
-ywstd_math_func2(fmin);
-ywstd_math_func2(fdim);
-int __cdecl abs(int);
-long __cdecl labs(long);
-long long __cdecl llabs(long long);
-ywstd_math_func1(fabs);
-ywstd_math_func2(fmod);
-ywstd_math_func2(remainder);
-float __cdecl remquof(float, float, int*);
-double __cdecl remquo(double, double, int*);
-float __cdecl nanf(const char*);
-double __cdecl nan(const char*);
-ywstd_math_func1(exp);
-ywstd_math_func1(exp2);
-ywstd_math_func1(expm1);
-ywstd_math_func1(log);
-ywstd_math_func1(log2);
-ywstd_math_func1(log10);
-ywstd_math_func1(log1p);
-ywstd_math_func2(pow);
-ywstd_math_func1(sqrt);
-ywstd_math_func1(cbrt);
-ywstd_math_func2(hypot);
-ywstd_math_func1(sin);
-ywstd_math_func1(cos);
-ywstd_math_func1(tan);
-ywstd_math_func1(asin);
-ywstd_math_func1(acos);
-ywstd_math_func1(atan);
-ywstd_math_func2(atan2);
-ywstd_math_func1(sinh);
-ywstd_math_func1(cosh);
-ywstd_math_func1(tanh);
-ywstd_math_func1(asinh);
-ywstd_math_func1(acosh);
-ywstd_math_func1(atanh);
-ywstd_math_func1(erf);
-ywstd_math_func1(erfc);
-ywstd_math_func1(tgamma);
-ywstd_math_func1(lgamma);
-long __cdecl lroundf(float);
-long __cdecl lround(double);
-long long __cdecl llroundf(float);
-long long __cdecl llround(double);
-ywstd_math_func1(nearbyint);
-ywstd_math_func1(rint);
-long __cdecl lrintf(float);
-long __cdecl lrint(double);
-long long __cdecl llrintf(float);
-long long __cdecl llrint(double);
-double __cdecl frexp(double, int*);
-float __cdecl ldexpf(float, int);
-double __cdecl ldexp(double, int);
-float __cdecl modff(float, float*);
-double __cdecl modf(double, double*);
-float __cdecl scalbnf(float, int);
-double __cdecl scalbn(double, int);
-float __cdecl scalblnf(float, long);
-double __cdecl scalbln(double, long);
-int __cdecl ilogbf(float);
-int __cdecl ilogb(double);
-ywstd_math_func1(logb);
-ywstd_math_func2(nextafter);
-float __cdecl nexttowardf(float, long double);
-double __cdecl nexttoward(double, long double);
-float __cdecl copysignf(float, float);
-double __cdecl copysign(double, double);
-
-short __cdecl _fdtest(float*);
-short __cdecl _dtest(double*);
-short __cdecl _ldtest(long double*);
-int __cdecl _fdsign(float);
-int __cdecl _dsign(double);
-int __cdecl _ldsign(long double);
-int __cdecl _fdpcomp(float, float);
-int __cdecl _dpcomp(double, double);
-int __cdecl _ldpcomp(long double, long double);
-
-[[nodiscard]] float __stdcall __std_smf_assoc_laguerref(unsigned, unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_assoc_laguerre(unsigned, unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_assoc_legendref(unsigned, unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_assoc_legendre(unsigned, unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_betaf(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_beta(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_comp_ellint_1f(float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_comp_ellint_1(double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_comp_ellint_2f(float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_comp_ellint_2(double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_comp_ellint_3f(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_comp_ellint_3(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_cyl_bessel_if(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_cyl_bessel_i(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_cyl_bessel_jf(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_cyl_bessel_j(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_cyl_bessel_kf(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_cyl_bessel_k(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_cyl_neumannf(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_cyl_neumann(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_ellint_1f(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_ellint_1(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_ellint_2f(float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_ellint_2(double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_ellint_3f(float, float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_ellint_3(double, double, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_expintf(float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_expint(double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_hermitef(unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_hermite(unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_laguerref(unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_laguerre(unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_legendref(unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_legendre(unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_riemann_zetaf(float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_riemann_zeta(double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_sph_besself(unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_sph_bessel(unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_sph_legendref(unsigned, unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_sph_legendre(unsigned, unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_sph_neumannf(unsigned, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_sph_neumann(unsigned, double) noexcept;
-[[nodiscard]] float __stdcall __std_smf_hypot3f(float, float, float) noexcept;
-[[nodiscard]] double __stdcall __std_smf_hypot3(double, double, double) noexcept;
 }
 #else
 #define ywstd_export
@@ -175,8 +19,9 @@ int __cdecl _ldpcomp(long double, long double);
 #ifndef ywstd_import
 namespace std {
 
-template<typename... Ts> struct _common_floating_point : common_type<typename _common_floating_point<Ts>::type...> {};
+template<typename... Ts> struct _common_floating_point;
 template<typename... Ts> using _common_floating_point_t = typename _common_floating_point<Ts...>::type;
+template<typename... Ts> struct _common_floating_point : type_identity<decltype((_common_floating_point_t<Ts>{}+ ...))> {};
 template<integral T> struct _common_floating_point<T> : type_identity<double> {};
 template<floating_point T> struct _common_floating_point<T> : type_identity<T> {};
 
